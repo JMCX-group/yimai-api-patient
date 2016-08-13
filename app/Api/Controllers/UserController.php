@@ -131,79 +131,12 @@ class UserController extends BaseController
         if (isset($request['city']) && !empty($request['city'])) {
             $user->city_id = $request['city'];
         }
-//        if (isset($request['hospital']) && !empty($request['hospital'])) {
-//            $hospitalId = $request['hospital'];
-//            if (!is_numeric($request['hospital'])) {
-//                $hospitalId = $this->createNewHospital($request);
-//            }
-//            $user->hospital_id = $hospitalId;
-//        }
-//        if (isset($request['department']) && !empty($request['department'])) {
-//            $user->dept_id = $request['department'];
-//        }
-//        if (isset($request['job_title']) && !empty($request['job_title'])) {
-//            $user->title = $request['job_title'];
-//        }
-//        if (isset($request['college']) && !empty($request['college'])) {
-//            $user->college_id = $request['college'];
-//        }
         if (isset($request['ID_number']) && !empty($request['ID_number'])) {
             $user->id_num = $request['ID_number'];
         }
         if (isset($request['tags']) && !empty($request['tags'])) {
             $user->tag_list = $request['tags'];
         }
-//        if (isset($request['personal_introduction']) && !empty($request['personal_introduction'])) {
-//            $user->profile = $request['personal_introduction'];
-//        }
-
-        /**
-         * 接诊收费设置。
-         */
-//        if (isset($request['fee_switch']) && !empty($request['fee_switch'])) {
-//            $user->fee_switch = $request['fee_switch'];
-//        }
-//        if (isset($request['fee']) && !empty($request['fee'])) {
-//            $user->fee = $request['fee'];
-//        }
-//        if (isset($request['fee_face_to_face']) && !empty($request['fee_face_to_face'])) {
-//            $user->fee_face_to_face = $request['fee_face_to_face'];
-//        }
-//        if (isset($request['admission_set_fixed']) && !empty($request['admission_set_fixed'])) {
-//            $user->admission_set_fixed = $request['admission_set_fixed'];
-//        }
-//        if (isset($request['admission_set_flexible']) && !empty($request['admission_set_flexible'])) {
-//            $user->admission_set_flexible = $this->delOutdated(json_decode($request['admission_set_flexible'], true));
-//        }
-
-        /**
-         * 隐私设置: 加好友验证开关 | 好友的好友发起约诊开关。
-         */
-//        if (isset($request['verify_switch']) && (!empty($request['verify_switch']) || $request['verify_switch'] == 0)) {
-//            $user->verify_switch = $request['verify_switch'];
-//        }
-//        if (isset($request['friends_friends_appointment_switch']) && (!empty($request['friends_friends_appointment_switch']) || $request['friends_friends_appointment_switch'] == 0)) {
-//            $user->friends_friends_appointment_switch = $request['friends_friends_appointment_switch'];
-//        }
-
-        /**
-         * Generate dp code.
-         */
-//        if (empty($user->dp_code) && !empty($user->dept_id)) {
-//            $user->dp_code = User::generateDpCode($user->dept_id);
-//        }
-
-        /**
-         * Get rong yun token.
-         */
-//        if (($user->rong_yun_token == '' || $user->rong_yun_token == null) && ($user->name != '' && $user->name != null)) {
-//            //获取云信token
-//            $rongCloudRet = $this->rongYunSer->getToken($user->id, $user->name, $user->avatar);
-//            $rongCloudRet = json_decode($rongCloudRet, true);
-//            if ($rongCloudRet['code'] == 200 && $rongCloudRet['userId'] == $user->id) {
-//                $user->rong_yun_token = $rongCloudRet['token'];
-//            }
-//        }
 
         try {
             if ($user->save()) {

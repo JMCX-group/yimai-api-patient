@@ -33,32 +33,13 @@ class UserTransformer extends TransformerAbstract
 
         return [
             'id' => $user['id'],
-            'code' => $user['dp_code'],
             'phone' => $user['phone'],
-//            'email' => $user['email'],
-//            'rong_yun_token' => $user['rong_yun_token'],
             'name' => $user['name'],
             'head_url' => ($user['avatar'] == '') ? null : $user['avatar'],
             'sex' => $user['gender'],
             'province' => $user['province_id'],
             'city' => $user['city_id'],
-//            'hospital' => $user['hospital_id'],
-//            'department' => $user['dept_id'],
-//            'job_title' => $user['title'],
-//            'college' => $user['college_id'],
-//            'ID_number' => $user['id_num'],
-            'tags' => $user['tag_list'],
-//            'personal_introduction' => $user['profile'],
-//            'is_auth' => $user['auth'],
-//            'auth_img' => $user['auth_img'],
-//            'fee_switch' => $user['fee_switch'],
-//            'fee' => $user['fee'],
-//            'fee_face_to_face' => $user['fee_face_to_face'],
-//            'admission_set_fixed' => $user['admission_set_fixed'],
-//            'admission_set_flexible' => self::delOutdated(json_decode($user['admission_set_flexible'], true)),
-//            'verify_switch' => $user['verify_switch'],
-//            'friends_friends_appointment_switch' => $user['friends_friends_appointment_switch'],
-//            'inviter' => $user['inviter_dp_code']
+            'tags' => $user['tag_list']
         ];
     }
 
@@ -132,32 +113,13 @@ class UserTransformer extends TransformerAbstract
 
         return [
             'id' => $user['id'],
-            'code' => $user['dp_code'],
             'phone' => $user['phone'],
-            'email' => $user['email'],
-            'rong_yun_token' => $user['rong_yun_token'],
             'name' => $user['name'],
-            'head_url' => ($user->avatar == '') ? null : $user->avatar,
+            'head_url' => ($user['avatar'] == '') ? null : $user['avatar'],
             'sex' => $user['gender'],
             'province' => $user['province_id'],
             'city' => $user['city_id'],
-            'hospital' => $user['hospital_id'],
-            'department' => $user['dept_id'],
-            'job_title' => $user['title'],
-            'college' => $user['college_id'],
-            'ID_number' => $user['id_num'],
-            'tags' => $user['tag_list'],
-            'personal_introduction' => $user['profile'],
-            'is_auth' => $user['auth'],
-            'auth_img' => $user['auth_img'],
-            'fee_switch' => $user['fee_switch'],
-            'fee' => $user['fee'],
-            'fee_face_to_face' => $user['fee_face_to_face'],
-            'admission_set_fixed' => $user['admission_set_fixed'],
-            'admission_set_flexible' => self::delOutdated(json_decode($user['admission_set_flexible'], true)),
-            'verify_switch' => $user['verify_switch'],
-            'friends_friends_appointment_switch' => $user['friends_friends_appointment_switch'],
-            'inviter' => $user['inviter_dp_code']
+            'tags' => $user['tag_list']
         ];
     }
 }

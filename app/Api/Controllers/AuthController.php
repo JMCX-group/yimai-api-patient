@@ -12,7 +12,6 @@ use App\Api\Requests\AuthRequest;
 use App\Api\Requests\InviterRequest;
 use App\Api\Requests\ResetPwdRequest;
 use App\Api\Transformers\UserTransformer;
-use App\Patient;
 use App\User;
 use App\AppUserVerifyCode;
 use Illuminate\Http\Request;
