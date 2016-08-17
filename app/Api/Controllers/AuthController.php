@@ -8,6 +8,7 @@
 
 namespace App\Api\Controllers;
 
+use App\Api\Helper\Sms;
 use App\Api\Requests\AuthRequest;
 use App\Api\Requests\InviterRequest;
 use App\Api\Requests\ResetPwdRequest;
@@ -137,14 +138,27 @@ class AuthController extends BaseController
             'phone' => $request->get('phone'),
             'code' => rand(1001, 9998)
         ];
-        $code = AppUserVerifyCode::where('phone', '=', $request->get('phone'))->get();
-        if (empty($code->all())) {
-            AppUserVerifyCode::create($newCode);
-        } else {
-            AppUserVerifyCode::where('phone', $request->get('phone'))->update(['code' => $newCode['code']]);
-        }
 
-        return response()->json(['debug' => $newCode['code']], 200);
+        /**
+         * 发送短信:
+         */
+        $sms = new Sms();
+        $txt = '您的验证码是:' . $newCode['code']; //文案
+        $result = $sms->sendSMS($newCode['phone'], $txt);
+        $result = $sms->execResult($result);
+
+        if ($result[1] == 0) {
+            $code = AppUserVerifyCode::where('phone', '=', $request->get('phone'))->get();
+            if (empty($code->all())) {
+                AppUserVerifyCode::create($newCode);
+            } else {
+                AppUserVerifyCode::where('phone', $request->get('phone'))->update(['code' => $newCode['code']]);
+            }
+
+            return response()->json(['debug' => $newCode['code']], 200);
+        } else {
+            return response()->json(['message' => '短信发送失败'], 500);
+        }
     }
 
     /**
