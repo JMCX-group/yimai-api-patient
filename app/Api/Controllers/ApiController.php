@@ -122,6 +122,7 @@ class ApiController extends BaseController
                                 'id' => '用户id',
                                 'phone' => '用户注册手机号',
                                 'name' => '用户姓名',
+                                'nickname' => '用户昵称',
                                 'head_url' => '头像URL',
                                 'sex' => '性别',
                                 'province' => [
@@ -157,6 +158,7 @@ class ApiController extends BaseController
                                 'id' => '用户id',
                                 'phone' => '用户注册手机号',
                                 'name' => '用户姓名',
+                                'nickname' => '用户昵称',
                                 'head_url' => '头像URL',
                                 'sex' => '性别',
                                 'province' => [
@@ -215,6 +217,7 @@ class ApiController extends BaseController
                         'form-data' => [
                             'password' => '用户密码',
                             'name' => '用户姓名',
+                            'nickname' => '用户昵称',
                             'head_img' => '用户头像; 直接POST文件,支持后缀:jpg/jpeg/png',
                             'sex' => '性别',
                             'province' => '用户所在省份ID',
@@ -226,6 +229,7 @@ class ApiController extends BaseController
                                 'id' => '用户id',
                                 'phone' => '用户注册手机号',
                                 'name' => '用户姓名',
+                                'nickname' => '用户昵称',
                                 'head_url' => '头像URL',
                                 'sex' => '性别',
                                 'province' => [

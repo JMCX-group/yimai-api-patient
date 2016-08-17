@@ -114,6 +114,9 @@ class UserController extends BaseController
         if (isset($request['name']) && !empty($request['name'])) {
             $user->name = $request['name'];
         }
+        if (isset($request['nickname']) && !empty($request['nickname'])) {
+            $user->nickname = $request['nickname'];
+        }
         if (isset($request['head_img']) && !empty($request['head_img'])) {
             $user->avatar = $this->avatar($user->id, $request->file('head_img'));
         }
