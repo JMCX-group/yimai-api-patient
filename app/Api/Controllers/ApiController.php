@@ -256,6 +256,10 @@ class ApiController extends BaseController
                             'token' => ''
                         ],
                         'response' => [
+                            'hot_citys' => [
+                                'id' => '城市ID',
+                                'name' => '城市名称'
+                            ],
                             'provinces' => [
                                 'id' => '省份ID, province_id',
                                 'name' => '省份/直辖市名称'
@@ -263,7 +267,8 @@ class ApiController extends BaseController
                             'citys' => [
                                 'id' => '城市ID',
                                 'province_id' => '省份ID',
-                                'name' => '城市名称'
+                                'name' => '城市名称',
+                                'hot' => '1为热门'
                             ],
                             'message' => '',
                             'error' => ''

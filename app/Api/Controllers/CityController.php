@@ -22,9 +22,23 @@ class CityController extends BaseController
     public function index()
     {
         $provinces = Province::all();
-        $citys = City::all(array('id', 'name', 'province_id'));
+        $citys = City::all(array('id', 'name', 'province_id', 'hot'));
+
+        /**
+         * 热门城市
+         */
+        $hotCitys = array();
+        foreach ($citys as $city) {
+            if ($city['hot'] == 1) {
+                array_push($hotCitys, array(
+                    'id' => $city['id'],
+                    'name' => $city['name']
+                ));
+            }
+        }
 
         $data = [
+            'hot_citys' => $hotCitys,
             'provinces' => $provinces,
             'citys' => $citys
         ];
