@@ -331,6 +331,25 @@ class ApiController extends BaseController
                             'error' => ''
                         ]
                     ],
+                    '获取标签和疾病,并分组' => [
+                        'url' => $http . '/api/tag/group',
+                        'method' => 'GET',
+                        'params' => [
+                            'token' => ''
+                        ],
+                        'response' => [
+                            'data' => [
+                                'id' => '标签ID',
+                                'name' => '标签名称',
+                                'illness' => [
+                                    'id' => '疾病ID',
+                                    'name' => '疾病名称',
+                                ]
+                            ],
+                            'message' => '',
+                            'error' => ''
+                        ]
+                    ]
                 ],
 
                 '广播信息' => [

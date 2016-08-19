@@ -18,7 +18,7 @@ class TagController extends BaseController
 {
     /**
      * Get all.
-     * 
+     *
      * @return mixed
      */
     public function index()
@@ -42,5 +42,33 @@ class TagController extends BaseController
         }
 
         return $this->response->collection($data, new IllnessTransformer());
+    }
+
+    /**
+     * Get dept and illness.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function group()
+    {
+        $tags = DeptStandard::where('parent_id', '!=', '0')->select('id', 'name')->get();
+        $illness = Illness::all('id', 'name', 'dept2_id');
+
+        foreach ($tags as &$tag) {
+            $illnessGroup = array();
+            foreach ($illness as $item) {
+                if ($tag['id'] == $item['dept2_id']) {
+                    $tmpData = [
+                        'id' => $item['id'],
+                        'name' => $item['name']
+                    ];
+                    array_push($illnessGroup, $tmpData);
+                }
+            }
+            $tag['illness'] = $illnessGroup;
+        }
+
+        $data = $tags;
+        return response()->json(compact('data'));
     }
 }
