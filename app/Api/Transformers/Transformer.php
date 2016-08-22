@@ -101,24 +101,18 @@ class Transformer
     public static function findDoctorTransform($user)
     {
         return [
-            'user' => [
-                'is_friend' => $user->is_friend,
-
-                'id' => $user->id,
-                'code' => $user->dp_code,
-                'name' => $user->name,
-                'head_url' => ($user->avatar == '') ? null : $user->avatar,
-                'job_title' => $user->title,
-                'province' => $user->province,
-                'city' => $user->city,
-                'hospital' => $user->hospital,
-                'department' => $user->dept,
-                'college' => $user->college,
-                'tags' => $user->tag_list,
-                'personal_introduction' => $user->profile,
-                'is_auth' => $user->auth,
-                'common_friend_list' => $user->common_friend_list,
-            ]
+            'id' => $user->id,
+            'name' => $user->name,
+            'head_url' => ($user->avatar == '') ? null : $user->avatar,
+            'job_title' => $user->title,
+            'province' => $user->province,
+            'city' => $user->city,
+            'hospital' => $user->hospital,
+            'department' => $user->dept,
+            'college' => $user->college,
+            'tags' => $user->tag_list,
+            'personal_introduction' => $user->profile,
+            'is_auth' => $user->auth
         ];
     }
 
@@ -143,7 +137,7 @@ class Transformer
                 'id' => $user->dept_id,
                 'name' => $user->dept,
             ],
-            'relation' => $relation
+//            'relation' => $relation
         ];
     }
 

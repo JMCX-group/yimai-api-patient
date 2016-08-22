@@ -22,6 +22,8 @@ class ApiController extends BaseController
         $http = env('MY_API_HTTP_HEAD', 'http://localhost');
 
         $api = [
+            '患者端API' => '',
+
             '统一说明' => [
                 '数据格式' => 'JSON',
                 'url字段' => 'HTTP请求地址; {}表示在链接后直接跟该数据的ID值即可,例:http://api/hospital/77?token=xx,能获取id为77的医院信息',
@@ -133,7 +135,7 @@ class ApiController extends BaseController
                                     'id' => '用户所在城市ID',
                                     'name' => '用户所在城市名称'
                                 ],
-                                'tags' => '标签； 格式（JSON）：[{"tag_list":"1,2,3,4","illness_list":"3,4,5,6"}]'
+                                'tags' => '标签； 格式（JSON Encode ）：{"tag_list":"1,2,3,4","illness_list":"3,4,5,6"}'
                             ],
                             'sys_info' => [
                                 'radio_unread_count' => '未读的广播数量',
@@ -169,7 +171,7 @@ class ApiController extends BaseController
                                     'id' => '用户所在城市ID',
                                     'name' => '用户所在城市名称'
                                 ],
-                                'tags' => '标签； 格式（JSON）：[{"tag_list":"1,2,3,4","illness_list":"3,4,5,6"}]'
+                                'tags' => '标签； 格式（JSON Encode）：{"tag_list":"1,2,3,4","illness_list":"3,4,5,6"}'
                             ],
                             'message' => '',
                             'error' => ''
@@ -194,7 +196,7 @@ class ApiController extends BaseController
                                 'hospital' => '用户所在医院名称',
                                 'department' => '用户所在科室名称',
                                 'college' => '用户所在院校名称',
-                                'tags' => '标签； 格式（JSON）：[{"tag_list":"1,2,3,4","illness_list":"3,4,5,6"}]',
+                                'tags' => '标签； 格式（JSON Encode）：{"tag_list":"1,2,3,4","illness_list":"3,4,5,6"}',
                                 'personal_introduction' => '个人简介',
                                 'is_auth' => '是否认证,1为认证,0为未认证',
                                 'common_friend_list' => [
@@ -222,7 +224,7 @@ class ApiController extends BaseController
                             'sex' => '性别',
                             'province' => '用户所在省份ID',
                             'city' => '用户所属城市ID',
-                            'tags' => '标签； 格式（JSON）：[{"tag_list":"1,2,3,4","illness_list":"3,4,5,6"}]'
+                            'tags' => '标签； 格式（JSON Encode）：{"tag_list":"1,2,3,4","illness_list":"3,4,5,6"}'
                         ],
                         'response' => [
                             'user' => [
@@ -240,12 +242,68 @@ class ApiController extends BaseController
                                     'id' => '用户所在城市ID',
                                     'name' => '用户所在城市名称'
                                 ],
-                                'tags' => '标签； 格式（JSON）：[{"tag_list":"1,2,3,4","illness_list":"3,4,5,6"}]'
+                                'tags' => '标签； 格式（JSON Encode）：{"tag_list":"1,2,3,4","illness_list":"3,4,5,6"}'
                             ],
                             'message' => '',
                             'error' => ''
                         ]
                     ]
+                ],
+
+                '搜索' => [
+                    '进入搜索页面默认加载的信息' => [
+                        'url' => $http . '/api/search/default',
+                        'method' => 'GET',
+                        'params' => [
+                            'token' => ''
+                        ],
+                        '说明' => '该数据通过登录用户填写标签筛选',
+                        'response' =>
+                            [
+                                'data' => [
+                                    'id' => '用户ID',
+                                    'name' => '用户姓名',
+                                    'head_url' => '头像URL',
+                                    'job_title' => '职称',
+                                    'city' => '所属城市',
+                                    'hospital' => [
+                                        'id' => '用户所在医院ID',
+                                        'name' => '用户所在医院名称'
+                                    ],
+                                    'department' => [
+                                        'id' => '用户所在科室ID',
+                                        'name' => '用户所在科室名称'
+                                    ]
+                                ],
+                                'message' => '',
+                                'error' => ''
+                            ]
+                    ],
+                    '通过医生ID查询其信息' => [
+                        'url' => $http . '/api/search/doctor/{doctor_id}',
+                        'method' => 'GET',
+                        'params' => [
+                            'token' => ''
+                        ],
+                        'response' => [
+                            'data' => [
+                                'id' => '用户id',
+                                'name' => '用户姓名',
+                                'head_url' => '头像URL',
+                                'job_title' => '用户职称',
+                                'province' => '用户所在省份名称',
+                                'city' => '用户所在城市名称',
+                                'hospital' => '用户所在医院名称',
+                                'department' => '用户所在科室名称',
+                                'college' => '用户所在院校名称',
+                                'tags' => '特长/标签',
+                                'personal_introduction' => '个人简介',
+                                'is_auth' => '是否认证,1为认证,0为未认证'
+                            ],
+                            'message' => '',
+                            'error' => ''
+                        ]
+                    ],
                 ],
 
                 '省市信息' => [

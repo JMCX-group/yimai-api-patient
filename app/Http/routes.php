@@ -40,9 +40,6 @@ $api->version('v1', function ($api) {
          * Token Auth
          */
         $api->group(['middleware' => 'jwt.auth'], function ($api) {
-            // Test
-            $api->post('post', 'TestController@postFun');
-
             // Init
             $api->group(['prefix' => 'init'], function ($api) {
                 $api->get('/', 'InitController@index');
@@ -51,15 +48,19 @@ $api->version('v1', function ($api) {
             // Doctor
             $api->group(['prefix' => 'user'], function ($api) {
                 $api->get('me', 'AuthController@getAuthenticatedUser');
-                $api->get('/{doctor}', 'UserController@findDoctor');
                 $api->get('phone/{doctor}', 'UserController@findDoctor_byPhone');
                 $api->post('/', 'UserController@update');
-                $api->post('search', 'UserController@searchUser');
-                $api->post('search/admissions', 'UserController@searchUser_admissions');
-                $api->post('search/same-hospital', 'UserController@searchUser_sameHospital');
-                $api->post('search/same-department', 'UserController@searchUser_sameDept');
-                $api->post('search/same-college', 'UserController@searchUser_sameCollege');
-                $api->post('upload-auth-img', 'UserController@uploadAuthPhotos');
+            });
+
+            // Search
+            $api->group(['prefix' => 'search'], function ($api) {
+                $api->post('/', 'SearchController@searchUser');
+                $api->get('default', 'SearchController@index');
+                $api->get('doctor/{doctor}', 'SearchController@findDoctor');
+                $api->post('admissions', 'SearchController@searchUser_admissions');
+                $api->post('same-hospital', 'SearchController@searchUser_sameHospital');
+                $api->post('same-department', 'SearchController@searchUser_sameDept');
+                $api->post('same-college', 'SearchController@searchUser_sameCollege');
             });
 
             // City

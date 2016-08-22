@@ -160,6 +160,19 @@ class User extends Model implements AuthenticatableContract,
     }
 
     /**
+     * 默认进入搜索获取的数据,获取相关标签
+     *
+     * @param $field
+     * @return mixed
+     */
+    public static function defaultInfo($field)
+    {
+        $condition = "WHERE `dept_id` IN (" . $field . ")";
+
+        return self::defaultSearchSql($condition, "ORDER BY hospitals.three_a desc");
+    }
+
+    /**
      * 根据必填的字段值和可选的城市/医院/科室条件搜索符合条件的医生.
      * id转name.
      * 按是否三甲医院排序.
