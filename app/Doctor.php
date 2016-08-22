@@ -62,6 +62,7 @@ class Doctor extends Model
             'doctors.id', 'doctors.name', 'doctors.avatar', 'doctors.title', 'doctors.auth',
             'doctors.province_id', 'doctors.city_id', 'doctors.hospital_id', 'doctors.dept_id', 'doctors.college_id',
             'doctors.tag_list', 'doctors.profile',
+            'doctors.fee_switch', 'doctors.fee', 'doctors.fee_face_to_face', 'doctors.admission_set_fixed', 'doctors.admission_set_flexible',
             'provinces.name AS province', 'citys.name AS city',
             'hospitals.name AS hospital', 'dept_standards.name AS dept',
             'colleges.name AS college')

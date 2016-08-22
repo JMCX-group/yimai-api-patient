@@ -273,6 +273,25 @@ class ApiController extends BaseController
                                     'department' => [
                                         'id' => '用户所在科室ID',
                                         'name' => '用户所在科室名称'
+                                    ],
+                                    'fee_switch' => '1:开, 0:关',
+                                    'fee' => '接诊收费金额',
+                                    'fee_face_to_face' => '当面咨询收费金额',
+                                    'admission_set_fixed' => [
+                                        '说明' => '接诊时间设置,固定排班; 接收json,直接存库; 需要存7组数据,week分别是:sun,mon,tue,wed,thu,fri,sat',
+                                        '格式案例' => [
+                                            'week' => 'sun',
+                                            'am' => 'true',
+                                            'pm' => 'false',
+                                        ]
+                                    ],
+                                    'admission_set_flexible' => [
+                                        '说明' => '接诊时间设置,灵活排班; 接收json,读取时会自动过滤过期时间; 会有多组数据,格式一致',
+                                        '格式案例' => [
+                                            'date' => '2016-06-23',
+                                            'am' => 'true',
+                                            'pm' => 'false',
+                                        ]
                                     ]
                                 ],
                                 'message' => '',
@@ -298,7 +317,26 @@ class ApiController extends BaseController
                                 'college' => '用户所在院校名称',
                                 'tags' => '特长/标签',
                                 'personal_introduction' => '个人简介',
-                                'is_auth' => '是否认证,1为认证,0为未认证'
+                                'is_auth' => '是否认证,1为认证,0为未认证',
+                                'fee_switch' => '1:开, 0:关',
+                                'fee' => '接诊收费金额',
+                                'fee_face_to_face' => '当面咨询收费金额',
+                                'admission_set_fixed' => [
+                                    '说明' => '接诊时间设置,固定排班; 接收json,直接存库; 需要存7组数据,week分别是:sun,mon,tue,wed,thu,fri,sat',
+                                    '格式案例' => [
+                                        'week' => 'sun',
+                                        'am' => 'true',
+                                        'pm' => 'false',
+                                    ]
+                                ],
+                                'admission_set_flexible' => [
+                                    '说明' => '接诊时间设置,灵活排班; 接收json,读取时会自动过滤过期时间; 会有多组数据,格式一致',
+                                    '格式案例' => [
+                                        'date' => '2016-06-23',
+                                        'am' => 'true',
+                                        'pm' => 'false',
+                                    ]
+                                ]
                             ],
                             'message' => '',
                             'error' => ''

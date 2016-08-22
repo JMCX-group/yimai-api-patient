@@ -112,16 +112,20 @@ class Transformer
             'college' => $user->college,
             'tags' => $user->tag_list,
             'personal_introduction' => $user->profile,
-            'is_auth' => $user->auth
+            'is_auth' => $user->auth,
+            'fee_switch' => $user->fee_switch,
+            'fee' => $user->fee,
+            'fee_face_to_face' => $user->fee_face_to_face,
+            'admission_set_fixed' => $user->admission_set_fixed,
+            'admission_set_flexible' => self::delOutdated(json_decode($user->admission_set_flexible, true))
         ];
     }
 
     /**
      * @param $user
-     * @param $relation
      * @return array
      */
-    public static function searchDoctorTransform($user, $relation = null)
+    public static function searchDoctorTransform($user)
     {
         return [
             'id' => $user->id,
@@ -137,8 +141,35 @@ class Transformer
                 'id' => $user->dept_id,
                 'name' => $user->dept,
             ],
-//            'relation' => $relation
+            'fee_switch' => $user->fee_switch,
+            'fee' => $user->fee,
+            'fee_face_to_face' => $user->fee_face_to_face,
+            'admission_set_fixed' => $user->admission_set_fixed,
+            'admission_set_flexible' => self::delOutdated(json_decode($user->admission_set_flexible, true))
         ];
+    }
+
+    /**
+     * 删除过期时间
+     *
+     * @param $data
+     * @return string
+     */
+    public static function delOutdated($data)
+    {
+        if ($data == '' || $data == null) {
+            return null;
+        }
+
+        $now = time();
+        $newData = array();
+        foreach ($data as $item) {
+            if (strtotime($item['date']) > $now) {
+                array_push($newData, $item);
+            }
+        }
+
+        return json_encode($newData);
     }
 
     /**
