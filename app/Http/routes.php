@@ -94,22 +94,7 @@ $api->version('v1', function ($api) {
                 $api->post('/illness', 'TagController@getIllness');
                 $api->get('/group', 'TagController@group');
             });
-            
-            // Relation
-            $api->group(['prefix' => 'relation'], function ($api) {
-                $api->post('add-friend', 'DoctorRelationController@store');
-                $api->post('confirm', 'DoctorRelationController@update');
-                $api->get('/', 'DoctorRelationController@getRelations');
-                $api->get('friends', 'DoctorRelationController@getRelationsFriends');
-                $api->get('friends-friends', 'DoctorRelationController@getRelationsFriendsFriends');
-                $api->get('common-friends/{friend}', 'DoctorRelationController@getCommonFriends');
-                $api->get('new-friends', 'DoctorRelationController@getNewFriends');
-                $api->post('push-recent-contacts', 'DoctorRelationController@pushRecentContacts');
-                $api->post('remarks', 'DoctorRelationController@setRemarks');
-                $api->post('del', 'DoctorRelationController@destroy');
-                $api->post('upload-address-book', 'DoctorRelationController@uploadAddressBook');
-            });
-            
+
             // Radio
             $api->group(['prefix' => 'radio'], function ($api) {
                 $api->get('/', 'RadioStationController@index');

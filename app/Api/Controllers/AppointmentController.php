@@ -15,6 +15,7 @@ use App\Api\Transformers\TimeLineTransformer;
 use App\Api\Transformers\Transformer;
 use App\Appointment;
 use App\AppointmentMsg;
+use App\Doctor;
 use App\User;
 use Intervention\Image\Facades\Image;
 use Tymon\JWTAuth\Exceptions\JWTException;
@@ -41,7 +42,7 @@ class AppointmentController extends BaseController
          * 计算预约码做ID.
          * 规则:01-99 . 年月日各两位长 . 0001-9999
          */
-        $frontId = '01' . date('ymd');
+        $frontId = '99' . date('ymd');
         $lastId = Appointment::where('id', 'like', $frontId . '%')
             ->orderBy('id', 'desc')
             ->lists('id');
@@ -57,7 +58,7 @@ class AppointmentController extends BaseController
          */
         $data = [
             'id' => $frontId . $nowId,
-            'locums_id' => $user->id, //代理医生ID
+            'locums_id' => 0, //代理医生ID,0为平台代约
             'patient_name' => $request['name'],
             'patient_phone' => $request['phone'],
             'patient_gender' => $request['sex'],
@@ -74,11 +75,11 @@ class AppointmentController extends BaseController
          */
         $msgData = [
             'appointment_id' => $frontId . $nowId,
-            'locums_id' => $user->id, //代理医生ID
+            'locums_id' => $user->id, //代理医生ID,0为平台代约
             'locums_name' => $user->name, //代理医生姓名
             'patient_name' => $request['name'],
             'doctor_id' => $request['doctor'],
-            'doctor_name' => User::find($request['doctor'])->first()->name,
+            'doctor_name' => Doctor::find($request['doctor'])->first()->name,
             'status' => 'wait-1' //新建约诊之后,进入待患者付款阶段
         ];
 
