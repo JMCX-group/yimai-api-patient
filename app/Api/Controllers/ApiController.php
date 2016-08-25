@@ -274,6 +274,7 @@ class ApiController extends BaseController
                                         'id' => '用户所在科室ID',
                                         'name' => '用户所在科室名称'
                                     ],
+                                    'tags' => '医生特长列表',
                                     'fee_switch' => '1:开, 0:关',
                                     'fee' => '接诊收费金额',
                                     'fee_face_to_face' => '当面咨询收费金额',
@@ -292,6 +293,117 @@ class ApiController extends BaseController
                                             'am' => 'true',
                                             'pm' => 'false',
                                         ]
+                                    ]
+                                ],
+                                'message' => '',
+                                'error' => ''
+                            ]
+                    ],
+                    '搜索医生信息' => [
+                        'url' => $http . '/api/user/search',
+                        'method' => 'POST',
+                        'params' => [
+                            'token' => ''
+                        ],
+                        'form-data' => [
+                            'field' => '搜索的关键字; 必填项,当type为指定内容时为可选项,不过此时将会是全局搜索,返回信息量巨大',
+                            'city' => '下拉框选择的城市ID; 可选项; 参数名也可以是city_id',
+                            'hospital' => '下拉框选择的医院ID; 可选项; 参数名也可以是hospital_id',
+                            'department' => '下拉框选择的科室ID; 可选项; 参数名也可以是dept_id',
+                            'job_title' => '下拉框选择的职称名称; 可选项;',
+                            'format' => '或者什么样的格式; 可选项; 提交该项,且值为android时,hospitals会返回安卓格式',
+                        ],
+                        '说明' => '会一次传递所有排好序的数据,按3个分组,每个显示2条数据即可; 如果下拉框为后置条件,建议前端执行过滤; 城市按省份ID分组; 医院按省份ID和城市ID级联分组',
+                        'response' =>
+                            [
+                                'provinces' => [
+                                    'id' => '省份ID, province_id',
+                                    'name' => '省份/直辖市名称'
+                                ],
+                                'citys' => [
+                                    '{province_id}' => [
+                                        'id' => '城市ID, city_id',
+                                        'name' => '城市名称'
+                                    ]
+                                ],
+                                'hospitals' => [
+                                    '默认格式说明' => '例如: hospitals[1][1]可以取到1省1市下的医院列表',
+                                    '{province_id}' => [
+                                        '{city_id}' => [
+                                            '{自增的数据下标,非key}' => [
+                                                'id' => '医院ID',
+                                                'name' => '城市名称',
+                                                'province_id' => '该医院的省id',
+                                                'city_id' => '该医院的市id'
+                                            ]
+                                        ]
+                                    ],
+
+                                    '安卓格式说明' => '提交format字段,且值为android时,hospitals会返回该格式 :',
+                                    '{自增的数组序号}' => [
+                                        'province_id' => '省份ID',
+                                        'data' => [
+                                            '{自增的数据下标,非key}' => [
+                                                'city_id' => '城市ID',
+                                                'data' => [
+                                                    '{自增的数据下标,非key}' => [
+                                                        'id' => '医院ID',
+                                                        'name' => '城市名称',
+                                                        'province_id' => '该医院的省id',
+                                                        'city_id' => '该医院的市id'
+                                                    ]
+                                                ]
+                                            ]
+                                        ]
+                                    ],
+                                ],
+                                'departments' => [
+                                    'id' => '科室ID',
+                                    'name' => '科室名称'
+                                ],
+                                'count' => '满足条件的医生数量',
+                                'users' => [
+                                    'name' => [
+                                        '说明' => '根据关键字,按姓名分组',
+                                        'id' => '用户ID',
+                                        'name' => '用户姓名',
+                                        'head_url' => '头像URL',
+                                        'job_title' => '职称',
+                                        'city' => '所属城市',
+                                        'hospital' => [
+                                            'id' => '用户所在医院ID',
+                                            'name' => '用户所在医院名称'
+                                        ],
+                                        'department' => [
+                                            'id' => '用户所在科室ID',
+                                            'name' => '用户所在科室名称'
+                                        ],
+                                        'tags' => '医生特长列表',
+                                        'fee_switch' => '1:开, 0:关',
+                                        'fee' => '接诊收费金额',
+                                        'fee_face_to_face' => '当面咨询收费金额',
+                                        'admission_set_fixed' => [
+                                            '说明' => '接诊时间设置,固定排班; 接收json,直接存库; 需要存7组数据,week分别是:sun,mon,tue,wed,thu,fri,sat',
+                                            '格式案例' => [
+                                                'week' => 'sun',
+                                                'am' => 'true',
+                                                'pm' => 'false',
+                                            ]
+                                        ],
+                                        'admission_set_flexible' => [
+                                            '说明' => '接诊时间设置,灵活排班; 接收json,读取时会自动过滤过期时间; 会有多组数据,格式一致',
+                                            '格式案例' => [
+                                                'date' => '2016-06-23',
+                                                'am' => 'true',
+                                                'pm' => 'false',
+                                            ]
+                                        ]
+                                    ],
+                                    'hospital' => [
+                                        '说明' => '根据关键字,按医院分组; 数据格式同上',
+                                    ],
+                                    'tag' => [
+                                        '说明' => '根据关键字,按标签分组; 数据格式同上',
                                     ]
                                 ],
                                 'message' => '',

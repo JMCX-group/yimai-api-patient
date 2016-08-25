@@ -141,6 +141,7 @@ class Transformer
                 'id' => $user->dept_id,
                 'name' => $user->dept,
             ],
+            'tags' => $user->tag_list,
             'fee_switch' => $user->fee_switch,
             'fee' => $user->fee,
             'fee_face_to_face' => $user->fee_face_to_face,

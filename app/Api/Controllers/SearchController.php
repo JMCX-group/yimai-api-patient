@@ -99,32 +99,38 @@ class SearchController extends BaseController
          * 获取前台传参:
          * 兼容不同形式的……蛋疼:
          */
-        if(isset($request['city']) && !empty($request['city'])){
+        if (isset($request['city']) && !empty($request['city'])) {
             $cityID = $request['city'];
-        } elseif(isset($request['city_id']) && !empty($request['city_id'])){
+        } elseif (isset($request['city_id']) && !empty($request['city_id'])) {
             $cityID = $request['city_id'];
         } else {
             $cityID = false;
         }
-        if(isset($request['hospital']) && !empty($request['hospital'])){
+        if (isset($request['hospital']) && !empty($request['hospital'])) {
             $hospitalID = $request['hospital'];
-        } elseif(isset($request['hospital_id']) && !empty($request['hospital_id'])){
+        } elseif (isset($request['hospital_id']) && !empty($request['hospital_id'])) {
             $hospitalID = $request['hospital_id'];
         } else {
             $hospitalID = false;
         }
-        if(isset($request['department']) && !empty($request['department'])){
+        if (isset($request['department']) && !empty($request['department'])) {
             $deptID = $request['department'];
-        } elseif(isset($request['dept_id']) && !empty($request['dept_id'])){
+        } elseif (isset($request['dept_id']) && !empty($request['dept_id'])) {
             $deptID = $request['dept_id'];
         } else {
             $deptID = false;
+        }
+        if (isset($request['job_title']) && !empty($request['job_title'])) {
+            $jobTitle = $request['job_title'];
+        } else {
+            $jobTitle = false;
         }
         $data = [
             'field' => isset($request['field']) && !empty($request['field']) ? $request['field'] : false,
             'city_id' => $cityID,
             'hospital_id' => $hospitalID,
-            'dept_id' => $deptID
+            'dept_id' => $deptID,
+            'title' => $jobTitle
         ];
 
         /**
@@ -134,38 +140,29 @@ class SearchController extends BaseController
          * same_hospital: 医脉处进行同医院搜索;
          *
          */
-        $searchType = (($type == null || $type == '') && isset($request['type']) && !empty($request['type'])) ? $request['type'] : $type;
-
-        switch ($searchType) {
-            case 'admissions':
-                $users = User::searchDoctor_admissions($data['field'], $user->city_id);
-                break;
-            case 'same_hospital':
-                $users = User::searchDoctor_sameHospital($data['field'], $user->hospital_id, $data['city_id'], $data['dept_id']);
-                break;
-            case 'same_department':
-                $deptIdList = DeptStandard::getSameFirstLevelDeptIdList($user->dept_id);
-                $users = User::searchDoctor_sameDept($data['field'], $deptIdList, $data['city_id'], $data['hospital_id']);
-                break;
-            case 'same_college':
-                $users = User::searchDoctor_sameCollege($data['field'], $user->college_id, $data['city_id'], $data['hospital_id'], $data['dept_id']);
-                break;
-            default:
-                $users = User::searchDoctor($data['field'], $data['city_id'], $data['hospital_id'], $data['dept_id']);
-                break;
-        }
-
-        /**
-         * 获取辅助数据: 最近通讯记录 / 好友ID列表 / 好友的好友ID列表
-         */
-        $contactRecords = DoctorContactRecord::where('doctor_id', $user->id)->lists('contacts_id_list');
-        $contactRecordsIdList = (count($contactRecords) != 0) ? explode(',', $contactRecords[0]) : $contactRecords;
-        $friendsIdList = DoctorRelation::getFriendIdList($user->id);
-        $friendsFriendsIdList = DoctorRelation::getFriendsFriendsIdList($friendsIdList, $user->id);
+//        $searchType = (($type == null || $type == '') && isset($request['type']) && !empty($request['type'])) ? $request['type'] : $type;
+//
+//        switch ($searchType) {
+//            case 'admissions':
+//                $users = User::searchDoctor_admissions($data['field'], $user->city_id);
+//                break;
+//            case 'same_hospital':
+//                $users = User::searchDoctor_sameHospital($data['field'], $user->hospital_id, $data['city_id'], $data['dept_id']);
+//                break;
+//            case 'same_department':
+//                $deptIdList = DeptStandard::getSameFirstLevelDeptIdList($user->dept_id);
+//                $users = User::searchDoctor_sameDept($data['field'], $deptIdList, $data['city_id'], $data['hospital_id']);
+//                break;
+//            case 'same_college':
+//                $users = User::searchDoctor_sameCollege($data['field'], $user->college_id, $data['city_id'], $data['hospital_id'], $data['dept_id']);
+//                break;
+//            default:
+                $users = Doctor::searchDoctor($data['field'], $data['city_id'], $data['hospital_id'], $data['dept_id'], $data['title']);
+//                break;
+//        }
 
         /**
-         * 排序/分组
-         * 规则: 最近互动 + 共同好友 + 同城 + 北上广三甲 + 180天内累计约诊次数
+         * 分组:
          */
         $provinces = array();
         $citys = array();
@@ -176,11 +173,9 @@ class SearchController extends BaseController
         $hospitalIdList = array();
         $departmentIdList = array();
 
-        $recentContactsArr = array();
-        $friendArr = array();
-        $friendsFriendsArr = array();
-        $sameCityArr = array();
-        $b_s_g_threeA = array();
+        $groupByNameArr = array();
+        $groupByHospitalArr = array();
+        $groupByTagArr = array();
         $otherArr = array();
 
         foreach ($users as $userItem) {
@@ -189,28 +184,18 @@ class SearchController extends BaseController
             $this->groupByHospitals($userItem, $hospitals, $hospitalIdList);
             $this->groupByDepartments($userItem, $departments, $departmentIdList);
 
-            if (empty($contactRecordsIdList) && in_array($userItem->id, $contactRecordsIdList)) {
-                array_push($recentContactsArr, Transformer::searchDoctorTransform($userItem, 1));
+            if (strstr($userItem->name, $data['field'])) {
+                array_push($groupByNameArr, Transformer::searchDoctorTransform($userItem));
                 continue;
             }
 
-            if (in_array($userItem->id, $friendsIdList)) {
-                array_push($friendArr, Transformer::searchDoctorTransform($userItem, 1));
+            if (strstr($userItem->hospital, $data['field'])) {
+                array_push($groupByHospitalArr, Transformer::searchDoctorTransform($userItem));
                 continue;
             }
 
-            if (in_array($userItem->id, $friendsFriendsIdList)) {
-                array_push($friendsFriendsArr, Transformer::searchDoctorTransform($userItem, 2));
-                continue;
-            }
-
-            if ($user->city_id == $userItem->city_id) {
-                array_push($sameCityArr, Transformer::searchDoctorTransform($userItem));
-                continue;
-            }
-
-            if (in_array($userItem->city, array('北京', '上海', '广州'))) {
-                array_push($b_s_g_threeA, Transformer::searchDoctorTransform($userItem));
+            if (strstr($userItem->tag_list, $data['field'])) {
+                array_push($groupByTagArr, Transformer::searchDoctorTransform($userItem));
                 continue;
             }
 
@@ -241,41 +226,37 @@ class SearchController extends BaseController
         /**
          * 只有普通搜索有分组:
          */
-        if ($request['type'] == 'same_hospital' || $request['type'] == 'same_department' || $request['type'] == 'same_college' || ($type != null && $type != 'admissions')) {
-            $retData = array_merge($recentContactsArr, $friendArr, $sameCityArr, $b_s_g_threeA, $otherArr);
+//        if ($request['type'] == 'same_hospital' || $request['type'] == 'same_department' || $request['type'] == 'same_college' || ($type != null && $type != 'admissions')) {
+//            $retData = array_merge($groupByNameArr, $friendArr, $sameCityArr, $b_s_g_threeA, $otherArr);
+//
+//            return [
+//                'provinces' => $provinces,
+//                'citys' => $citys,
+//                'hospitals' => isset($newHospital) ? $newHospital : $hospitals,
+//                'departments' => $departments,
+//                'count' => count($retData),
+//                'users' => $retData
+//            ];
+//        } else {
+//            if ($type == 'admissions') {
+//                $retDataFriends = array_merge($groupByNameArr, $friendArr);
+//                $retDataFriendsFriends = $friendsFriendsArr;
+//                $retDataOther = array();
+//            }
 
             return [
                 'provinces' => $provinces,
                 'citys' => $citys,
                 'hospitals' => isset($newHospital) ? $newHospital : $hospitals,
                 'departments' => $departments,
-                'count' => count($retData),
-                'users' => $retData
-            ];
-        } else {
-            if ($type == 'admissions') {
-                $retData_1 = array_merge($recentContactsArr, $friendArr);
-                $retData_2 = $friendsFriendsArr;
-                $retData_other = array();
-            } else {
-                $retData_1 = array_merge($recentContactsArr, $friendArr);
-                $retData_2 = $friendsFriendsArr;
-                $retData_other = array_merge($sameCityArr, $b_s_g_threeA, $otherArr);
-            }
-
-            return [
-                'provinces' => $provinces,
-                'citys' => $citys,
-                'hospitals' => isset($newHospital) ? $newHospital : $hospitals,
-                'departments' => $departments,
-                'count' => (count($retData_1) + count($retData_2) + count($retData_other)),
+                'count' => (count($groupByNameArr) + count($groupByHospitalArr) + count($groupByTagArr)),
                 'users' => [
-                    'friends' => $retData_1,
-                    'friends-friends' => $retData_2,
-                    'other' => $retData_other,
+                    'name' => $groupByNameArr,
+                    'hospital' => $groupByHospitalArr,
+                    'tag' => $groupByTagArr,
                 ]
             ];
-        }
+//        }
     }
 
     /**
