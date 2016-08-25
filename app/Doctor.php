@@ -119,7 +119,7 @@ class Doctor extends Model
     public static function defaultSearchSql($condition, $order = '')
     {
         return DB::select(
-            "SELECT doctors.id, doctors.name, doctors.avatar, doctors.province_id, doctors.city_id, doctors.hospital_id, doctors.dept_id, doctors.title, tag_list, doctors.fee_switch, doctors.fee, doctors.fee_face_to_face, doctors.admission_set_fixed, doctors.admission_set_flexible," .
+            "SELECT doctors.id, doctors.name, doctors.avatar, doctors.province_id, doctors.city_id, doctors.hospital_id, doctors.dept_id, doctors.title, doctors.tag_list, doctors.auth, doctors.fee_switch, doctors.fee, doctors.fee_face_to_face, doctors.admission_set_fixed, doctors.admission_set_flexible," .
             "provinces.name AS province, citys.name AS city, hospitals.name AS hospital, dept_standards.name AS dept " .
             "FROM doctors " .
             "LEFT JOIN provinces ON provinces.id=doctors.province_id " .
