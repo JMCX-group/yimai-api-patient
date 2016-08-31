@@ -38,6 +38,7 @@ class UserTransformer extends TransformerAbstract
             'nickname' => $user['nickname'],
             'head_url' => ($user['avatar'] == '') ? null : $user['avatar'],
             'sex' => $user['gender'],
+            'birthday' => $user['birthday'],
             'province' => $user['province_id'],
             'city' => $user['city_id'],
             'tags' => $user['tag_list']

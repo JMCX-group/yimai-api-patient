@@ -222,6 +222,7 @@ class ApiController extends BaseController
                             'nickname' => '用户昵称',
                             'head_img' => '用户头像; 直接POST文件,支持后缀:jpg/jpeg/png',
                             'sex' => '性别',
+                            'birthday' => '生日; Date型',
                             'province' => '用户所在省份ID',
                             'city' => '用户所属城市ID',
                             'tags' => '标签； 格式（JSON Encode）：{"tag_list":"1,2,3,4","illness_list":"3,4,5,6"}'
@@ -234,6 +235,7 @@ class ApiController extends BaseController
                                 'nickname' => '用户昵称',
                                 'head_url' => '头像URL',
                                 'sex' => '性别',
+                                'birthday' => '生日; Date型',
                                 'province' => [
                                     'id' => '用户所在省份ID',
                                     'name' => '用户所在省份名称'
