@@ -276,7 +276,13 @@ class ApiController extends BaseController
                                         'id' => '用户所在科室ID',
                                         'name' => '用户所在科室名称'
                                     ],
+                                    'college' => [
+                                        'id' => '用户所在院校ID',
+                                        'name' => '用户所在院校名称'
+                                    ],
                                     'tags' => '医生特长列表',
+                                    'personal_introduction' => '个人简介',
+                                    'is_auth' => '是否认证',
                                     'fee_switch' => '1:开, 0:关',
                                     'fee' => '接诊收费金额',
                                     'fee_face_to_face' => '当面咨询收费金额',
@@ -302,7 +308,7 @@ class ApiController extends BaseController
                             ]
                     ],
                     '搜索医生信息' => [
-                        'url' => $http . '/api/user/search',
+                        'url' => $http . '/api/search',
                         'method' => 'POST',
                         'params' => [
                             'token' => ''
@@ -414,7 +420,7 @@ class ApiController extends BaseController
                             ]
                     ],
                     '通过医生ID查询其信息' => [
-                        'url' => $http . '/api/search/doctor/{doctor_id}',
+                        'url' => $http . '/api/doctor/{doctor_id}',
                         'method' => 'GET',
                         'params' => [
                             'token' => ''

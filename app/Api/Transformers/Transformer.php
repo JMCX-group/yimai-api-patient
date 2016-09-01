@@ -141,7 +141,12 @@ class Transformer
                 'id' => $user->dept_id,
                 'name' => $user->dept,
             ],
+            'college' => [
+                'id' => $user->college_id,
+                'name' => $user->college,
+            ],
             'tags' => $user->tag_list,
+            'personal_introduction' => $user->profile,
             'is_auth' => $user->auth,
             'fee_switch' => $user->fee_switch,
             'fee' => $user->fee,

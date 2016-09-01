@@ -290,7 +290,7 @@ class SearchController extends BaseController
      */
     public function groupByProvinces($userItem, &$provinces, &$provinceIdList)
     {
-        if (!in_array($userItem->province_id, $provinceIdList)) {
+        if ($userItem->province_id && !in_array($userItem->province_id, $provinceIdList)) {
             array_push($provinceIdList, $userItem->province_id);
             array_push(
                 $provinces,
