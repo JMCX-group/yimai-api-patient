@@ -352,7 +352,7 @@ class SearchController extends BaseController
     {
         $user = Doctor::findDoctor($id);
 
-        $data = Transformer::findDoctorTransform($user);
+        $data = Transformer::searchDoctorTransform($user);
 
         return response()->json(compact('data'));
     }
@@ -378,7 +378,7 @@ class SearchController extends BaseController
             $retData = User::select('id', 'avatar as head_url', 'auth as is_auth')->find($idList);
             $user['common_friend_list'] = $retData;
 
-            return Transformer::findDoctorTransform($user);
+            return Transformer::searchDoctorTransform($user);
         } else {
             return response()->json(['success' => ''], 204); //给肠媳适配。。
         }

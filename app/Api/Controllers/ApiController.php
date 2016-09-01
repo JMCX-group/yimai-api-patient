@@ -267,7 +267,14 @@ class ApiController extends BaseController
                                     'name' => '用户姓名',
                                     'head_url' => '头像URL',
                                     'job_title' => '职称',
-                                    'city' => '所属城市',
+                                    'province' => [
+                                        'id' => '所属省份ID',
+                                        'name' => '所属省份名称'
+                                    ],
+                                    'city' => [
+                                        'id' => '所属城市ID',
+                                        'name' => '所属城市名称'
+                                    ],
                                     'hospital' => [
                                         'id' => '用户所在医院ID',
                                         'name' => '用户所在医院名称'
@@ -282,7 +289,7 @@ class ApiController extends BaseController
                                     ],
                                     'tags' => '医生特长列表',
                                     'personal_introduction' => '个人简介',
-                                    'is_auth' => '是否认证',
+                                    'is_auth' => '是否认证,1为认证,0为未认证',
                                     'fee_switch' => '1:开, 0:关',
                                     'fee' => '接诊收费金额',
                                     'fee_face_to_face' => '当面咨询收费金额',
@@ -377,7 +384,14 @@ class ApiController extends BaseController
                                         'name' => '用户姓名',
                                         'head_url' => '头像URL',
                                         'job_title' => '职称',
-                                        'city' => '所属城市',
+                                        'province' => [
+                                            'id' => '所属省份ID',
+                                            'name' => '所属省份名称'
+                                        ],
+                                        'city' => [
+                                            'id' => '所属城市ID',
+                                            'name' => '所属城市名称'
+                                        ],
                                         'hospital' => [
                                             'id' => '用户所在医院ID',
                                             'name' => '用户所在医院名称'
@@ -386,7 +400,12 @@ class ApiController extends BaseController
                                             'id' => '用户所在科室ID',
                                             'name' => '用户所在科室名称'
                                         ],
+                                        'college' => [
+                                            'id' => '用户所在院校ID',
+                                            'name' => '用户所在院校名称'
+                                        ],
                                         'tags' => '医生特长列表',
+                                        'personal_introduction' => '个人简介',
                                         'is_auth' => '是否认证,1为认证,0为未认证',
                                         'fee_switch' => '1:开, 0:关',
                                         'fee' => '接诊收费金额',
@@ -427,16 +446,31 @@ class ApiController extends BaseController
                         ],
                         'response' => [
                             'data' => [
-                                'id' => '用户id',
+                                'id' => '用户ID',
                                 'name' => '用户姓名',
                                 'head_url' => '头像URL',
-                                'job_title' => '用户职称',
-                                'province' => '用户所在省份名称',
-                                'city' => '用户所在城市名称',
-                                'hospital' => '用户所在医院名称',
-                                'department' => '用户所在科室名称',
-                                'college' => '用户所在院校名称',
-                                'tags' => '特长/标签',
+                                'job_title' => '职称',
+                                'province' => [
+                                    'id' => '所属省份ID',
+                                    'name' => '所属省份名称'
+                                ],
+                                'city' => [
+                                    'id' => '所属城市ID',
+                                    'name' => '所属城市名称'
+                                ],
+                                'hospital' => [
+                                    'id' => '用户所在医院ID',
+                                    'name' => '用户所在医院名称'
+                                ],
+                                'department' => [
+                                    'id' => '用户所在科室ID',
+                                    'name' => '用户所在科室名称'
+                                ],
+                                'college' => [
+                                    'id' => '用户所在院校ID',
+                                    'name' => '用户所在院校名称'
+                                ],
+                                'tags' => '医生特长列表',
                                 'personal_introduction' => '个人简介',
                                 'is_auth' => '是否认证,1为认证,0为未认证',
                                 'fee_switch' => '1:开, 0:关',

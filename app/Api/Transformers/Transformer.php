@@ -98,33 +98,6 @@ class Transformer
      * @param $user
      * @return array
      */
-    public static function findDoctorTransform($user)
-    {
-        return [
-            'id' => $user->id,
-            'name' => $user->name,
-            'head_url' => ($user->avatar == '') ? null : $user->avatar,
-            'job_title' => $user->title,
-            'province' => $user->province,
-            'city' => $user->city,
-            'hospital' => $user->hospital,
-            'department' => $user->dept,
-            'college' => $user->college,
-            'tags' => $user->tag_list,
-            'personal_introduction' => $user->profile,
-            'is_auth' => $user->auth,
-            'fee_switch' => $user->fee_switch,
-            'fee' => $user->fee,
-            'fee_face_to_face' => $user->fee_face_to_face,
-            'admission_set_fixed' => $user->admission_set_fixed,
-            'admission_set_flexible' => self::delOutdated(json_decode($user->admission_set_flexible, true))
-        ];
-    }
-
-    /**
-     * @param $user
-     * @return array
-     */
     public static function searchDoctorTransform($user)
     {
         return [
@@ -132,7 +105,14 @@ class Transformer
             'name' => $user->name,
             'head_url' => ($user->avatar == '') ? null : $user->avatar,
             'job_title' => $user->title,
-            'city' => $user->city,
+            'province' => [
+                'id' => $user->province_id,
+                'name' => $user->province,
+            ],
+            'city' => [
+                'id' => $user->city_id,
+                'name' => $user->city,
+            ],
             'hospital' => [
                 'id' => $user->hospital_id,
                 'name' => $user->hospital,
