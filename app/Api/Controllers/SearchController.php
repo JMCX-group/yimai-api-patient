@@ -358,6 +358,11 @@ class SearchController extends BaseController
         return response()->json(compact('data'));
     }
 
+    /**
+     * 首页点击"约我的医生"
+     *
+     * @return \Illuminate\Http\JsonResponse|mixed
+     */
     public function findMyDoctor()
     {
         $user = User::getAuthenticatedUser();
@@ -365,17 +370,12 @@ class SearchController extends BaseController
             return $user;
         }
 
-        /*
-         * 获取我的约诊记录
-         */
-        $appointmentList = Appointment::where('patient_id', $user->id)->value('doctor_id');
-        dd($appointmentList);
-
-        /*
-         * 获得相应医生列表
-         */
-
-        $data = '';
+        $doctorIdList = Appointment::where('patient_id', $user->id)->distinct()->lists('doctor_id');
+        $doctors = Doctor::whereIn('id', $doctorIdList)->get();
+        $data = array();
+        foreach ($doctors as $doctor){
+            array_push($data, Transformer::searchDoctorTransform($doctor));
+        }
 
         return response()->json(compact('data'));
     }
