@@ -10,6 +10,7 @@ namespace App\Api\Controllers;
 
 use App\Api\Requests\SearchUserRequest;
 use App\Api\Transformers\Transformer;
+use App\Appointment;
 use App\DeptStandard;
 use App\Doctor;
 use App\DoctorContactRecord;
@@ -353,6 +354,28 @@ class SearchController extends BaseController
         $user = Doctor::findDoctor($id);
 
         $data = Transformer::searchDoctorTransform($user);
+
+        return response()->json(compact('data'));
+    }
+
+    public function findMyDoctor()
+    {
+        $user = User::getAuthenticatedUser();
+        if (!isset($user->id)) {
+            return $user;
+        }
+
+        /*
+         * 获取我的约诊记录
+         */
+        $appointmentList = Appointment::where('patient_id', $user->id)->value('doctor_id');
+        dd($appointmentList);
+
+        /*
+         * 获得相应医生列表
+         */
+
+        $data = '';
 
         return response()->json(compact('data'));
     }

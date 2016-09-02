@@ -57,6 +57,7 @@ $api->version('v1', function ($api) {
                 $api->post('/', 'SearchController@searchUser');
                 $api->get('default', 'SearchController@index');
                 $api->get('doctor/{doctor}', 'SearchController@findDoctor');
+                $api->get('my-doctor', 'SearchController@findMyDoctor');
                 $api->post('admissions', 'SearchController@searchUser_admissions');
                 $api->post('same-hospital', 'SearchController@searchUser_sameHospital');
                 $api->post('same-department', 'SearchController@searchUser_sameDept');
