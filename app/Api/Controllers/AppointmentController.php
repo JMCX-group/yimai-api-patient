@@ -59,12 +59,14 @@ class AppointmentController extends BaseController
         $data = [
             'id' => $frontId . $nowId,
             'locums_id' => 0, //代理医生ID,0为平台代约
+            'patient_id' => $user->id,
             'patient_name' => $request['name'],
             'patient_phone' => $request['phone'],
             'patient_gender' => $request['sex'],
             'patient_age' => $request['age'],
             'patient_history' => $request['history'],
             'doctor_id' => $request['doctor'],
+            'doctor_or_patient' => 'p', //患者发起
             'expect_visit_date' => $request['date'],
             'expect_am_pm' => $request['am_or_pm'],
             'status' => 'wait-1' //新建约诊之后,进入待患者付款阶段
@@ -75,12 +77,81 @@ class AppointmentController extends BaseController
          */
         $msgData = [
             'appointment_id' => $frontId . $nowId,
-            'locums_id' => $user->id, //代理医生ID,0为平台代约
-            'locums_name' => $user->name, //代理医生姓名
+            'locums_id' => 0, //代理医生ID,0为平台代约
             'patient_name' => $request['name'],
             'doctor_id' => $request['doctor'],
             'doctor_name' => Doctor::find($request['doctor'])->first()->name,
             'status' => 'wait-1' //新建约诊之后,进入待患者付款阶段
+        ];
+
+        try {
+            Appointment::create($data);
+            AppointmentMsg::create($msgData);
+        } catch (JWTException $e) {
+            return response()->json(['error' => $e->getMessage()], $e->getStatusCode());
+        }
+
+        return ['id' => $frontId . $nowId];
+    }
+
+    /**
+     * 患者发起的代约请求
+     *
+     * @param AppointmentRequest $request
+     * @return array|\Illuminate\Http\JsonResponse|mixed
+     */
+    public function insteadAppointment(AppointmentRequest $request)
+    {
+        $user = User::getAuthenticatedUser();
+        if (!isset($user->id)) {
+            return $user;
+        }
+
+        /**
+         * 计算预约码做ID.
+         * 规则:01-99 . 年月日各两位长 . 0001-9999
+         */
+        $frontId = '88' . date('ymd');
+        $lastId = Appointment::where('id', 'like', $frontId . '%')
+            ->orderBy('id', 'desc')
+            ->lists('id');
+        if ($lastId->isEmpty()) {
+            $nowId = '0001';
+        } else {
+            $lastId = intval(substr($lastId[0], 8));
+            $nowId = str_pad($lastId + 1, 4, '0', STR_PAD_LEFT);
+        }
+
+        /**
+         * 发起约诊信息记录
+         */
+        $data = [
+            'id' => $frontId . $nowId,
+            'locums_id' => 0, //代理医生ID,0为平台代约
+            'patient_id' => $user->id,
+            'patient_name' => $request['name'],
+            'patient_phone' => $request['phone'],
+            'patient_gender' => $request['sex'],
+            'patient_age' => $request['age'],
+            'patient_history' => $request['history'],
+            'patient_demand' => $request['demand'],
+            'doctor_id' => $request['doctor'],
+            'doctor_or_patient' => 'p', //患者发起
+            'expect_visit_date' => $request['date'],
+            'expect_am_pm' => $request['am_or_pm'],
+            'status' => 'wait-0' //请求代约
+        ];
+
+        /**
+         * 推送消息记录
+         */
+        $msgData = [
+            'appointment_id' => $frontId . $nowId,
+            'locums_id' => $request['doctor'], //代理医生ID,0为平台代约
+            'locums_name' => Doctor::find($request['doctor'])->first()->name, //代理医生姓名
+            'patient_id' => $user->id,
+            'patient_name' => $request['name'],
+            'status' => 'wait-0' //新建约诊之后,进入待患者付款阶段
         ];
 
         try {

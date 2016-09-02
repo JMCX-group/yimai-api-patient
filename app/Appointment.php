@@ -30,6 +30,7 @@ class Appointment extends Model
         'patient_imgs',
         'doctor_id',
         'patient_id',
+        'patient_demand',
         'doctor_or_patient',
         'expect_visit_date',
         'expect_am_pm',

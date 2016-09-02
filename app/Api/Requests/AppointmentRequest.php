@@ -30,7 +30,9 @@ class AppointmentRequest extends Request
     public function rules()
     {
         return [
-            'name' => 'between:1,10'
+            'name' => 'required|between:1,10',
+            'phone' => 'required',
+            'doctor' => 'required',
         ];
     }
 
@@ -51,7 +53,9 @@ class AppointmentRequest extends Request
     public function attributes()
     {
         return [
-            'name' => '姓名'
+            'name' => '姓名',
+            'phone' => '手机号码',
+            'doctor' => '医生ID',
         ];
     }
 

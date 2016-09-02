@@ -690,6 +690,29 @@ class ApiController extends BaseController
                             'error' => ''
                         ]
                     ],
+                    '新建请求代约' => [
+                        'url' => $http . '/api/appointment/instead',
+                        'method' => 'POST',
+                        'params' => [
+                            'token' => ''
+                        ],
+                        'form-data' => [
+                            'name' => '患者姓名',
+                            'phone' => '患者手机号',
+                            'sex' => '患者性别,1男0女',
+                            'age' => '患者年龄',
+                            'history' => '患者现病史',
+                            'demand' => '患者代约需求',
+                            'doctor' => '预约的医生的ID',
+                            'date' => '预约日期,最多选择3个,用逗号分隔开即可,例:2016-05-01,2016-05-02; 如果是医生决定就是传0即可。',
+                            'am_or_pm' => '预约上/下午,和上面的对应的用逗号分隔开即可,例:am,pm; 如果是医生决定随便传什么,都不会处理,取值时为空',
+                        ],
+                        'response' => [
+                            'id' => '预约码',
+                            'message' => '',
+                            'error' => ''
+                        ]
+                    ],
                     '上传图片' => [
                         'url' => $http . '/api/appointment/upload-img',
                         'method' => 'POST',
