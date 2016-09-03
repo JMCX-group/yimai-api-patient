@@ -8,6 +8,7 @@
 
 namespace App\Api\Controllers;
 
+use App\Api\Requests\AppointmentDetailRequest;
 use App\Api\Requests\AppointmentIdRequest;
 use App\Api\Requests\AppointmentRequest;
 use App\Api\Transformers\ReservationRecordTransformer;
@@ -236,15 +237,17 @@ class AppointmentController extends BaseController
     }
 
     /**
-     * @param $id
-     * @return array
+     * @param AppointmentDetailRequest $request
+     * @return array|mixed
      */
-    public function getDetailInfo($id)
+    public function getDetailInfo(AppointmentDetailRequest $request)
     {
         $user = User::getAuthenticatedUser();
         if (!isset($user->id)) {
             return $user;
         }
+
+        $id = $request['id'];
 
         $appointments = Appointment::where('appointments.id', $id)
             ->leftJoin('doctors', 'doctors.id', '=', 'appointments.locums_id')
@@ -253,33 +256,28 @@ class AppointmentController extends BaseController
             ->get()
             ->first();
 
-        $doctors = User::select(
-            'doctors.id', 'doctors.name', 'doctors.avatar', 'doctors.hospital_id', 'doctors.dept_id', 'doctors.title',
-            'hospitals.name AS hospital', 'dept_standards.name AS dept')
+        $doctors = Doctor::where('doctors.id', $appointments->doctor_id)
+            ->select(
+                'doctors.id', 'doctors.name', 'doctors.avatar', 'doctors.hospital_id', 'doctors.dept_id', 'doctors.title',
+                'hospitals.name AS hospital', 'dept_standards.name AS dept')
             ->leftJoin('hospitals', 'hospitals.id', '=', 'doctors.hospital_id')
             ->leftJoin('dept_standards', 'dept_standards.id', '=', 'doctors.dept_id')
-            ->where('doctors.id', $appointments->doctor_id)
             ->get()
             ->first();
 
         /**
-         * 自己不是代约医生的话,需要查询代约医生的信息:
+         * 查询代约医生的信息:
          */
-        if ($user->id != $appointments->locums_id) {
-            $locumsDoctor = User::select(
+        $locumsDoctor = Doctor::where('doctors.id', $appointments->locums_id)
+            ->select(
                 'doctors.id', 'doctors.name', 'doctors.avatar', 'doctors.hospital_id', 'doctors.dept_id', 'doctors.title',
                 'hospitals.name AS hospital', 'dept_standards.name AS dept')
-                ->leftJoin('hospitals', 'hospitals.id', '=', 'doctors.hospital_id')
-                ->leftJoin('dept_standards', 'dept_standards.id', '=', 'doctors.dept_id')
-                ->where('doctors.id', $appointments->locums_id)
-                ->get()
-                ->first();
+            ->leftJoin('hospitals', 'hospitals.id', '=', 'doctors.hospital_id')
+            ->leftJoin('dept_standards', 'dept_standards.id', '=', 'doctors.dept_id')
+            ->get()
+            ->first();
 
-            $appointments['time_line'] = TimeLineTransformer::generateTimeLine($appointments, $doctors, $user->id, $locumsDoctor);
-        } else {
-            $appointments['time_line'] = TimeLineTransformer::generateTimeLine($appointments, $doctors, $user->id);
-        }
-
+        $appointments['time_line'] = TimeLineTransformer::generateTimeLine($appointments, $doctors, $user->id, $locumsDoctor);
         $appointments['progress'] = TimeLineTransformer::generateProgressStatus($appointments->status);
 
         return Transformer::appointmentsTransform($appointments, $doctors);
