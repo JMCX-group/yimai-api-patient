@@ -25,26 +25,54 @@ class ReservationRecordTransformer extends TransformerAbstract
             'doctor_head_url' => ($appointment['avatar'] == '') ? null : $appointment['avatar'],
             'doctor_job_title' => $appointment['title'],
             'doctor_is_auth' => $appointment['auth'],
+            'patient_id' => $appointment['patient_id'],
             'patient_name' => $appointment['patient_name'],
+            'patient_age' => $appointment['patient_age'],
             'time' => PublicTransformer::generateTreatmentTime($appointment),
             'status' => self::generateStatus($appointment['status'])
         ];
     }
 
     /**
+     * wait:
+     * wait-1: 待患者付款
+     * wait-2: 患者已付款，待医生确认
+     * wait-3: 医生确认接诊，待面诊
+     * wait-4: 医生改期，待患者确认
+     * wait-5: 患者确认改期，待面诊
+     * close:
+     * close-1: 待患者付款
+     * close-2: 医生过期未接诊,约诊关闭
+     * close-3: 医生拒绝接诊
+     * cancel:
+     * cancel-1: 患者取消约诊; 未付款
+     * cancel-2: 医生取消约诊
+     * cancel-3: 患者取消约诊; 已付款后
+     * cancel-4: 医生改期之后,医生取消约诊;
+     * cancel-5: 医生改期之后,患者取消约诊;
+     * cancel-6: 医生改期之后,患者确认之后,患者取消约诊;
+     * cancel-7: 医生改期之后,患者确认之后,医生取消约诊;
+     * completed:
+     * completed-1:最简正常流程
+     * completed-2:改期后完成
+     *
      * @param $status
      * @return array|string
      */
     public static function generateStatus($status)
     {
         switch ($status) {
-            case 'wait-1':
-            case 'wait-4':
-                $retData = '待患者确认';
-                break;
-
-            case 'wait-2':
+            case 'wait-0':
                 $retData = '待医生确认';
+                break;
+            case 'wait-1':
+                $retData = '保证金代缴';
+                break;
+            case 'wait-2':
+                $retData = '待专家确认';
+                break;
+            case 'wait-4':
+                $retData = '专家改期,待您确认';
                 break;
 
             case 'wait-3':
@@ -53,6 +81,9 @@ class ReservationRecordTransformer extends TransformerAbstract
                 break;
 
             case 'close-1':
+                $retData = '已过期';
+                break;
+
             case 'cancel-1':
             case 'cancel-3':
             case 'cancel-5':

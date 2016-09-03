@@ -22,6 +22,30 @@ use Tymon\JWTAuth\Exceptions\JWTException;
 
 class AppointmentController extends BaseController
 {
+    /**
+     * wait:
+     * wait-1: 待患者付款
+     * wait-2: 患者已付款，待医生确认
+     * wait-3: 医生确认接诊，待面诊
+     * wait-4: 医生改期，待患者确认
+     * wait-5: 患者确认改期，待面诊
+     * close:
+     * close-1: 待患者付款
+     * close-2: 医生过期未接诊,约诊关闭
+     * close-3: 医生拒绝接诊
+     * cancel:
+     * cancel-1: 患者取消约诊; 未付款
+     * cancel-2: 医生取消约诊
+     * cancel-3: 患者取消约诊; 已付款后
+     * cancel-4: 医生改期之后,医生取消约诊;
+     * cancel-5: 医生改期之后,患者取消约诊;
+     * cancel-6: 医生改期之后,患者确认之后,患者取消约诊;
+     * cancel-7: 医生改期之后,患者确认之后,医生取消约诊;
+     * completed:
+     * completed-1:最简正常流程
+     * completed-2:改期后完成
+     */
+
     public function index()
     {
 
@@ -273,27 +297,35 @@ class AppointmentController extends BaseController
             return $user;
         }
 
-        $appointments = Appointment::where('appointments.locums_id', $user->id)
+        $appointments = Appointment::where('appointments.patient_id', $user->id)
             ->leftJoin('doctors', 'doctors.id', '=', 'appointments.doctor_id')
             ->select('appointments.*', 'doctors.name', 'doctors.avatar', 'doctors.title', 'doctors.auth')
             ->orderBy('updated_at', 'desc')
             ->get();
 
         if ($appointments->isEmpty()) {
-//            return $this->response->noContent();
-            return response()->json(['success' => ''], 204); //给肠媳适配。。
+            return response()->json(['success' => ''], 204);
         }
 
-        $waitingForReply = array();
-        $alreadyReply = array();
+        $waitingConfirmed = array();
+        $waitingMeet = array();
+        $completed = array();
         foreach ($appointments as $appointment) {
-            if (strstr($appointment['status'], 'wait')) {
-                array_push($waitingForReply, ReservationRecordTransformer::appointmentTransform($appointment));
+            if (in_array($appointment['status'], array('wait-0', 'wait-1', 'wait-2', 'wait-4'))) {
+                array_push($waitingConfirmed, ReservationRecordTransformer::appointmentTransform($appointment));
+            } elseif (in_array($appointment['status'], array('wait-3', 'wait-5'))) {
+                array_push($waitingMeet, ReservationRecordTransformer::appointmentTransform($appointment));
             } else {
-                array_push($alreadyReply, ReservationRecordTransformer::appointmentTransform($appointment));
+                array_push($completed, ReservationRecordTransformer::appointmentTransform($appointment));
             }
         }
 
-        return ['data' => ['wait' => $waitingForReply, 'already' => $alreadyReply]];
+        $data = [
+            'wait_confirm' => $waitingConfirmed,
+            'wait_meet' => $waitingMeet,
+            'completed' => $completed
+        ];
+
+        return response()->json(compact('data'));
     }
 }

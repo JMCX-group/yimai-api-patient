@@ -728,7 +728,38 @@ class ApiController extends BaseController
                             'message' => '',
                             'error' => ''
                         ]
-                    ]
+                    ],
+                    '获取约诊记录(待确认/待面诊/已结束)' => [
+                        'url' => $http . '/api/appointment/list',
+                        'method' => 'GET',
+                        'params' => [
+                            'token' => ''
+                        ],
+                        '说明' => '用phone:18712345678,password:123456登陆可以获得所有测试数据',
+                        'response' => [
+                            'data' => [
+                                'wait_confirm' => [
+                                    [
+                                        'id' => '约诊ID',
+                                        'doctor_id' => '医生ID',
+                                        'doctor_name' => '医生姓名',
+                                        'doctor_head_url' => '医生头像',
+                                        'doctor_job_title' => '医生头衔',
+                                        'doctor_is_auth' => '医生是否认证',
+                                        'patient_id' => '患者ID',
+                                        'patient_name' => '患者姓名',
+                                        'patient_age' => '患者姓名',
+                                        'time' => '时间',
+                                        'status' => '状态'
+                                    ]
+                                ],
+                                'wait_meet' => '结构同上',
+                                'completed' => '结构同上'
+                            ],
+                            'message' => '',
+                            'error' => ''
+                        ]
+                    ],
                 ],
 
                 '广播信息' => [
