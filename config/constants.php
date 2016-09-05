@@ -10,11 +10,19 @@ return [
     'CASE_HISTORY_SAVE_PATH' => 'uploads/case-history/',
     'AVATAR_SAVE_PATH' => 'uploads/avatar/',
     'AUTH_PATH' => 'uploads/auth/',
-    
+
+    'PATIENT' => '患者',
+
+    'demand' => '需求',
+
     'APPOINTMENT_DEFAULT' => '{代约医生}替患者{患者}向{医生}医生发起约诊',
     'APPOINTMENT_DEFAULT_REQUEST' => '{患者}发起代约请求',
 
-    'WAIT_PAYMENT' => '待患者付款',
+    'PATIENT_REQUEST_APPOINTMENT' => '您向{医生}发起约诊',
+    'PATIENT_APPOINTMENT' => '您向{代约医生}发起代约请求',
+    'WAIT_DOCTOR_CONFIRM' => '等待医生确认代约',
+
+    'WAIT_PAYMENT' => '保证金代缴',
     'ALREADY_PAID_WAIT_CONFIRM' => '患者已付款,待医生确认',
     'ALREADY_PAID' => '患者已付款',
 

@@ -83,7 +83,7 @@ class AppointmentController extends BaseController
          */
         $data = [
             'id' => $frontId . $nowId,
-            'locums_id' => 0, //代理医生ID,0为平台代约
+            'locums_id' => 99999999, //代理医生ID,99999999为平台代约,0为没有代约医生
             'patient_id' => $user->id,
             'patient_name' => $request['name'],
             'patient_phone' => $request['phone'],
@@ -91,6 +91,7 @@ class AppointmentController extends BaseController
             'patient_age' => $request['age'],
             'patient_history' => $request['history'],
             'doctor_id' => $request['doctor'],
+            'platform_or_doctor' => 'p',
             'doctor_or_patient' => 'p', //患者发起
             'expect_visit_date' => $request['date'],
             'expect_am_pm' => $request['am_or_pm'],
@@ -152,15 +153,16 @@ class AppointmentController extends BaseController
          */
         $data = [
             'id' => $frontId . $nowId,
-            'locums_id' => 0, //代理医生ID,0为平台代约
+            'locums_id' => isset($request['demand']) ? $request['locums_doctor'] : 0, //代理医生ID,99999999为平台代约,0为没有代约医生
             'patient_id' => $user->id,
             'patient_name' => $request['name'],
             'patient_phone' => $request['phone'],
             'patient_gender' => $request['sex'],
             'patient_age' => $request['age'],
             'patient_history' => $request['history'],
-            'patient_demand' => $request['demand'],
+            'patient_demand' => isset($request['demand']) ? $request['demand'] : '',
             'doctor_id' => $request['doctor'],
+            'platform_or_doctor' => isset($request['demand']) ? 'd' : '',
             'doctor_or_patient' => 'p', //患者发起
             'expect_visit_date' => $request['date'],
             'expect_am_pm' => $request['am_or_pm'],
