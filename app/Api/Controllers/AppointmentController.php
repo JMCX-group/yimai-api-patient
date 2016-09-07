@@ -53,6 +53,8 @@ class AppointmentController extends BaseController
     }
 
     /**
+     * 通过搜索找的医生
+     *
      * @param AppointmentRequest $request
      * @return array|mixed
      */
@@ -91,6 +93,7 @@ class AppointmentController extends BaseController
             'patient_age' => $request['age'],
             'patient_history' => $request['history'],
             'doctor_id' => $request['doctor'],
+            'request_mode' => '找专家', //我的医生、找专家、医生代约
             'platform_or_doctor' => 'p',
             'doctor_or_patient' => 'p', //患者发起
             'expect_visit_date' => $request['date'],
@@ -153,16 +156,20 @@ class AppointmentController extends BaseController
          */
         $data = [
             'id' => $frontId . $nowId,
-            'locums_id' => isset($request['demand']) ? $request['locums_doctor'] : 0, //代理医生ID,99999999为平台代约,0为没有代约医生
+            'locums_id' => isset($request['demand_hospital']) ? $request['locums_doctor'] : 0, //代理医生ID,99999999为平台代约,0为没有代约医生
             'patient_id' => $user->id,
             'patient_name' => $request['name'],
             'patient_phone' => $request['phone'],
             'patient_gender' => $request['sex'],
             'patient_age' => $request['age'],
             'patient_history' => $request['history'],
-            'patient_demand' => isset($request['demand']) ? $request['demand'] : '',
+            'patient_demand_doctor_name' => isset($request['demand_doctor_name']) ? $request['demand_doctor_name'] : '',
+            'patient_demand_hospital' => isset($request['demand_hospital']) ? $request['demand_hospital'] : '',
+            'patient_demand_dept' => isset($request['demand_dept']) ? $request['demand_dept'] : '',
+            'patient_demand_title' => isset($request['demand_title']) ? $request['demand_title'] : '',
             'doctor_id' => $request['doctor'],
-            'platform_or_doctor' => isset($request['demand']) ? 'd' : '',
+            'request_mode' => isset($request['demand_hospital']) ? '医生代约' : '我的医生', //我的医生、找专家、医生代约
+            'platform_or_doctor' => isset($request['demand_hospital']) ? 'd' : '',
             'doctor_or_patient' => 'p', //患者发起
             'expect_visit_date' => $request['date'],
             'expect_am_pm' => $request['am_or_pm'],
