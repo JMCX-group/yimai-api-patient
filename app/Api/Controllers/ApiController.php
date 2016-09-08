@@ -668,19 +668,19 @@ class ApiController extends BaseController
                 ],
 
                 '约诊' => [
-                    '新建约诊' => [
+                    '新建约诊:搜索找到医生约,直接约我的医生' => [
                         'url' => $http . '/api/appointment/new',
                         'method' => 'POST',
                         'params' => [
                             'token' => ''
                         ],
                         'form-data' => [
-                            'name' => '患者姓名',
-                            'phone' => '患者手机号',
+                            'name' => '患者姓名; 必填',
+                            'phone' => '患者手机号; 必填',
                             'sex' => '患者性别,1男0女',
                             'age' => '患者年龄',
                             'history' => '患者现病史',
-                            'doctor' => '预约的医生的ID',
+                            'doctor' => '预约的医生的ID; 必填',
                             'date' => '预约日期,最多选择3个,用逗号分隔开即可,例:2016-05-01,2016-05-02; 如果是医生决定就是传0即可。',
                             'am_or_pm' => '预约上/下午,和上面的对应的用逗号分隔开即可,例:am,pm; 如果是医生决定随便传什么,都不会处理,取值时为空',
                         ],
@@ -690,20 +690,23 @@ class ApiController extends BaseController
                             'error' => ''
                         ]
                     ],
-                    '新建请求代约' => [
+                    '新建请求代约:找我的医生代约' => [
                         'url' => $http . '/api/appointment/instead',
                         'method' => 'POST',
                         'params' => [
                             'token' => ''
                         ],
                         'form-data' => [
-                            'name' => '患者姓名',
-                            'phone' => '患者手机号',
+                            'name' => '患者姓名; 必填',
+                            'phone' => '患者手机号; 必填',
                             'sex' => '患者性别,1男0女',
                             'age' => '患者年龄',
                             'history' => '患者现病史',
-                            'demand' => '患者代约需求',
-                            'doctor' => '预约的医生的ID',
+                            'demand_doctor_name' => '患者代约请求,需求的医生姓名; 该项为选填',
+                            'demand_hospital' => '患者代约请求,需求的医院; 必填',
+                            'demand_dept' => '患者代约请求,需求的科室; 必填',
+                            'demand_title' => '患者代约请求,需求的医生职称; 必填',
+                            'doctor' => '预约的医生的ID; 必填',
                             'locums_doctor' => '预约的医生的ID',
                             'date' => '预约日期,最多选择3个,用逗号分隔开即可,例:2016-05-01,2016-05-02; 如果是医生决定就是传0即可。',
                             'am_or_pm' => '预约上/下午,和上面的对应的用逗号分隔开即可,例:am,pm; 如果是医生决定随便传什么,都不会处理,取值时为空',

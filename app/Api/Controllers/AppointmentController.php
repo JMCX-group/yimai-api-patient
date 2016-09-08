@@ -53,7 +53,7 @@ class AppointmentController extends BaseController
     }
 
     /**
-     * 通过搜索找的医生
+     * 预约:通过搜索找的医生/预约我的医生
      *
      * @param AppointmentRequest $request
      * @return array|mixed
@@ -126,10 +126,10 @@ class AppointmentController extends BaseController
     /**
      * 患者发起的代约请求
      *
-     * @param AppointmentRequest $request
+     * @param AppointmentInsteadRequest $request
      * @return array|\Illuminate\Http\JsonResponse|mixed
      */
-    public function insteadAppointment(AppointmentRequest $request)
+    public function insteadAppointment(AppointmentInsteadRequest $request)
     {
         $user = User::getAuthenticatedUser();
         if (!isset($user->id)) {
