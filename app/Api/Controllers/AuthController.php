@@ -13,6 +13,7 @@ use App\Api\Requests\AuthRequest;
 use App\Api\Requests\InviterRequest;
 use App\Api\Requests\ResetPwdRequest;
 use App\Api\Transformers\UserTransformer;
+use App\Appointment;
 use App\User;
 use App\AppUserVerifyCode;
 use Illuminate\Http\Request;
@@ -67,9 +68,21 @@ class AuthController extends BaseController
             'avatar' => '/uploads/avatar/default.jpg'
         ];
         $user = User::create($newUser);
+        $this->setUserIdToAppointment($user->id, $newUser['phone']);
         $token = JWTAuth::fromUser($user);
 
         return response()->json(compact('token'));
+    }
+
+    /**
+     * 患者注册,自动更新约诊ID
+     *
+     * @param $id
+     * @param $phone
+     */
+    public function setUserIdToAppointment($id, $phone)
+    {
+        Appointment::where('patient_phone', $phone)->update(['patient_id' => $id]);
     }
 
     /**
