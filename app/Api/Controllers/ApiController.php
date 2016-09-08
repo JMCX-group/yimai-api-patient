@@ -739,7 +739,7 @@ class ApiController extends BaseController
                         'params' => [
                             'token' => ''
                         ],
-                        '说明' => '用phone:18712345678,password:123456登陆可以获得所有测试数据',
+                        '说明' => '用phone:18812121218,password:123456登陆可以获得所有测试数据',
                         'response' => [
                             'data' => [
                                 'wait_confirm' => [
@@ -752,7 +752,11 @@ class ApiController extends BaseController
                                         'doctor_is_auth' => '医生是否认证',
                                         'patient_id' => '患者ID',
                                         'patient_name' => '患者姓名',
+                                        'patient_sex' => '患者性别',
                                         'patient_age' => '患者姓名',
+                                        'request_mode' => '请求约诊的模式:我的医生、找专家、医生代约',
+                                        'deposit' => '订金/押金',
+                                        'price' => '约诊费用',
                                         'time' => '时间',
                                         'status' => '状态'
                                     ]
