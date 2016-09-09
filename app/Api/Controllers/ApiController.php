@@ -754,7 +754,7 @@ class ApiController extends BaseController
                                         'patient_name' => '患者姓名',
                                         'patient_sex' => '患者性别',
                                         'patient_age' => '患者姓名',
-                                        'request_mode' => '请求约诊的模式:我的医生、找专家、医生代约',
+                                        'request_mode' => '请求约诊的模式:我的医生、找专家、医生代约; 如果为null,则是由医生发起的,不用显示那个标签',
                                         'deposit' => '订金/押金',
                                         'price' => '约诊费用',
                                         'time' => '时间',

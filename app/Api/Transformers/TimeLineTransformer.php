@@ -18,33 +18,39 @@ class TimeLineTransformer
      *
      * @param $appointments
      * @param $doctors
-     * @param null $locumsDoctor
+     * @param $patientId
+     * @param $locumsDoctor
      * @return array|mixed
      */
-    public static function generateTimeLine($appointments, $doctors, $locumsDoctor = null)
+    public static function generateTimeLine($appointments, $doctors, $patientId, $locumsDoctor)
     {
         $retData = array();
 
         /**
          * 发起约诊的第一个时间点内容:
          */
-        if ($appointments->platform_or_doctor == '' || $appointments->platform_or_doctor == null) { //患者直接约诊医生
-            $time = $appointments->created_at->format('Y-m-d H:i:s');
+        $time = $appointments->created_at->format('Y-m-d H:i:s');
 
-            $text = \Config::get('constants.PATIENT_REQUEST_APPOINTMENT');
+        if($appointments->doctor_or_patient == 'd'){ //医生帮患者约
+            $text = \Config::get('constants.APPOINTMENT_DEFAULT');
             $infoText = str_replace('{医生}', $doctors->name, $text);
+            $infoText = str_replace('{患者}', $appointments->patient_name, $infoText);
+            $infoText = str_replace('{代约医生}', $locumsDoctor->name, $infoText);
             $infoOther = self::otherInfoContent_initiateAppointments($appointments);
             $retData = self::copyTransformer($retData, $time, $infoText, $infoOther, 'pass');
-        } elseif ($appointments->platform_or_doctor == 'p') { //平台代约
-            $time = $appointments->confirm_locums_time;
-
-            $infoText = self::confirmLocumsText($locumsDoctor);
-            $retData = self::copyTransformer($retData, $time, $infoText, null, 'pass');
-        } else { //代约医生
-            $time = $appointments->confirm_locums_time;
-
-            $infoText = self::confirmLocumsText($locumsDoctor);
-            $retData = self::copyTransformer($retData, $time, $infoText, null, 'pass');
+        }else {
+            if ($appointments->platform_or_doctor == '' || $appointments->platform_or_doctor == null) { //患者直接约诊医生
+                $text = \Config::get('constants.PATIENT_REQUEST_APPOINTMENT');
+                $infoText = str_replace('{医生}', $doctors->name, $text);
+                $infoOther = self::otherInfoContent_initiateAppointments($appointments);
+                $retData = self::copyTransformer($retData, $time, $infoText, $infoOther, 'pass');
+            } elseif ($appointments->platform_or_doctor == 'p') { //平台代约
+                $infoText = self::confirmLocumsText($locumsDoctor->name);
+                $retData = self::copyTransformer($retData, $time, $infoText, null, 'pass');
+            } else { //代约医生
+                $infoText = self::confirmLocumsText($locumsDoctor->name);
+                $retData = self::copyTransformer($retData, $time, $infoText, null, 'pass');
+            }
         }
 
         switch ($appointments->status) {
@@ -64,12 +70,13 @@ class TimeLineTransformer
 
             case 'wait-1':
                 $infoText = \Config::get('constants.WAIT_PAYMENT');
-                //TODO 未完成
                 $infoOther = self::otherInfoContent_initiateAppointments($appointments);
                 $retData = self::copyTransformer($retData, null, $infoText, $infoOther, 'wait');
                 break;
 
             case 'wait-2':
+                $retData = self::otherInfoContent_alreadyPaid($appointments, $retData);
+
                 $infoText = \Config::get('constants.ALREADY_PAID_WAIT_CONFIRM');
                 $retData = self::copyTransformer($retData, null, $infoText, null, 'wait');
                 break;
@@ -85,6 +92,7 @@ class TimeLineTransformer
             case 'wait-4':
                 $retData = self::otherInfoContent_alreadyPaid($appointments, $retData);
                 $retData = self::otherInfoContent_confirmAdmissions($appointments, $doctors, $retData);
+                $retData = self::otherInfoContent_doctorRescheduled($appointments, $retData);
 
                 $infoText = \Config::get('constants.DOCTOR_RESCHEDULED_WAIT_CONFIRM');
                 $retData = self::copyTransformer($retData, null, $infoText, null, 'wait');
@@ -294,7 +302,8 @@ class TimeLineTransformer
         $payRecord = PayRecord::where('transaction_id', $appointments->transaction_id)->get()->first();
         $time = $payRecord->created_at->format('Y-m-d H:i:s');
         $infoText = \Config::get('constants.ALREADY_PAID');
-        return self::copyTransformer($retData, $time, $infoText, null, 'pass');
+        $infoOther = self::infoOther_alreadyPaid($appointments);
+        return self::copyTransformer($retData, $time, $infoText, $infoOther, 'pass');
     }
 
     /**
@@ -372,7 +381,24 @@ class TimeLineTransformer
         ], [
             'name' => \Config::get('constants.TREATMENT_NOTICE'),
             'content' => $appointments->remark
-        ],];
+        ],[
+            'name' => \Config::get('constants.COST'),
+            'content' => $appointments->price
+        ]];
+    }
+
+    /**
+     * 已支付的附加信息段
+     *
+     * @param $appointments
+     * @return array
+     */
+    private static function infoOther_alreadyPaid($appointments)
+    {
+        return [[
+            'name' => \Config::get('constants.COST'),
+            'content' => ($appointments->deposit == null || $appointments->deposit == '0') ? $appointments->price : $appointments->deposit
+        ]];
     }
 
     /**
@@ -394,7 +420,7 @@ class TimeLineTransformer
                 $retData = ['milestone' => '发起约诊', 'status' => '待付款'];
                 break;
             case 'wait-2':
-                $retData = ['milestone' => '患者确认', 'status' => '待确认'];
+                $retData = ['milestone' => '确认预约', 'status' => '待确认'];
                 break;
             case 'wait-3':
             case 'wait-5':

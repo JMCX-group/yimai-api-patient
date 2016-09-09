@@ -15,7 +15,7 @@ return [
 
     'demand' => '需求',
 
-    'APPOINTMENT_DEFAULT' => '{代约医生}替患者{患者}向{医生}医生发起约诊',
+    'APPOINTMENT_DEFAULT' => '{代约医生}替您{患者}向{医生}医生发起约诊',
     'APPOINTMENT_DEFAULT_REQUEST' => '{患者}发起代约请求',
 
     'PATIENT_REQUEST_APPOINTMENT' => '您向{医生}发起约诊',
@@ -23,25 +23,26 @@ return [
     'WAIT_DOCTOR_CONFIRM' => '等待医生确认代约',
 
     'WAIT_PAYMENT' => '保证金代缴',
-    'ALREADY_PAID_WAIT_CONFIRM' => '患者已付款,待医生确认',
-    'ALREADY_PAID' => '患者已付款',
+    'COST' => '实际诊费',
+    'ALREADY_PAID_WAIT_CONFIRM' => '待专家确认',
+    'ALREADY_PAID' => '您已确认',
 
     'CONFIRM_ADMISSIONS_WAIT_FACE_CONSULTATION' => '医生确认接诊,待面诊',
     'CONFIRM_ADMISSIONS' => '医生确认接诊',
     'CONFIRM_APPOINTMENT' => '{人称}确认代约',
 
-    'DOCTOR_RESCHEDULED_WAIT_CONFIRM' => '医生改期,待患者确认',
+    'DOCTOR_RESCHEDULED_WAIT_CONFIRM' => '医生改期,待您确认',
     'DOCTOR_RESCHEDULED' => '医生改期',
 
     'CONFIRM_RESCHEDULED_WAIT_FACE_CONSULTATION' => '患者确认改期,待面诊',
-    'CONFIRM_RESCHEDULED' => '患者确认改期',
+    'CONFIRM_RESCHEDULED' => '您已确认改期',
     'WAIT_FACE_CONSULTATION' => '待面诊',
 
-    'UNPAID_APPOINTMENT_CLOSE' => '患者过期未付款,约诊关闭',
+    'UNPAID_APPOINTMENT_CLOSE' => '您过期未付款,约诊关闭',
 
     'DOCTOR_CANCEL_APPOINTMENT' => '医生取消约诊',
     'DOCTOR_CANCEL_ADMISSIONS' => '医生取消接诊',
-    'PATIENT_CANCEL_APPOINTMENT' => '患者取消约诊',
+    'PATIENT_CANCEL_APPOINTMENT' => '您取消约诊',
 
     'DOCTOR_REFUSED_APPOINTMENT' => '医生无法约诊', //等同于医生拒绝
     'DOCTOR_APPOINTMENT_CLOSE' => '医生无法接诊',
@@ -49,7 +50,7 @@ return [
     'FACE_CONSULTATION_COMPLETE' => '面诊完成',
 
     'DOCTOR_EXPIRED_APPOINTMENT_CLOSE' => '医生过期未接诊,约诊关闭',
-    'PATIENT_EXPIRED_APPOINTMENT_CLOSE' => '患者过期未确认,约诊关闭',
+    'PATIENT_EXPIRED_APPOINTMENT_CLOSE' => '您过期未确认,约诊关闭',
 
     'DESIRED_TREATMENT_TIME' => '期望就诊时间',
     
@@ -60,5 +61,5 @@ return [
 
     'RESCHEDULED_TIME' => '改期时间',
 
-    'NOT_PAY_CLOSE' => '患者过期未付款,约诊关闭'
+    'NOT_PAY_CLOSE' => '您过期未付款,约诊关闭'
 ];
