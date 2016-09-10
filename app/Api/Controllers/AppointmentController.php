@@ -335,4 +335,35 @@ class AppointmentController extends BaseController
 
         return response()->json(compact('data'));
     }
+
+    /**
+     * @param AppointmentIdRequest $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function pay(AppointmentIdRequest $request)
+    {
+        //TODO 接入微信支付
+        $appointmentId = $request['id'];
+
+        $data = [
+            'debug' => '还未接入，只是测试',
+            'id' => $appointmentId
+        ];
+
+        return response()->json(compact('data'));
+    }
+
+    /**
+     * 患者确认完成面诊
+     *
+     * @param AppointmentIdRequest $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function complete(AppointmentIdRequest $request)
+    {
+        $appointmentId = $request['id'];
+        Appointment::where('id', $appointmentId)->update(['status' => 'completed-1']);
+
+        return response()->json(['success' => ''], 204);
+    }
 }

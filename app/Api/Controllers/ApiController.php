@@ -835,6 +835,39 @@ class ApiController extends BaseController
                             'message' => '',
                             'error' => ''
                         ]
+                    ],
+                    '缴纳保证金/缴纳接诊费' => [
+                        'url' => $http . '/api/appointment/pay',
+                        'method' => 'POST',
+                        'params' => [
+                            'token' => ''
+                        ],
+                        'form-data' => [
+                            'id' => '约诊ID'
+                        ],
+                        'response' => [
+                            'data' => [
+                                'debug' => '',
+                                'id' => ''
+                            ],
+                            'message' => '',
+                            'error' => ''
+                        ]
+                    ],
+                    '完成面诊' => [
+                        'url' => $http . '/api/appointment/complete',
+                        'method' => 'POST',
+                        'params' => [
+                            'token' => ''
+                        ],
+                        'form-data' => [
+                            'id' => '约诊ID'
+                        ],
+                        'response' => [
+                            'success' => '',
+                            'message' => '',
+                            'error' => ''
+                        ]
                     ]
                 ],
 
