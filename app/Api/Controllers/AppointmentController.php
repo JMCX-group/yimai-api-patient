@@ -10,6 +10,7 @@ namespace App\Api\Controllers;
 
 use App\Api\Requests\AppointmentDetailRequest;
 use App\Api\Requests\AppointmentIdRequest;
+use App\Api\Requests\AppointmentInsteadRequest;
 use App\Api\Requests\AppointmentRequest;
 use App\Api\Transformers\ReservationRecordTransformer;
 use App\Api\Transformers\TimeLineTransformer;
@@ -83,6 +84,7 @@ class AppointmentController extends BaseController
         /**
          * 发起约诊信息记录
          */
+        $doctor = Doctor::find($request['doctor']);
         $data = [
             'id' => $frontId . $nowId,
             'locums_id' => 99999999, //代理医生ID,99999999为平台代约,0为没有代约医生
@@ -98,6 +100,7 @@ class AppointmentController extends BaseController
             'doctor_or_patient' => 'p', //患者发起
             'expect_visit_date' => $request['date'],
             'expect_am_pm' => $request['am_or_pm'],
+            'price' => $doctor->fee,
             'status' => 'wait-1' //新建约诊之后,进入待患者付款阶段
         ];
 
@@ -106,10 +109,10 @@ class AppointmentController extends BaseController
          */
         $msgData = [
             'appointment_id' => $frontId . $nowId,
-            'locums_id' => 0, //代理医生ID,0为平台代约
-            'patient_name' => $request['name'],
-            'doctor_id' => $request['doctor'],
-            'doctor_name' => Doctor::find($request['doctor'])->first()->name,
+            'locums_id' => 99999999, //代理医生ID； 99999999为平台代约
+            'patient_name' => $data['patient_name'],
+            'doctor_id' => $data['doctor_id'],
+            'doctor_name' => $doctor->name,
             'status' => 'wait-1' //新建约诊之后,进入待患者付款阶段
         ];
 
@@ -337,6 +340,8 @@ class AppointmentController extends BaseController
     }
 
     /**
+     * 调用微信支付
+     *
      * @param AppointmentIdRequest $request
      * @return \Illuminate\Http\JsonResponse
      */
@@ -345,8 +350,33 @@ class AppointmentController extends BaseController
         //TODO 接入微信支付
         $appointmentId = $request['id'];
 
+        /**
+         * 修改状态：
+         */
+        $appointment = Appointment::find($appointmentId);
+        if ($appointment->status == 'wait-1') {
+            $appointment->status = 'wait-2';
+            $appointment->save();
+        }
+
+        /**
+         * 推送消息记录
+         */
+        $msgData = [
+            'appointment_id' => $appointmentId,
+            'locums_id' => 99999999, //代理医生ID； 99999999为平台代约
+            'patient_name' => $appointment->patient_name,
+            'doctor_id' => $appointment->doctor_id,
+            'doctor_name' => Doctor::find($appointment->doctor_id)->first()->name,
+            'status' => 'wait-2' //患者已付款
+        ];
+        AppointmentMsg::create($msgData);
+
+        /**
+         * 返回数据：
+         */
         $data = [
-            'debug' => '还未接入，只是测试',
+            'debug' => '还未接入，只是测试；支付价格是：' . $appointment->price,
             'id' => $appointmentId
         ];
 

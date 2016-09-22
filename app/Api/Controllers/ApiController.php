@@ -845,6 +845,7 @@ class ApiController extends BaseController
                         'form-data' => [
                             'id' => '约诊ID'
                         ],
+                        '说明' => '该接口还未完成，只做了状态信息的变更和消息推送，没有做实际资金',
                         'response' => [
                             'data' => [
                                 'debug' => '',
