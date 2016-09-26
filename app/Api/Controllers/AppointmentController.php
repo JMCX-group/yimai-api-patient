@@ -347,13 +347,14 @@ class AppointmentController extends BaseController
      */
     public function pay(AppointmentIdRequest $request)
     {
-        //TODO 接入微信支付
         $appointmentId = $request['id'];
+        $appointment = Appointment::find($appointmentId);
+
+        //TODO 接入微信支付
 
         /**
          * 修改状态：
          */
-        $appointment = Appointment::find($appointmentId);
         if ($appointment->status == 'wait-1') {
             $appointment->status = 'wait-2';
             $appointment->save();
