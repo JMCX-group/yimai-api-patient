@@ -1,55 +1,42 @@
 <?php
+/**
+ * Created by PhpStorm.
+ * User: liyingxuan
+ * Date: 2016/8/16
+ * Time: 19:52
+ */
+
 namespace App\Api\Helper;
 
 /**
  * 微信支付
- *
  * Class WeiXinPay
  * @package App\Api\Helper
  */
 class WeiXinPay
 {
-    /**
-     * @var
-     */
     public $parameters;
-    /**
-     * @var
-     */
     private $url;
-    /**
-     * @var
-     */
     private $key;
-    /**
-     * @var
-     */
-    private $appid;
-    /**
-     * @var
-     */
-    private $mch_id;
-    /**
-     * @var
-     */
-    private $notify_url;
+    private $appId;
+    private $mchId;
+    private $notifyUrl;
 
-    /**
-     * WeiXinPay constructor.
-     */
     public function __construct()
     {
-//        $data = file_get_contents('../weixinpay.txt');
-//        $array = explode(',',$data);
-//        $this->url = 'https://api.mch.weixin.qq.com/pay/unifiedorder';
-//        $this->key = explode(':',$array[1])[1];
-//        $this->appid = explode(':',$array[0])[1];
-//        $this->mch_id = explode(':',$array[2])[1];
-//        $this->notify_url = \Config::get('constants.WEIXINNOTIFYURL');
+        $this->url = 'https://api.mch.weixin.qq.com/pay/unifiedorder';
+        $this->key = 'YegenshenYejiquan197806212009111';
+        $this->appId = 'wx1a4ce4a82bbd1da5';
+        $this->mchId = '1273535201';
+        $this->notifyUrl = 'http://api.superxing.cc/api/recharge/wxnotify_url';
     }
 
     /**
      * MD5加密
+     *
+     * @param $content
+     * @param $key
+     * @return string
      */
     public function wxMd5Sign($content, $key)
     {
@@ -67,8 +54,12 @@ class WeiXinPay
         }
     }
 
+
     /**
      * 数组转化为xml
+     *
+     * @param null $parameters
+     * @return string
      */
     public function wxArrayToXml($parameters = NULL)
     {
@@ -89,21 +80,27 @@ class WeiXinPay
     }
 
     /**
-     * 微信支付
+     * 微信支付。
+     *
+     * @param $orderNum
+     * @param $actName
+     * @param $money
+     * @param $timeExpire
+     * @return array
      */
-    public function weixinpay($order_num, $act_name, $money, $time_expire)
+    public function wxPay($orderNum, $actName, $money, $timeExpire)
     {
         // 参数数组
         $data = array(
-            'appid' => $this->appid,
+            'appid' => $this->appId,
             'attach' => 'weixinpay',
-            'body' => $act_name,
-            'mch_id' => $this->mch_id,
+            'body' => $actName,
+            'mch_id' => $this->mchId,
             'nonce_str' => $this->random('15'),
-            'notify_url' => $this->notify_url,
-            'out_trade_no' => $order_num,
+            'notify_url' => $this->notifyUrl,
+            'out_trade_no' => $orderNum,
             'spbill_create_ip' => $this->get_real_ip(),
-            'time_expire' => $time_expire,
+            'time_expire' => $timeExpire,
             'total_fee' => $money,
             'trade_type' => 'APP'
         );
@@ -118,6 +115,7 @@ class WeiXinPay
         }
         $data['sign'] = $this->wxMd5Sign($str, $this->key);
         $data = $this->wxArrayToXml($data);
+        file_put_contents('01.txt', json_encode($data));
         $second = 30000;
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $second);
@@ -130,23 +128,25 @@ class WeiXinPay
         curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
         $return = curl_exec($ch);
         curl_close($ch);
-        return $this->weixintwosign($return);
+        return $this->wxTwoSign($return);
     }
 
     /**
-     * @param $datawx
+     *
+     *
+     * @param $wxData
      * @return array
      */
-    public function weixintwosign($datawx)
+    public function wxTwoSign($wxData)
     {
-        $datawx = (array)simplexml_load_string($datawx, 'SimpleXMLElement', LIBXML_NOCDATA);
-        if (!empty($datawx)) {
-            if ($datawx['return_code'] == 'SUCCESS') {
-                $data['appid'] = $datawx['appid'];
-                $data['noncestr'] = $datawx['nonce_str'];
+        $wxData = (array)simplexml_load_string($wxData, 'SimpleXMLElement', LIBXML_NOCDATA);
+        if (!empty($wxData)) {
+            if ($wxData['return_code'] == 'SUCCESS') {
+                $data['appid'] = $wxData['appid'];
+                $data['noncestr'] = $wxData['nonce_str'];
                 $data['package'] = "Sign=WXPay";
-                $data['partnerid'] = $datawx['mch_id'];
-                $data['prepayid'] = $datawx['prepay_id'];
+                $data['partnerid'] = $wxData['mch_id'];
+                $data['prepayid'] = $wxData['prepay_id'];
                 $data['timestamp'] = time();
                 $str = '';
                 foreach ($data as $key => $value) {
@@ -166,11 +166,15 @@ class WeiXinPay
 
     /**
      * 返回随机数
+     *
+     * @param $length
+     * @param int $numeric
+     * @return string
      */
     public function random($length, $numeric = 0)
     {
         if ($numeric) {
-            $hash = sprintf('%0' . length . 'd', mt_rand(0, pow(10, $length) - 1));
+            $hash = sprintf('%0' . $length . 'd', mt_rand(0, pow(10, $length) - 1));
         } else {
             $hash = '';
             $chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz';
@@ -184,10 +188,11 @@ class WeiXinPay
 
     /**
      * 获取ip
+     *
      * @return mixed
      */
     public function get_real_ip()
     {
-        return $_SERVER["REMOTE_ADDR"];;
+        return $_SERVER["REMOTE_ADDR"];
     }
 }
