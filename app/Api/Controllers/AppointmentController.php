@@ -8,6 +8,7 @@
 
 namespace App\Api\Controllers;
 
+use App\Api\Helper\WeiXinPay;
 use App\Api\Requests\AppointmentDetailRequest;
 use App\Api\Requests\AppointmentIdRequest;
 use App\Api\Requests\AppointmentInsteadRequest;
@@ -24,6 +25,13 @@ use Tymon\JWTAuth\Exceptions\JWTException;
 
 class AppointmentController extends BaseController
 {
+    private $wxPay;
+
+    public function __construct()
+    {
+        $this->wxPay = new WeiXinPay();
+    }
+
     /**
      * wait:
      * wait-1: 待患者付款
