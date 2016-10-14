@@ -19,6 +19,7 @@ use App\Api\Transformers\Transformer;
 use App\Appointment;
 use App\AppointmentMsg;
 use App\Doctor;
+use App\Order;
 use App\User;
 use Intervention\Image\Facades\Image;
 use Tymon\JWTAuth\Exceptions\JWTException;
@@ -359,6 +360,7 @@ class AppointmentController extends BaseController
         $appointment = Appointment::find($appointmentId);
 
         //TODO 接入微信支付
+        $this->wxPay();
 
         /**
          * 修改状态：
@@ -390,6 +392,11 @@ class AppointmentController extends BaseController
         ];
 
         return response()->json(compact('data'));
+    }
+
+    public function wxPay()
+    {
+        $order = Order::where('out_trade_no', $request->get('out_trade_no'))->first();
     }
 
     /**

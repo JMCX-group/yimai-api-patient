@@ -54,7 +54,6 @@ class WeiXinPay
         }
     }
 
-
     /**
      * 数组转化为xml
      *
@@ -116,7 +115,7 @@ class WeiXinPay
         $data['sign'] = $this->wxMd5Sign($str, $this->key);
         $data = $this->wxArrayToXml($data);
 
-        file_put_contents('01.txt', json_encode($data));
+        file_put_contents('pay.file', json_encode($data));
         $second = 30000;
 
         $ch = curl_init();
