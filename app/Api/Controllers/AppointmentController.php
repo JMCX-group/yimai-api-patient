@@ -26,11 +26,11 @@ use Tymon\JWTAuth\Exceptions\JWTException;
 
 class AppointmentController extends BaseController
 {
-    private $wxPay;
+    private $wxPayClass;
 
     public function __construct()
     {
-        $this->wxPay = new WeiXinPay();
+        $this->wxPayClass = new WeiXinPay();
     }
 
     /**
@@ -358,45 +358,78 @@ class AppointmentController extends BaseController
     {
         $appointmentId = $request['id'];
         $appointment = Appointment::find($appointmentId);
+        $doctorName = Doctor::find($appointment->doctor_id)->first()->name;
 
-        //TODO 接入微信支付
-        $this->wxPay();
-
-        /**
-         * 修改状态：
-         */
-        if ($appointment->status == 'wait-1') {
-            $appointment->status = 'wait-2';
-            $appointment->save();
+        //微信支付
+        $data = ['message' => '错误！'];
+        if (!($appointment->price == 0 || $appointment->price == null || $appointment->price == '')) {
+            $retData = $this->wxPay($appointment, $doctorName);
+            if ($retData != false) {
+                $data = $retData;
+            }
         }
-
-        /**
-         * 推送消息记录
-         */
-        $msgData = [
-            'appointment_id' => $appointmentId,
-            'locums_id' => 99999999, //代理医生ID； 99999999为平台代约
-            'patient_name' => $appointment->patient_name,
-            'doctor_id' => $appointment->doctor_id,
-            'doctor_name' => Doctor::find($appointment->doctor_id)->first()->name,
-            'status' => 'wait-2' //患者已付款
-        ];
-        AppointmentMsg::create($msgData);
-
-        /**
-         * 返回数据：
-         */
-        $data = [
-            'debug' => '还未接入，只是测试；支付价格是：' . $appointment->price,
-            'id' => $appointmentId
-        ];
+//
+//        /**
+//         * 修改状态：
+//         */
+//        if ($appointment->status == 'wait-1') {
+//            $appointment->status = 'wait-2';
+//            $appointment->save();
+//        }
+//
+//        /**
+//         * 推送消息记录
+//         */
+//        $msgData = [
+//            'appointment_id' => $appointmentId,
+//            'locums_id' => 99999999, //代理医生ID； 99999999为平台代约
+//            'patient_name' => $appointment->patient_name,
+//            'doctor_id' => $appointment->doctor_id,
+//            'doctor_name' => $doctorName,
+//            'status' => 'wait-2' //患者已付款
+//        ];
+//        AppointmentMsg::create($msgData);
+//
+//        /**
+//         * 返回数据：
+//         */
+//        $data = [
+//            'debug' => '还未接入，只是测试；支付价格是：' . $appointment->price,
+//            'id' => $appointmentId
+//        ];
 
         return response()->json(compact('data'));
     }
 
-    public function wxPay()
+    /**
+     * 调用微信支付
+     *
+     * @param $appointment
+     * @param $doctorName
+     * @return array|bool
+     */
+    public function wxPay($appointment, $doctorName)
     {
-        $order = Order::where('out_trade_no', $request->get('out_trade_no'))->first();
+        try {
+            $order = Order::where('out_trade_no', $appointment->id)->first();
+            if (empty($order->id)){
+                $newOrder = [
+                    'doctor_id' => $appointment->doctor_id,
+                    'patient_id' => $appointment->patient_id,
+                    'out_trade_no' => $appointment->id,
+                    'total_fee' => ($appointment->price) * 100,
+                    'body' => '医脉约诊' . $doctorName,
+                    'detail' => '',
+                    'status' => 'start' //start:开始; end:结束
+                ];
+                $order = Order::create($newOrder);
+            }
+
+            $timeExpire = date('YmdHis', (time() + 600)); //过期时间600秒
+            return $this->wxPayClass->wxPay($order['out_trade_no'], $order['body'], $order['total_fee'], $timeExpire);
+        } catch (JWTException $e) {
+            return false;
+        }
     }
 
     /**

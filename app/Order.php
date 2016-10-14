@@ -25,6 +25,7 @@ class Order extends Model
         'total_fee',
         'body',
         'detail',
+        'status',
         'time_start',
         'time_expire'
     ];

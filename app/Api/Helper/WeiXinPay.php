@@ -26,7 +26,7 @@ class WeiXinPay
     {
         $this->url = 'https://api.mch.weixin.qq.com/pay/unifiedorder';
         $this->key = 'YegenshenYejiquan197806212009111';
-        $this->appId = 'wx1a4ce4a82bbd1da5';
+        $this->appId = 'wx2097e8b109f9dc35';
         $this->mchId = '1273535201';
         $this->notifyUrl = 'http://139.129.167.9/api/pay/notify_url';
     }
@@ -75,6 +75,7 @@ class WeiXinPay
             $xml .= "<" . $key . "><![CDATA[" . $val . "]]></" . $key . ">";
         }
         $xml .= "</xml>";
+
         return $xml;
     }
 
@@ -112,6 +113,7 @@ class WeiXinPay
                 $str = $key . '=' . $value;
             }
         }
+
         $data['sign'] = $this->wxMd5Sign($str, $this->key);
         $data = $this->wxArrayToXml($data);
 
@@ -129,6 +131,8 @@ class WeiXinPay
         curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
         $return = curl_exec($ch);
         curl_close($ch);
+
+        //return $return;
         return $this->wxTwoSign($return);
     }
 
@@ -149,6 +153,7 @@ class WeiXinPay
                 $data['partnerid'] = $wxData['mch_id'];
                 $data['prepayid'] = $wxData['prepay_id'];
                 $data['timestamp'] = time();
+
                 $str = '';
                 foreach ($data as $key => $value) {
                     if ($str != '') {
@@ -160,9 +165,9 @@ class WeiXinPay
                 $data['sign'] = $this->wxMd5Sign($str, $this->key);
                 return $data;
             }
-            return $data = ['message' => '错误！'];
+            return $data = ['message' => 'false'];
         }
-        return $data = ['message' => '错误！'];
+        return $data = ['message' => 'false'];
     }
 
     /**

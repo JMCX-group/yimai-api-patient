@@ -37,6 +37,13 @@ $api->version('v1', function ($api) {
         });
 
         /**
+         * WeChat Notify Url
+         */
+        $api->group(['prefix' => 'pay'], function ($api) {
+            $api->get('notify_url', 'PayController@notifyUrl');
+        });
+
+        /**
          * Token Auth
          */
         $api->group(['middleware' => 'jwt.auth'], function ($api) {
@@ -154,7 +161,6 @@ $api->version('v1', function ($api) {
             //Pay
             $api->group(['prefix' => 'pay'], function ($api) {
                 $api->get('/', 'PayController@pay');
-                $api->get('notify_url', 'PayController@notifyUrl');
             });
         });
     });
