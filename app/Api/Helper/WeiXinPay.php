@@ -28,7 +28,7 @@ class WeiXinPay
         $this->key = 'YegenshenYejiquan197806212009111';
         $this->appId = 'wx1a4ce4a82bbd1da5';
         $this->mchId = '1273535201';
-        $this->notifyUrl = 'http://api.superxing.cc/api/recharge/wxnotify_url';
+        $this->notifyUrl = 'http://139.129.167.9/api/pay/notify_url';
     }
 
     /**
@@ -82,30 +82,30 @@ class WeiXinPay
     /**
      * 微信支付。
      *
-     * @param $orderNum
-     * @param $actName
-     * @param $money
+     * @param $outTradeNo
+     * @param $body
+     * @param $totalFee
      * @param $timeExpire
      * @return array
      */
-    public function wxPay($orderNum, $actName, $money, $timeExpire)
+    public function wxPay($outTradeNo, $body, $totalFee, $timeExpire)
     {
         // 参数数组
         $data = array(
             'appid' => $this->appId,
             'attach' => 'weixinpay',
-            'body' => $actName,
+            'body' => $body,
             'mch_id' => $this->mchId,
             'nonce_str' => $this->random('15'),
             'notify_url' => $this->notifyUrl,
-            'out_trade_no' => $orderNum,
+            'out_trade_no' => $outTradeNo,
             'spbill_create_ip' => $this->get_real_ip(),
             'time_expire' => $timeExpire,
-            'total_fee' => $money,
+            'total_fee' => $totalFee,
             'trade_type' => 'APP'
         );
-        $str = '';
 
+        $str = '';
         foreach ($data as $key => $value) {
             if ($str != '') {
                 $str .= '&' . $key . '=' . $value;
@@ -115,8 +115,10 @@ class WeiXinPay
         }
         $data['sign'] = $this->wxMd5Sign($str, $this->key);
         $data = $this->wxArrayToXml($data);
+
         file_put_contents('01.txt', json_encode($data));
         $second = 30000;
+
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $second);
         curl_setopt($ch, CURLOPT_URL, $this->url);

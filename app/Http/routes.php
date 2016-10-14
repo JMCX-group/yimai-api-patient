@@ -150,6 +150,12 @@ $api->version('v1', function ($api) {
             $api->group(['prefix' => 'contacts'], function ($api) {
                 $api->get('all', 'ContactController@index');
             });
+
+            //Pay
+            $api->group(['prefix' => 'pay'], function ($api) {
+                $api->get('/', 'PayController@pay');
+                $api->get('notify_url', 'PayController@notifyUrl');
+            });
         });
     });
 });
