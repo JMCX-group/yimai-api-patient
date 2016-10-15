@@ -369,7 +369,7 @@ class AppointmentController extends BaseController
             }
         }
 
-        return response()->json(compact('data'));
+        return response()->json(compact('data'), 500);
     }
 
     /**
