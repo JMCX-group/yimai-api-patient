@@ -836,7 +836,7 @@ class ApiController extends BaseController
                             'error' => ''
                         ]
                     ],
-                    '缴纳保证金/缴纳接诊费' => [
+                    '支付/缴纳保证金/缴纳接诊费' => [
                         'url' => $http . '/api/appointment/pay',
                         'method' => 'POST',
                         'params' => [
@@ -845,13 +845,19 @@ class ApiController extends BaseController
                         'form-data' => [
                             'id' => '约诊ID'
                         ],
-                        '说明' => '该接口还未完成，只做了状态信息的变更和消息推送，没有做实际资金',
+                        '说明' => '该接口目前还没通，key可能不对，在解决中',
+                        'APP支付接口调用文档' => 'https://pay.weixin.qq.com/wiki/doc/api/app/app.php?chapter=9_12&index=2',
                         'response' => [
                             'data' => [
-                                'debug' => '',
-                                'id' => ''
+                                'appid' => '',
+                                'noncestr' => '',
+                                'package' => '',
+                                'partnerid' => '',
+                                'prepayid' => '',
+                                'timestamp' => '',
+                                'sign' => '',
                             ],
-                            'message' => '',
+                            'message' => 'false: 表示失败',
                             'error' => ''
                         ]
                     ],
