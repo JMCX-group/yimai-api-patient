@@ -366,6 +366,7 @@ class AppointmentController extends BaseController
             $retData = $this->wxPay($appointment, $doctorName);
             if ($retData != false) {
                 $data = $retData;
+                return response()->json(compact('data'), 200);
             }
         }
 
