@@ -361,7 +361,7 @@ class AppointmentController extends BaseController
         $doctorName = Doctor::find($appointment->doctor_id)->first()->name;
 
         //微信支付
-        $data = ['message' => '错误！'];
+        $data = ['message' => 'false'];
         if (!($appointment->price == 0 || $appointment->price == null || $appointment->price == '')) {
             $retData = $this->wxPay($appointment, $doctorName);
             if ($retData != false) {

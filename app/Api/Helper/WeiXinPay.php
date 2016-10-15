@@ -32,22 +32,98 @@ class WeiXinPay
     }
 
     /**
+     * 微信支付。
+     *
+     * @param $outTradeNo
+     * @param $body
+     * @param $totalFee
+     * @param $timeExpire
+     * @return array
+     */
+    public function wxPay($outTradeNo, $body, $totalFee, $timeExpire)
+    {
+        // 参数数组
+        $data = array(
+            'appid' => $this->appId,
+            'attach' => 'weixinpay',
+            'body' => $body,
+            'mch_id' => $this->mchId,
+            'nonce_str' => $this->random('15'),
+            'notify_url' => $this->notifyUrl,
+            'out_trade_no' => $outTradeNo,
+            'spbill_create_ip' => $this->get_real_ip(),
+            'time_expire' => $timeExpire,
+            'total_fee' => $totalFee,
+            'trade_type' => 'APP'
+        );
+        $data['sign'] = $this->wxMd5Sign($data);
+        $data = $this->wxArrayToXml($data);
+//        file_put_contents('pay.file', json_encode($data));
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30000);
+        curl_setopt($ch, CURLOPT_URL, $this->url);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
+        curl_setopt($ch, CURLOPT_HEADER, FALSE);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+        curl_setopt($ch, CURLOPT_POST, TRUE);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+        $return = curl_exec($ch);
+        curl_close($ch);
+
+        return $this->wxRetAppData($return);
+    }
+
+    /**
+     * 生成返回给前端APP的参数
+     *
+     * @param $wxData
+     * @return array
+     */
+    public function wxRetAppData($wxData)
+    {
+        $wxData = (array)simplexml_load_string($wxData, 'SimpleXMLElement', LIBXML_NOCDATA);
+        if (!empty($wxData)) {
+            if ($wxData['return_code'] == 'SUCCESS') {
+                $data['appid'] = $wxData['appid'];
+                $data['noncestr'] = $wxData['nonce_str'];
+                $data['package'] = "Sign=WXPay";
+                $data['partnerid'] = $wxData['mch_id'];
+                $data['prepayid'] = $wxData['prepay_id'];
+                $data['timestamp'] = time();
+                $data['sign'] = $this->wxMd5Sign($data);
+
+                return $data;
+            }
+            return $data = ['message' => 'false'];
+        }
+        return $data = ['message' => 'false'];
+    }
+
+    /**
      * MD5加密
      *
-     * @param $content
-     * @param $key
+     * @param $data
      * @return string
      */
-    public function wxMd5Sign($content, $key)
+    public function wxMd5Sign($data)
     {
-        try {
-            if (is_null($key)) {
-                throw new \Exception("财付通签名key不能为空！");
+        $content = '';
+        foreach ($data as $key => $value) {
+            if ($content != '') {
+                $content .= '&' . $key . '=' . $value;
+            } else {
+                $content = $key . '=' . $value;
             }
+        }
+
+        try {
             if (is_null($content)) {
                 throw new \Exception("财付通签名内容不能为空");
             }
-            $signStr = $content . "&key=" . $key;
+            $signStr = $content . "&key=" . $this->key;
+
             return strtoupper(md5($signStr));
         } catch (\Exception $e) {
             die($e->getMessage());
@@ -77,97 +153,6 @@ class WeiXinPay
         $xml .= "</xml>";
 
         return $xml;
-    }
-
-    /**
-     * 微信支付。
-     *
-     * @param $outTradeNo
-     * @param $body
-     * @param $totalFee
-     * @param $timeExpire
-     * @return array
-     */
-    public function wxPay($outTradeNo, $body, $totalFee, $timeExpire)
-    {
-        // 参数数组
-        $data = array(
-            'appid' => $this->appId,
-            'attach' => 'weixinpay',
-            'body' => $body,
-            'mch_id' => $this->mchId,
-            'nonce_str' => $this->random('15'),
-            'notify_url' => $this->notifyUrl,
-            'out_trade_no' => $outTradeNo,
-            'spbill_create_ip' => $this->get_real_ip(),
-            'time_expire' => $timeExpire,
-            'total_fee' => $totalFee,
-            'trade_type' => 'APP'
-        );
-
-        $str = '';
-        foreach ($data as $key => $value) {
-            if ($str != '') {
-                $str .= '&' . $key . '=' . $value;
-            } else {
-                $str = $key . '=' . $value;
-            }
-        }
-
-        $data['sign'] = $this->wxMd5Sign($str, $this->key);
-        $data = $this->wxArrayToXml($data);
-
-        file_put_contents('pay.file', json_encode($data));
-        $second = 30000;
-
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $second);
-        curl_setopt($ch, CURLOPT_URL, $this->url);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
-        curl_setopt($ch, CURLOPT_HEADER, FALSE);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-        curl_setopt($ch, CURLOPT_POST, TRUE);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-        $return = curl_exec($ch);
-        curl_close($ch);
-
-        //return $return;
-        return $this->wxTwoSign($return);
-    }
-
-    /**
-     *
-     *
-     * @param $wxData
-     * @return array
-     */
-    public function wxTwoSign($wxData)
-    {
-        $wxData = (array)simplexml_load_string($wxData, 'SimpleXMLElement', LIBXML_NOCDATA);
-        if (!empty($wxData)) {
-            if ($wxData['return_code'] == 'SUCCESS') {
-                $data['appid'] = $wxData['appid'];
-                $data['noncestr'] = $wxData['nonce_str'];
-                $data['package'] = "Sign=WXPay";
-                $data['partnerid'] = $wxData['mch_id'];
-                $data['prepayid'] = $wxData['prepay_id'];
-                $data['timestamp'] = time();
-
-                $str = '';
-                foreach ($data as $key => $value) {
-                    if ($str != '') {
-                        $str .= '&' . $key . '=' . $value;
-                    } else {
-                        $str = $key . '=' . $value;
-                    }
-                }
-                $data['sign'] = $this->wxMd5Sign($str, $this->key);
-                return $data;
-            }
-            return $data = ['message' => 'false'];
-        }
-        return $data = ['message' => 'false'];
     }
 
     /**
