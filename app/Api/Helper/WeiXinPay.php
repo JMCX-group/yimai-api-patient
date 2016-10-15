@@ -58,7 +58,6 @@ class WeiXinPay
         );
         $data['sign'] = $this->wxMd5Sign($data);
         $dataXml = $this->wxArrayToXml($data);
-        return ['test' => $data, 'test1' => $dataXml];
 //        file_put_contents('pay.file', json_encode($dataXml));
 
         $ch = curl_init();
@@ -70,10 +69,11 @@ class WeiXinPay
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
         curl_setopt($ch, CURLOPT_POST, TRUE);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $dataXml);
-        $return = curl_exec($ch);
+        $retData = curl_exec($ch);
         curl_close($ch);
 
-        return $this->wxRetAppData($return);
+//        return $retData;
+        return $this->wxRetAppData($retData);
     }
 
     /**
