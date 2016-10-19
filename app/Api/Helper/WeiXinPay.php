@@ -72,7 +72,6 @@ class WeiXinPay
         $retData = curl_exec($ch);
         curl_close($ch);
 
-        return $retData;
         return $this->wxRetAppData($retData);
     }
 
