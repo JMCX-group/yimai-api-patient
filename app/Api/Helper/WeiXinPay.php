@@ -8,11 +8,6 @@
 
 namespace App\Api\Helper;
 
-/**
- * 微信支付
- * Class WeiXinPay
- * @package App\Api\Helper
- */
 class WeiXinPay
 {
     public $parameters;
@@ -22,6 +17,11 @@ class WeiXinPay
     private $mchId;
     private $notifyUrl;
 
+    /**
+     * Init.
+     *
+     * WeiXinPay constructor.
+     */
     public function __construct()
     {
         $this->url = 'https://api.mch.weixin.qq.com/pay/unifiedorder';
@@ -32,7 +32,7 @@ class WeiXinPay
     }
 
     /**
-     * 微信支付。
+     * WeChat Pay
      *
      * @param $outTradeNo
      * @param $body
@@ -42,7 +42,9 @@ class WeiXinPay
      */
     public function wxPay($outTradeNo, $body, $totalFee, $timeExpire)
     {
-        // 参数数组
+        /**
+         * 参数组:
+         */
         $data = array(
             'appid' => $this->appId,
             'attach' => 'weixinpay',
@@ -51,14 +53,13 @@ class WeiXinPay
             'nonce_str' => $this->random('15'),
             'notify_url' => $this->notifyUrl,
             'out_trade_no' => $outTradeNo,
-            'spbill_create_ip' => $this->get_real_ip(),
+            'spbill_create_ip' => $this->getIp(),
             'time_expire' => $timeExpire,
             'total_fee' => $totalFee,
             'trade_type' => 'APP'
         );
         $data['sign'] = $this->wxMd5Sign($data);
         $dataXml = $this->wxArrayToXml($data);
-//        file_put_contents('pay.file', json_encode($dataXml));
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30000);
@@ -76,7 +77,7 @@ class WeiXinPay
     }
 
     /**
-     * 生成返回给前端APP的参数
+     * Ret app data.
      *
      * @param $wxData
      * @return array
@@ -88,7 +89,7 @@ class WeiXinPay
             if ($wxData['return_code'] == 'SUCCESS') {
                 $data['appid'] = $wxData['appid'];
                 $data['noncestr'] = $wxData['nonce_str'];
-                $data['package'] = "Sign=WXPay";
+                $data['package'] = 'Sign=WXPay';
                 $data['partnerid'] = $wxData['mch_id'];
                 $data['prepayid'] = $wxData['prepay_id'];
                 $data['timestamp'] = time();
@@ -102,7 +103,7 @@ class WeiXinPay
     }
 
     /**
-     * MD5加密
+     * MD5
      *
      * @param $data
      * @return string
@@ -120,9 +121,9 @@ class WeiXinPay
 
         try {
             if (is_null($content)) {
-                throw new \Exception("财付通签名内容不能为空");
+                throw new \Exception('财付通签名内容不能为空');
             }
-            $signStr = $content . "&key=" . $this->key;
+            $signStr = $content . '&key=' . $this->key;
 
             return strtoupper(md5($signStr));
         } catch (\Exception $e) {
@@ -131,7 +132,7 @@ class WeiXinPay
     }
 
     /**
-     * 数组转化为xml
+     * Array to xml.
      *
      * @param null $parameters
      * @return string
@@ -143,7 +144,7 @@ class WeiXinPay
         }
 
         if (!is_array($parameters) || empty($parameters)) {
-            die("参数不为数组无法解析");
+            die('参数不为数组无法解析');
         }
 
         $xml = "<xml>";
@@ -156,7 +157,7 @@ class WeiXinPay
     }
 
     /**
-     * 返回随机数
+     * Random.
      *
      * @param $length
      * @param int $numeric
@@ -174,33 +175,19 @@ class WeiXinPay
                 $hash .= $chars[mt_rand(0, $max)];
             }
         }
+
         return $hash;
     }
 
     /**
-     * 获取ip
+     * Get ip.
      *
      * @return mixed
      */
-    public function get_real_ip()
+    public function getIp()
     {
-        $ip = false;
-        if (!empty($_SERVER["HTTP_CLIENT_IP"])) {
-            $ip = $_SERVER["HTTP_CLIENT_IP"];
-        }
-        if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-            $ips = explode(", ", $_SERVER['HTTP_X_FORWARDED_FOR']);
-            if ($ip) {
-                array_unshift($ips, $ip);
-                $ip = FALSE;
-            }
-            for ($i = 0; $i < count($ips); $i++) {
-                if (!preg_match("^(10|172.16|192.168).", $ips[$i])) {
-                    $ip = $ips[$i];
-                    break;
-                }
-            }
-        }
-        return ($ip ? $ip : $_SERVER['REMOTE_ADDR']);
+        $ip = $_SERVER['REMOTE_ADDR'];
+
+        return ($ip == '::1') ? '127.0.0.1' : $ip;
     }
 }
