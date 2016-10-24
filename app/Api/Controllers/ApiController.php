@@ -128,6 +128,7 @@ class ApiController extends BaseController
                                 'nickname' => '用户昵称',
                                 'head_url' => '头像URL',
                                 'sex' => '性别',
+                                'birthday' => '生日',
                                 'province' => [
                                     'id' => '用户所在省份ID',
                                     'name' => '用户所在省份名称'
@@ -164,6 +165,7 @@ class ApiController extends BaseController
                                 'nickname' => '用户昵称',
                                 'head_url' => '头像URL',
                                 'sex' => '性别',
+                                'birthday' => '生日',
                                 'province' => [
                                     'id' => '用户所在省份ID',
                                     'name' => '用户所在省份名称'
