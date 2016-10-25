@@ -289,14 +289,22 @@ class AppointmentController extends BaseController
         /**
          * 查询代约医生的信息:
          */
-        $locumsDoctor = Doctor::where('doctors.id', $appointments->locums_id)
-            ->select(
-                'doctors.id', 'doctors.name', 'doctors.avatar', 'doctors.hospital_id', 'doctors.dept_id', 'doctors.title',
-                'hospitals.name AS hospital', 'dept_standards.name AS dept')
-            ->leftJoin('hospitals', 'hospitals.id', '=', 'doctors.hospital_id')
-            ->leftJoin('dept_standards', 'dept_standards.id', '=', 'doctors.dept_id')
-            ->get()
-            ->first();
+        $locumsDoctor = array();
+        if ($appointments->locums_id == '99999999') { //医脉平台代约
+            $locumsDoctor['name'] = '医脉平台';
+            $locumsDoctor = (object)$locumsDoctor;
+        } elseif ($appointments->locums_id == '0') { //没有代约医生
+            $locumsDoctor = null;
+        } else {
+            $locumsDoctor = Doctor::where('doctors.id', $appointments->locums_id)
+                ->select(
+                    'doctors.id', 'doctors.name', 'doctors.avatar', 'doctors.hospital_id', 'doctors.dept_id', 'doctors.title',
+                    'hospitals.name AS hospital', 'dept_standards.name AS dept')
+                ->leftJoin('hospitals', 'hospitals.id', '=', 'doctors.hospital_id')
+                ->leftJoin('dept_standards', 'dept_standards.id', '=', 'doctors.dept_id')
+                ->get()
+                ->first();
+        }
 
         $appointments['time_line'] = TimeLineTransformer::generateTimeLine($appointments, $doctors, $user->id, $locumsDoctor);
         $appointments['progress'] = TimeLineTransformer::generateProgressStatus($appointments->status);

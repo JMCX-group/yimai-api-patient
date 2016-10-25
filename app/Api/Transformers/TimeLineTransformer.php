@@ -495,7 +495,7 @@ class TimeLineTransformer
     public static function confirmLocumsText($locumsDoctor)
     {
         $text = \Config::get('constants.PATIENT_APPOINTMENT');
-        $text = str_replace('{代约医生}', $locumsDoctor['name'], $text);
+        $text = str_replace('{代约医生}', $locumsDoctor, $text);
 
         return $text;
     }
