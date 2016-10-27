@@ -25,13 +25,14 @@ class PayController extends BaseController
         $this->wxPay = new WeiXinPay();
     }
 
-    public function pay()
-    {
-
-    }
-
     public function notifyUrl()
     {
+        $wxData = (array)simplexml_load_string(file_get_contents('php://input'), 'SimpleXMLElement', LIBXML_NOCDATA);
+        $outTradeNo = $wxData['out_trade_no'];
+        $retCode = $wxData['return_code'];
+
+        $time = time();
+        file_put_contents($time . 'pay.file', json_encode($wxData));
 //
 //        /**
 //         * 修改状态：
