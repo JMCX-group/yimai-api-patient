@@ -41,7 +41,7 @@ $api->version('v1', function ($api) {
          * WeChat Notify Url
          */
         $api->group(['prefix' => 'pay'], function ($api) {
-            $api->get('notify_url', 'PayController@notifyUrl');
+            $api->post('notify_url', 'PayController@notifyUrl');
         });
 
         /**
