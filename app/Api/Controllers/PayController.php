@@ -9,6 +9,7 @@
 namespace App\Api\Controllers;
 
 use App\Api\Helper\WeiXinPay;
+use App\Appointment;
 
 class PayController extends BaseController
 {
@@ -33,6 +34,9 @@ class PayController extends BaseController
 
         $time = time();
         file_put_contents($time . 'pay.file', json_encode($wxData));
+
+
+        Appointment::where('id', '991610260002')->update(['remark' => json_encode($wxData)]);
 //
 //        /**
 //         * 修改状态：
