@@ -12,6 +12,7 @@ use App\Api\Helper\WeiXinPay;
 use App\Appointment;
 use App\AppointmentMsg;
 use App\Order;
+use App\User;
 
 class PayController extends BaseController
 {
@@ -61,11 +62,11 @@ class PayController extends BaseController
                  * 推送消息记录
                  */
                 $msgData = [
-                    'appointment_id' => $appointmentId,
+                    'appointment_id' => $appointment->id,
                     'locums_id' => 99999999, //代理医生ID； 99999999为平台代约
                     'patient_name' => $appointment->patient_name,
                     'doctor_id' => $appointment->doctor_id,
-                    'doctor_name' => $doctorName,
+                    'doctor_name' => User::find($appointment->doctor_id)->first()->name,
                     'status' => 'wait-2' //患者已付款
                 ];
                 AppointmentMsg::create($msgData);
