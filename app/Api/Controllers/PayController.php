@@ -38,8 +38,6 @@ class PayController extends BaseController
         $outTradeNo = $wxData['out_trade_no'];
         $retCode = $wxData['return_code'];
 
-        file_put_contents('pay.file', json_encode($wxData));
-
         if ($retCode == 'SUCCESS' || $retCode == 'TRADE_FINISHED') {
             $data['status'] = 'end';
         } else {
@@ -51,6 +49,7 @@ class PayController extends BaseController
         if (!empty($order->id)) {
             $order->status = $data['status'];
             $order->time_expire = $data['pay_time'];
+            $order->ret_date = json_encode($wxData);
             $order->save();
 
             $appointment = Appointment::find($outTradeNo);
