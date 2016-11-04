@@ -783,6 +783,27 @@ class ApiController extends BaseController
                             'token' => ''
                         ],
                         '说明' => '用phone:18812121218,password:123456登陆可以获得所有测试数据',
+                        '状态code说明' => 'wait-0: 待医生确认
+                                             wait-1: 待患者付款
+                                             wait-2: 患者已付款，待医生确认
+                                             wait-3: 医生确认接诊，待面诊
+                                             wait-4: 医生改期，待患者确认
+                                             wait-5: 患者确认改期，待面诊
+                                             close:
+                                             close-1: 待患者付款
+                                             close-2: 医生过期未接诊,约诊关闭
+                                             close-3: 医生拒绝接诊
+                                             cancel:
+                                             cancel-1: 患者取消约诊; 未付款
+                                             cancel-2: 医生取消约诊
+                                             cancel-3: 患者取消约诊; 已付款后
+                                             cancel-4: 医生改期之后,医生取消约诊;
+                                             cancel-5: 医生改期之后,患者取消约诊;
+                                             cancel-6: 医生改期之后,患者确认之后,患者取消约诊;
+                                             cancel-7: 医生改期之后,患者确认之后,医生取消约诊;
+                                             completed:
+                                             completed-1:最简正常流程
+                                             completed-2:改期后完成',
                         'response' => [
                             'data' => [
                                 'wait_confirm' => [
@@ -801,7 +822,8 @@ class ApiController extends BaseController
                                         'deposit' => '订金/押金',
                                         'price' => '约诊费用',
                                         'time' => '时间',
-                                        'status' => '状态'
+                                        'status' => '状态',
+                                        'status_code' => '状态code'
                                     ]
                                 ],
                                 'wait_meet' => '结构同上',

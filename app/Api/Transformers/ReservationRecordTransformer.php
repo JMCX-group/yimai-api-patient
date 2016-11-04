@@ -33,7 +33,8 @@ class ReservationRecordTransformer extends TransformerAbstract
             'deposit' => $appointment['deposit'],
             'price' => $appointment['price'],
             'time' => PublicTransformer::generateTreatmentTime($appointment),
-            'status' => self::generateStatus($appointment['status'])
+            'status' => self::generateStatus($appointment['status']),
+            'status_code' => $appointment['status']
         ];
     }
 
