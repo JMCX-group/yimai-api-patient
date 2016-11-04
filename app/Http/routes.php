@@ -56,7 +56,7 @@ $api->version('v1', function ($api) {
             // Doctor
             $api->group(['prefix' => 'user'], function ($api) {
                 $api->get('me', 'AuthController@getAuthenticatedUser');
-                $api->get('phone/{doctor}', 'UserController@findDoctor_byPhone');
+                $api->get('phone-code/{doctor}', 'SearchController@findDoctor_byPhoneOrCode');
                 $api->post('/', 'UserController@update');
             });
 

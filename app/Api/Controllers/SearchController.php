@@ -11,10 +11,7 @@ namespace App\Api\Controllers;
 use App\Api\Requests\SearchUserRequest;
 use App\Api\Transformers\Transformer;
 use App\Appointment;
-use App\DeptStandard;
 use App\Doctor;
-use App\DoctorContactRecord;
-use App\DoctorRelation;
 use App\User;
 
 class SearchController extends BaseController
@@ -31,7 +28,7 @@ class SearchController extends BaseController
             return $user;
         }
 
-        if(!empty($user->tag_list)){
+        if (!empty($user->tag_list)) {
             $tag = json_decode($user->tag_list, true);
             $data = User::defaultInfo($tag['tag_list']);
 
@@ -158,7 +155,7 @@ class SearchController extends BaseController
 //                $users = User::searchDoctor_sameCollege($data['field'], $user->college_id, $data['city_id'], $data['hospital_id'], $data['dept_id']);
 //                break;
 //            default:
-                $users = Doctor::searchDoctor($data['field'], $data['city_id'], $data['hospital_id'], $data['dept_id'], $data['title']);
+        $users = Doctor::searchDoctor($data['field'], $data['city_id'], $data['hospital_id'], $data['dept_id'], $data['title']);
 //                break;
 //        }
 
@@ -245,18 +242,18 @@ class SearchController extends BaseController
 //                $retDataOther = array();
 //            }
 
-            return [
-                'provinces' => $provinces,
-                'citys' => $citys,
-                'hospitals' => isset($newHospital) ? $newHospital : $hospitals,
-                'departments' => $departments,
-                'count' => (count($groupByNameArr) + count($groupByHospitalArr) + count($groupByTagArr)),
-                'users' => [
-                    'name' => $groupByNameArr,
-                    'hospital' => $groupByHospitalArr,
-                    'tag' => $groupByTagArr,
-                ]
-            ];
+        return [
+            'provinces' => $provinces,
+            'citys' => $citys,
+            'hospitals' => isset($newHospital) ? $newHospital : $hospitals,
+            'departments' => $departments,
+            'count' => (count($groupByNameArr) + count($groupByHospitalArr) + count($groupByTagArr)),
+            'users' => [
+                'name' => $groupByNameArr,
+                'hospital' => $groupByHospitalArr,
+                'tag' => $groupByTagArr,
+            ]
+        ];
 //        }
     }
 
@@ -373,7 +370,7 @@ class SearchController extends BaseController
         $doctorIdList = Appointment::where('patient_id', $user->id)->distinct()->lists('doctor_id');
         $doctors = Doctor::whereIn('id', $doctorIdList)->get();
         $data = array();
-        foreach ($doctors as $doctor){
+        foreach ($doctors as $doctor) {
             array_push($data, Transformer::searchDoctorTransform($doctor));
         }
 
@@ -381,28 +378,24 @@ class SearchController extends BaseController
     }
 
     /**
-     * 通过手机号查看其他医生的信息
+     * 通过手机号或医脉码查看其他医生的信息
      *
-     * @param $phone
+     * @param $getData
      * @return array|mixed
      */
-    public function findDoctor_byPhone($phone)
+    public function findDoctor_byPhoneOrCode($getData)
     {
-        $my = User::getAuthenticatedUser();
-        if (!isset($my->id)) {
-            return $my;
-        }
-
-        $user = User::findDoctor_byPhone($phone);
-        if (isset($user['id']) && $user['id'] != '' && $user['id'] != null) {
-            $user['dp_code'] = User::getDpCode($user['id']);
-            $user['is_friend'] = (DoctorRelation::getIsFriend($my->id, $user['id'])[0]->count) == 2 ? true : false;
-            $idList = DoctorRelation::getCommonFriendIdList($my->id, $user['id']);
-            $retData = User::select('id', 'avatar as head_url', 'auth as is_auth')->find($idList);
-            $user['common_friend_list'] = $retData;
-
-            return Transformer::searchDoctorTransform($user);
+        $doctor = Doctor::findDoctor_byPhone($getData);
+        if (isset($doctor['id']) && $doctor['id'] != '' && $doctor['id'] != null) {
+            $data =  Transformer::findDoctorTransform($doctor);
+            return response()->json(compact('data'));
         } else {
+            $doctor = Doctor::findDoctor_byCode($getData);
+            if (isset($doctor['id']) && $doctor['id'] != '' && $doctor['id'] != null) {
+                $data = Transformer::findDoctorTransform($doctor);
+                return response()->json(compact('data'));
+            }
+
             return response()->json(['success' => ''], 204); //给肠媳适配。。
         }
     }

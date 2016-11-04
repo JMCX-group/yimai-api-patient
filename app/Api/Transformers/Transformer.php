@@ -137,6 +137,43 @@ class Transformer
     }
 
     /**
+     * @param $user
+     * @return array
+     */
+    public static function findDoctorTransform($user)
+    {
+        return [
+            'id' => $user->id,
+            'name' => $user->name,
+            'head_url' => ($user->avatar == '') ? null : $user->avatar,
+            'job_title' => $user->title,
+            'province' => [
+                'id' => $user->province_id,
+                'name' => $user->province,
+            ],
+            'city' => [
+                'id' => $user->city_id,
+                'name' => $user->city,
+            ],
+            'hospital' => [
+                'id' => $user->hospital_id,
+                'name' => $user->hospital,
+            ],
+            'department' => [
+                'id' => $user->dept_id,
+                'name' => $user->dept,
+            ],
+            'college' => [
+                'id' => $user->college_id,
+                'name' => $user->college,
+            ],
+            'tags' => $user->tag_list,
+            'personal_introduction' => $user->profile,
+            'is_auth' => $user->auth
+        ];
+    }
+
+    /**
      * 删除过期时间
      *
      * @param $data

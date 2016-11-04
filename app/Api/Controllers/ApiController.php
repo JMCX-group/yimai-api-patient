@@ -212,6 +212,46 @@ class ApiController extends BaseController
                             'error' => ''
                         ]
                     ],
+                    '通过医生手机号或医脉码查询医生的信息' => [
+                        'url' => $http . '/api/user/phone-code/{doctor_id_or_code}',
+                        'method' => 'GET',
+                        'params' => [
+                            'token' => ''
+                        ],
+                        'response' => [
+                            'data' => [
+                                'id' => '用户ID',
+                                'name' => '用户姓名',
+                                'head_url' => '头像URL',
+                                'job_title' => '职称',
+                                'province' => [
+                                    'id' => '所属省份ID',
+                                    'name' => '所属省份名称'
+                                ],
+                                'city' => [
+                                    'id' => '所属城市ID',
+                                    'name' => '所属城市名称'
+                                ],
+                                'hospital' => [
+                                    'id' => '用户所在医院ID',
+                                    'name' => '用户所在医院名称'
+                                ],
+                                'department' => [
+                                    'id' => '用户所在科室ID',
+                                    'name' => '用户所在科室名称'
+                                ],
+                                'college' => [
+                                    'id' => '用户所在院校ID',
+                                    'name' => '用户所在院校名称'
+                                ],
+                                'tags' => '医生特长列表',
+                                'personal_introduction' => '个人简介',
+                                'is_auth' => '是否认证,1为认证,0为未认证'
+                            ],
+                            'message' => '',
+                            'error' => ''
+                        ]
+                    ],
                     '修改个人信息/修改密码/修改接诊收费信息/修改隐私设置' => [
                         'url' => $http . '/api/user',
                         'method' => 'POST',
