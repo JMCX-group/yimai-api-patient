@@ -895,7 +895,8 @@ class ApiController extends BaseController
                                             ],
                                             'type' => '决定使用什么icon; begin | wait'
                                         ]]
-                                ]
+                                ],
+                                'status_code' => '状态CODE'
                             ],
                             'message' => '',
                             'error' => ''
