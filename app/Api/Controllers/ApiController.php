@@ -970,6 +970,79 @@ class ApiController extends BaseController
                         ]
                     ]
                 ],
+
+                '患者约诊信息' => [
+                    '全部信息' => [
+                        'url' => $http . '/api/msg/all',
+                        'method' => 'GET',
+                        'params' => [
+                            'token' => ''
+                        ],
+                        '说明' => '',
+                        'response' => [
+                            'data' => [
+                                'id' => '消息ID',
+                                'appointment_id' => '约诊号; 用来跳转到对应的【我的接诊】记录',
+                                'text' => '显示文案',
+                                'type' => '是否重要,0为不重要,1为重要; 重要的内容必须点开告知服务器变为已读; 不重要内容点开列表就全部变已读',
+                                'read' => '是否已读,0为未读,1为已读; 该状态后期会将type为0的,获取时直接全部置为已读',
+                                'time' => '时间'
+                            ],
+                            'message' => '',
+                            'error' => ''
+                        ]
+                    ],
+                    '未读信息' => [
+                        'url' => $http . '/api/msg/new',
+                        'method' => 'GET',
+                        'params' => [
+                            'token' => ''
+                        ],
+                        '说明' => '',
+                        'response' => [
+                            'data' => [
+                                'id' => '消息ID',
+                                'appointment_id' => '约诊号; 用来跳转到对应的【我的接诊】记录',
+                                'text' => '显示文案',
+                                'type' => '是否重要,0为不重要,1为重要; 重要的内容必须点开告知服务器变为已读; 不重要内容点开列表就全部变已读',
+                                'read' => '是否已读,0为未读,1为已读; 该状态后期会将type为0的,获取时直接全部置为已读',
+                                'time' => '时间'
+                            ],
+                            'message' => '',
+                            'error' => ''
+                        ]
+                    ],
+                    '发送已读状态更新' => [
+                        'url' => $http . '/api/msg/read',
+                        'method' => 'POST',
+                        'params' => [
+                            'token' => ''
+                        ],
+                        'form-data' => [
+                            'id' => '消息ID'
+                        ],
+                        '说明' => 'HTTP状态204',
+                        'response' => [
+                            'success' => '',
+                            'message' => '',
+                            'error' => ''
+                        ]
+                    ],
+//                    '全部已读' => [
+//                        'url' => $http . '/api/msg/admissions/all-read',
+//                        'method' => 'GET',
+//                        'params' => [
+//                            'token' => ''
+//                        ],
+//                        '说明' => 'HTTP状态204',
+//                        'response' => [
+//                            'success' => '',
+//                            'message' => '',
+//                            'error' => ''
+//                        ]
+//                    ]
+                ],
+
             ]
         ];
 
