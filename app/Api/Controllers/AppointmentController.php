@@ -400,7 +400,9 @@ class AppointmentController extends BaseController
                     'total_fee' => ($appointment->price) * 100,
                     'body' => '医脉约诊' . $doctorName,
                     'detail' => '',
-                    'status' => 'start' //start:开始; end:结束
+                    'type' => '收入',
+                    'status' => 'start', //start:开始; end:结束
+                    'settlement_status' => '待结算'
                 ];
                 $order = Order::create($newOrder);
             }
