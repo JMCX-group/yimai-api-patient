@@ -944,6 +944,44 @@ class ApiController extends BaseController
                     ]
                 ],
 
+                '钱包' => [
+                    '我的钱包' => [
+                        'url' => $http . '/api/wallet/info',
+                        'method' => 'GET',
+                        'params' => [
+                            'token' => ''
+                        ],
+                        'response' => [
+                            'data' => [
+                                'wallet' => [
+                                    'total' => '总额',
+                                    'freeze' => '可提现'
+                                ],
+                                'appointment_list' => [
+                                    'id' => '约诊ID',
+                                    'doctor_id' => '医生ID',
+                                    'doctor_name' => '医生姓名',
+                                    'doctor_head_url' => '医生头像',
+                                    'doctor_job_title' => '医生头衔',
+                                    'doctor_is_auth' => '医生是否认证',
+                                    'patient_id' => '患者ID',
+                                    'patient_name' => '患者姓名',
+                                    'patient_sex' => '患者性别',
+                                    'patient_age' => '患者姓名',
+                                    'request_mode' => '请求约诊的模式:我的医生、找专家、医生代约; 如果为null,则是由医生发起的,不用显示那个标签',
+                                    'deposit' => '订金/押金',
+                                    'price' => '约诊费用',
+                                    'time' => '时间',
+                                    'status' => '状态',
+                                    'status_code' => '状态code'
+                                ]
+                            ],
+                            'message' => '',
+                            'error' => ''
+                        ]
+                    ],
+                ],
+
                 '广播信息' => [
                     '所有广播' => [
                         'url' => $http . '/api/radio',
