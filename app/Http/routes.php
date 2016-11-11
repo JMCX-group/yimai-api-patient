@@ -164,6 +164,14 @@ $api->version('v1', function ($api) {
 //            $api->group(['prefix' => 'pay'], function ($api) {
 //                $api->get('/', 'PayController@pay');
 //            });
+
+            //Wallet
+            $api->group(['prefix' => 'wallet'], function ($api) {
+                $api->get('info', 'WalletController@info');
+//                $api->get('record', 'WalletController@recordGet');
+//                $api->post('record', 'WalletController@record');
+//                $api->get('detail/{id}', 'WalletController@detail');
+            });
         });
     });
 });
