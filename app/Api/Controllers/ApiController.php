@@ -964,6 +964,8 @@ class ApiController extends BaseController
                                     'doctor_head_url' => '医生头像',
                                     'doctor_job_title' => '医生头衔',
                                     'doctor_is_auth' => '医生是否认证',
+                                    'doctor_dept' => '医生所在部门/科室',
+                                    'doctor_hospital' => '医生所在医院',
                                     'patient_id' => '患者ID',
                                     'patient_name' => '患者姓名',
                                     'patient_sex' => '患者性别',
@@ -972,6 +974,7 @@ class ApiController extends BaseController
                                     'deposit' => '订金/押金',
                                     'price' => '约诊费用',
                                     'time' => '时间',
+                                    'deadline' => '最后缴纳时间',
                                     'status' => '状态',
                                     'status_code' => '状态code'
                                 ]

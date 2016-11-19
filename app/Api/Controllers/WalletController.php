@@ -8,7 +8,6 @@
 
 namespace App\Api\Controllers;
 
-use App\Api\Transformers\ReservationRecordTransformer;
 use App\Api\Transformers\TransactionRecordTransformer;
 use App\Api\Transformers\WalletTransformer;
 use App\Appointment;
@@ -47,13 +46,15 @@ class WalletController extends BaseController
         //患者未支付的列表：
         $appointments = Appointment::where('appointments.patient_id', $user->id)
             ->leftJoin('doctors', 'doctors.id', '=', 'appointments.doctor_id')
-            ->select('appointments.*', 'doctors.name', 'doctors.avatar', 'doctors.title', 'doctors.auth')
-            ->where('status', 'wait-1')
+            ->leftJoin('dept_standards', 'dept_standards.id', '=', 'doctors.dept_id')
+            ->leftJoin('hospitals', 'hospitals.id', '=', 'doctors.hospital_id')
+            ->select('appointments.*', 'doctors.name', 'doctors.avatar', 'doctors.title', 'doctors.auth', 'dept_standards.name AS dept_name', 'hospitals.name AS hospital_name')
+            ->where('appointments.status', 'wait-1')
             ->orderBy('updated_at', 'desc')
             ->get();
         $retAppointments = array();
         foreach ($appointments as $appointment){
-            array_push($retAppointments, ReservationRecordTransformer::appointmentTransform($appointment));
+            array_push($retAppointments, WalletTransformer::appointmentTransform($appointment));
         }
 
         $data = [
