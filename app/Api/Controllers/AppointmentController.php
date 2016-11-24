@@ -96,7 +96,7 @@ class AppointmentController extends BaseController
         $doctor = Doctor::find($request['doctor']);
         $data = [
             'id' => $frontId . $nowId,
-            'locums_id' => 99999999, //代理医生ID,99999999为平台代约,0为没有代约医生
+            'locums_id' => 1, //代理医生ID,1为平台代约,0为没有代约医生
             'patient_id' => $user->id,
             'patient_name' => $request['name'],
             'patient_phone' => $request['phone'],
@@ -118,7 +118,7 @@ class AppointmentController extends BaseController
          */
         $msgData = [
             'appointment_id' => $frontId . $nowId,
-            'locums_id' => 99999999, //代理医生ID； 99999999为平台代约
+            'locums_id' => 1, //代理医生ID； 1为平台代约
             'patient_name' => $data['patient_name'],
             'doctor_id' => $data['doctor_id'],
             'doctor_name' => $doctor->name,
@@ -168,7 +168,7 @@ class AppointmentController extends BaseController
          */
         $data = [
             'id' => $frontId . $nowId,
-            'locums_id' => isset($request['demand_hospital']) ? $request['locums_doctor'] : 0, //代理医生ID,99999999为平台代约,0为没有代约医生
+            'locums_id' => isset($request['demand_hospital']) ? $request['locums_doctor'] : 0, //代理医生ID,1为平台代约,0为没有代约医生
             'patient_id' => $user->id,
             'patient_name' => $request['name'],
             'patient_phone' => $request['phone'],
@@ -290,7 +290,7 @@ class AppointmentController extends BaseController
          * 查询代约医生的信息:
          */
         $locumsDoctor = array();
-        if ($appointments->locums_id == '99999999') { //医脉平台代约
+        if ($appointments->locums_id == '1') { //医脉平台代约
             $locumsDoctor['name'] = '医脉平台';
             $locumsDoctor = (object)$locumsDoctor;
         } elseif ($appointments->locums_id == '0') { //没有代约医生

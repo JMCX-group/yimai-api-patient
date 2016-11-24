@@ -62,7 +62,7 @@ class PayController extends BaseController
                  */
                 $msgData = [
                     'appointment_id' => $appointment->id,
-                    'locums_id' => 99999999, //代理医生ID； 99999999为平台代约
+                    'locums_id' => 1, //代理医生ID； 1为平台代约
                     'patient_name' => $appointment->patient_name,
                     'doctor_id' => $appointment->doctor_id,
                     'doctor_name' => User::find($appointment->doctor_id)->first()->name,
