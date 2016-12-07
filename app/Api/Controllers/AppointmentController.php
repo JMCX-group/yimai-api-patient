@@ -325,6 +325,7 @@ class AppointmentController extends BaseController
         }
 
         $appointments = Appointment::where('appointments.patient_id', $user->id)
+            ->orWhere('appointments.patient_phone', $user->phone)
             ->leftJoin('doctors', 'doctors.id', '=', 'appointments.doctor_id')
             ->select('appointments.*', 'doctors.name', 'doctors.avatar', 'doctors.title', 'doctors.auth')
             ->orderBy('updated_at', 'desc')
