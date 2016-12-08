@@ -324,8 +324,24 @@ class AppointmentController extends BaseController
             return $user;
         }
 
+        /**
+         * 更新订单没有id的：
+         */
+        Appointment::where('patient_phone', $user->phone)->update(['patient_id' => $user->id]);
+
+        /**
+         * 处理一些不可描述的订单：
+         */
+        $needProcessAppointments = Appointment::getAllWait1AppointmentIdList($user->id, $user->phone);
+        if (!$needProcessAppointments->isEmpty()) {
+            $payCtrl = new PayController();
+            $payCtrl->batProcessing($needProcessAppointments);
+        }
+
+        /**
+         * 获取该登录用户所有信息：
+         */
         $appointments = Appointment::where('appointments.patient_id', $user->id)
-            ->orWhere('appointments.patient_phone', $user->phone)
             ->leftJoin('doctors', 'doctors.id', '=', 'appointments.doctor_id')
             ->select('appointments.*', 'doctors.name', 'doctors.avatar', 'doctors.title', 'doctors.auth')
             ->orderBy('updated_at', 'desc')

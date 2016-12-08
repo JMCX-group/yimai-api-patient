@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use DB;
 
 class Appointment extends Model
 {
@@ -52,4 +53,18 @@ class Appointment extends Model
         'confirm_rescheduled_time',
         'status'
     ];
+
+    /**
+     * 获取全部待缴费状态的id list。
+     *
+     * @param $id
+     * @param $phone
+     * @return mixed
+     */
+    public static function getAllWait1AppointmentIdList($id, $phone)
+    {
+        return DB::select(
+            "select `id` from `appointments` where ((`patient_id`='$id' OR `patient_phone`='$phone') AND `status`='wait-1')"
+        );
+    }
 }

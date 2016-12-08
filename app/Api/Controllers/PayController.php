@@ -14,7 +14,6 @@ use App\AppointmentMsg;
 use App\Doctor;
 use Illuminate\Http\Request;
 use App\Order;
-use App\User;
 
 class PayController extends BaseController
 {
@@ -58,10 +57,13 @@ class PayController extends BaseController
     public function notifyUrl()
     {
         $wxData = (array)simplexml_load_string(file_get_contents('php://input'), 'SimpleXMLElement', LIBXML_NOCDATA);
-        $this->writeFile(json_encode($wxData));
-        $this->paymentProcessing($wxData);
-
-        echo 'SUCCESS';
+        $this->writeFile(json_encode($wxData)); //测试期间
+        if ($wxData['return_code'] == 'SUCCESS' && $wxData['result_code'] == 'SUCCESS') {
+            $this->paymentProcessing($wxData);
+            echo 'SUCCESS';
+        } else {
+            echo 'FAIL';
+        }
     }
 
     /**
@@ -71,10 +73,8 @@ class PayController extends BaseController
     public function wxPayOrderQuery(Request $request)
     {
         $wxData = $this->wxPay->wxOrderQuery($request['id']);
-        $ret = $this->paymentProcessing($wxData);
-
-        if ($ret) {
-            $data = ['result' => 'success'];
+        if ($wxData['return_code'] == 'SUCCESS' && $wxData['trade_state'] == 'SUCCESS') {
+            $data = $this->paymentProcessing($wxData);
         } else {
             $data = ['result' => 'fail'];
         }
@@ -83,25 +83,33 @@ class PayController extends BaseController
     }
 
     /**
-     * 查询参数后的处理
+     * 批量处理一些订单
+     *
+     * @param $idArr
+     */
+    public function batProcessing($idArr)
+    {
+        foreach ($idArr as $item) {
+            $wxData = $this->wxPay->wxOrderQuery($item->id);
+            if ($wxData['return_code'] == 'SUCCESS' && $wxData['result_code'] == 'SUCCESS' && $wxData['trade_state'] == 'SUCCESS') {
+                $this->paymentProcessing($wxData);
+            }
+        }
+    }
+
+    /**
+     * 统一处理
      *
      * @param $wxData
-     * @return bool
+     * @return array
      */
     public function paymentProcessing($wxData)
     {
         $outTradeNo = $wxData['out_trade_no'];
-        $retCode = $wxData['return_code'];
-
-        if ($retCode == 'SUCCESS' || $retCode == 'TRADE_FINISHED') {
-            $status = 'end';
-        } else {
-            $status = 'error';
-        }
 
         $order = Order::where('out_trade_no', $outTradeNo)->first();
         if (!empty($order->id)) {
-            $order->status = $status;
+            $order->status = 'end';
             $order->time_expire = $wxData['time_end'];
             $order->ret_data = json_encode($wxData);
             $order->save();
@@ -109,6 +117,7 @@ class PayController extends BaseController
             $appointment = Appointment::find($outTradeNo);
             if ($appointment->status == 'wait-1') {
                 $appointment->status = 'wait-2';
+                $appointment->transaction_id = $wxData['transaction_id'];
                 $appointment->save();
                 /**
                  * 推送消息记录
@@ -124,7 +133,6 @@ class PayController extends BaseController
                 AppointmentMsg::create($msgData);
             }
 
-
             /**
              * wait:
              * wait-0: 待代约医生确认
@@ -135,9 +143,11 @@ class PayController extends BaseController
              * wait-5: 患者确认改期，待面诊
              */
 
-            return true;
+            $data = ['result' => 'success'];
         } else {
-            return false;
+            $data = ['result' => 'fail', 'debug' => '木有订单信息啊'];
         }
+
+        return $data;
     }
 }
