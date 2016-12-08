@@ -333,7 +333,7 @@ class AppointmentController extends BaseController
          * 处理一些不可描述的订单：
          */
         $needProcessAppointments = Appointment::getAllWait1AppointmentIdList($user->id, $user->phone);
-        if (!$needProcessAppointments->isEmpty()) {
+        if ($needProcessAppointments != '' && $needProcessAppointments != null) {
             $payCtrl = new PayController();
             $payCtrl->batProcessing($needProcessAppointments);
         }
@@ -390,6 +390,9 @@ class AppointmentController extends BaseController
         if (!($appointment->price == 0 || $appointment->price == null || $appointment->price == '')) {
             $retData = $this->wxPay($appointment, $doctorName);
             if ($retData != false) {
+                $appointment->is_pay = '1'; //已经支付记录
+                $appointment->save();
+
                 $data = $retData;
                 return response()->json(compact('data'), 200);
             }

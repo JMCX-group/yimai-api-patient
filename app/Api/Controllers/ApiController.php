@@ -842,7 +842,8 @@ class ApiController extends BaseController
                                         'price' => '约诊费用',
                                         'time' => '时间',
                                         'status' => '状态',
-                                        'status_code' => '状态code'
+                                        'status_code' => '状态code',
+                                        'is_pay' => '是否支付；0为还未，1为已经支付；有可能wait-1也有已经支付的'
                                     ]
                                 ],
                                 'wait_meet' => '结构同上',
@@ -889,7 +890,7 @@ class ApiController extends BaseController
                                 'history' => '病情描述',
                                 'img_url' => '病历图片url序列,url中把{_thumb}替换掉就是未压缩图片,例如:/uploads/case-history/2016/05/011605130001/1463539005_thumb.jpg,原图就是:/uploads/case-history/2016/05/011605130001/1463539005.jpg',
                             ],
-                            'detail_info' => [
+                            'other_info' => [
                                 'progress' => '顶部进度',
                                 'time_line' => [
                                     '说明' => 'time_line数组及其内部other数组下可能有1条或多条信息,需要遍历,0和1的序号不用在意,foreach就好',
@@ -915,7 +916,8 @@ class ApiController extends BaseController
                                             'type' => '决定使用什么icon; begin | wait'
                                         ]]
                                 ],
-                                'status_code' => '状态CODE'
+                                'status_code' => '状态CODE',
+                                'is_pay' => '是否支付；0为还未，1为已经支付；有可能wait-1也有已经支付的'
                             ],
                             'message' => '',
                             'error' => ''
