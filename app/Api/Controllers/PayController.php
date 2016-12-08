@@ -36,7 +36,7 @@ class PayController extends BaseController
      */
     public function writeFile($content)
     {
-        $fileName = "/test-pay/pay.file";
+        $fileName = "test-pay/pay.file";
 
         //以读写方式打写指定文件，如果文件不存则创建
         if (($TxtRes = fopen($fileName, "w+")) === FALSE) {
@@ -56,7 +56,7 @@ class PayController extends BaseController
     public function notifyUrl()
     {
         $wxData = (array)simplexml_load_string(file_get_contents('php://input'), 'SimpleXMLElement', LIBXML_NOCDATA);
-        $this->writeFile($wxData);
+        $this->writeFile(json_encode($wxData));
         $outTradeNo = $wxData['out_trade_no'];
         $retCode = $wxData['return_code'];
 
