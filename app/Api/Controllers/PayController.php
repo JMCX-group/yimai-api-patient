@@ -30,11 +30,33 @@ class PayController extends BaseController
     }
 
     /**
+     * Debug
+     *
+     * @param $content
+     */
+    public function writeFile($content)
+    {
+        $fileName = "/test-pay/pay.file";
+
+        //以读写方式打写指定文件，如果文件不存则创建
+        if (($TxtRes = fopen($fileName, "w+")) === FALSE) {
+            exit();
+        }
+
+        if (!fwrite($TxtRes, $content)) { //将信息写入文件
+            fclose($TxtRes);
+            exit();
+        }
+        fclose($TxtRes); //关闭指针
+    }
+
+    /**
      * 微信支付回調函數
      */
     public function notifyUrl()
     {
         $wxData = (array)simplexml_load_string(file_get_contents('php://input'), 'SimpleXMLElement', LIBXML_NOCDATA);
+        $this->writeFile($wxData);
         $outTradeNo = $wxData['out_trade_no'];
         $retCode = $wxData['return_code'];
 
