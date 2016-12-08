@@ -398,7 +398,8 @@ class AppointmentController extends BaseController
                     'doctor_id' => $appointment->doctor_id,
                     'patient_id' => $appointment->patient_id,
                     'out_trade_no' => $appointment->id,
-                    'total_fee' => ($appointment->price) * 100,
+//                    'total_fee' => ($appointment->price) * 100,
+                    'total_fee' => 1, //临时测试，只支付一分
                     'body' => '约诊',
                     'detail' => '',
                     'type' => '收入',
