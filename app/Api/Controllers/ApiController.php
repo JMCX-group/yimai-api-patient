@@ -102,6 +102,25 @@ class ApiController extends BaseController
                         ]
                     ]
                 ],
+
+                '订单' =>[
+                    '查询订单' => [
+                        'url' => $http . '/api/pay/notify_url',
+                        'method' => 'POST',
+                        '说明' => '因为微信不稳定，需要手动查询接口',
+                        'form-data' => [
+                            'id' => '约诊ID'
+                        ],
+                        'response' => [
+                            'data' => [
+                                'result' => 'success或fail；代表支付成功或失败，成功的话，此时会刷新订单状态'
+                            ],
+                            'message' => '',
+                            'error' => ''
+                        ]
+                    ]
+                ],
+
                 '静态资源' => [
                     '说明' => '和图片一样是相对链接，前面拼域名或IP即可访问； 例如：http://101.201.40.220/about/contact-us ，可以访问关于我们',
                     '关于我们' => $http . '/about/contact-us',

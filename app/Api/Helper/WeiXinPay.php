@@ -29,6 +29,8 @@ class WeiXinPay
         $this->appId = 'wx2097e8b109f9dc35';
         $this->mchId = '1273535201';
         $this->notifyUrl = 'http://139.129.167.9/api/pay/notify_url';
+
+        $this->orderQueryUrl = 'https://api.mch.weixin.qq.com/pay/orderquery';
     }
 
     /**
@@ -74,6 +76,39 @@ class WeiXinPay
         curl_close($ch);
 
         return $this->wxRetAppData($retData);
+    }
+
+    /**
+     * @param $outTradeNo
+     * @return array
+     */
+    public function wxOrderQuery($outTradeNo)
+    {
+        /**
+         * 参数组:
+         */
+        $data = array(
+            'appid' => $this->appId,
+            'mch_id' => $this->mchId,
+            'nonce_str' => $this->random('32'),
+            'out_trade_no' => $outTradeNo
+        );
+        $data['sign'] = $this->wxMd5Sign($data);
+        $dataXml = $this->wxArrayToXml($data);
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30000);
+        curl_setopt($ch, CURLOPT_URL, $this->orderQueryUrl);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
+        curl_setopt($ch, CURLOPT_HEADER, FALSE);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+        curl_setopt($ch, CURLOPT_POST, TRUE);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $dataXml);
+        $retData = curl_exec($ch);
+        curl_close($ch);
+
+        return $wxData = (array)simplexml_load_string($retData, 'SimpleXMLElement', LIBXML_NOCDATA);
     }
 
     /**

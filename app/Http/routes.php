@@ -42,6 +42,7 @@ $api->version('v1', function ($api) {
          */
         $api->group(['prefix' => 'pay'], function ($api) {
             $api->post('notify_url', 'PayController@notifyUrl');
+            $api->post('order_query', 'PayController@wxPayOrderQuery');
         });
 
         /**

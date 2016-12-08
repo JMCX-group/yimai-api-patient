@@ -11,6 +11,8 @@ namespace App\Api\Controllers;
 use App\Api\Helper\WeiXinPay;
 use App\Appointment;
 use App\AppointmentMsg;
+use App\Doctor;
+use Illuminate\Http\Request;
 use App\Order;
 use App\User;
 
@@ -57,28 +59,57 @@ class PayController extends BaseController
     {
         $wxData = (array)simplexml_load_string(file_get_contents('php://input'), 'SimpleXMLElement', LIBXML_NOCDATA);
         $this->writeFile(json_encode($wxData));
+        $this->paymentProcessing($wxData);
+
+        echo 'SUCCESS';
+    }
+
+    /**
+     * @param Request $request
+     * @return array
+     */
+    public function wxPayOrderQuery(Request $request)
+    {
+        $wxData = $this->wxPay->wxOrderQuery($request['id']);
+        $ret = $this->paymentProcessing($wxData);
+
+        if ($ret) {
+            $data = ['result' => 'success'];
+        } else {
+            $data = ['result' => 'fail'];
+        }
+
+        return response()->json(compact('data'));
+    }
+
+    /**
+     * 查询参数后的处理
+     *
+     * @param $wxData
+     * @return bool
+     */
+    public function paymentProcessing($wxData)
+    {
         $outTradeNo = $wxData['out_trade_no'];
         $retCode = $wxData['return_code'];
 
         if ($retCode == 'SUCCESS' || $retCode == 'TRADE_FINISHED') {
-            $data['status'] = 'end';
+            $status = 'end';
         } else {
-            $data['status'] = 'error';
+            $status = 'error';
         }
 
-        $data['pay_time'] = time();
         $order = Order::where('out_trade_no', $outTradeNo)->first();
         if (!empty($order->id)) {
-            $order->status = $data['status'];
-            $order->time_expire = $data['pay_time'];
-            $order->ret_date = json_encode($wxData);
+            $order->status = $status;
+            $order->time_expire = $wxData['time_end'];
+            $order->ret_data = json_encode($wxData);
             $order->save();
 
             $appointment = Appointment::find($outTradeNo);
             if ($appointment->status == 'wait-1') {
                 $appointment->status = 'wait-2';
                 $appointment->save();
-
                 /**
                  * 推送消息记录
                  */
@@ -87,7 +118,7 @@ class PayController extends BaseController
                     'locums_id' => 1, //代理医生ID； 1为平台代约
                     'patient_name' => $appointment->patient_name,
                     'doctor_id' => $appointment->doctor_id,
-                    'doctor_name' => User::find($appointment->doctor_id)->first()->name,
+                    'doctor_name' => Doctor::find($appointment->doctor_id)->first()->name,
                     'status' => 'wait-2' //患者已付款
                 ];
                 AppointmentMsg::create($msgData);
@@ -103,8 +134,10 @@ class PayController extends BaseController
              * wait-4: 医生改期，待患者确认
              * wait-5: 患者确认改期，待面诊
              */
-        }
 
-        echo 'SUCCESS';
+            return true;
+        } else {
+            return false;
+        }
     }
 }
