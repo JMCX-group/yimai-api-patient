@@ -330,6 +330,15 @@ class AppointmentController extends BaseController
         Appointment::where('patient_phone', $user->phone)->update(['patient_id' => $user->id]);
 
         /**
+         * 更新过期未支付的：
+         */
+        Appointment::where('patient_id', $user->id)
+            ->where('is_pay', '0')
+            ->where('status', 'wait-1')
+            ->where('updated_at', '>', date("Y-m-d H:i:s", time() - 12 * 3600))
+            ->update(['status' => 'close-1']); //close-1: 待患者付款，关闭
+
+        /**
          * 处理一些不可描述的订单：
          */
         $needProcessAppointments = Appointment::getAllWait1AppointmentIdList($user->id, $user->phone);
