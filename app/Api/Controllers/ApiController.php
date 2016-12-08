@@ -105,7 +105,7 @@ class ApiController extends BaseController
 
                 '订单' =>[
                     '查询订单' => [
-                        'url' => $http . '/api/pay/notify_url',
+                        'url' => $http . '/api/pay/order_query',
                         'method' => 'POST',
                         '说明' => '因为微信不稳定，需要手动查询接口',
                         'form-data' => [
