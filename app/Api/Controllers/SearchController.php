@@ -33,7 +33,7 @@ class SearchController extends BaseController
             $data = User::defaultInfo($tag['tag_list']);
 
             foreach ($data as &$item) {
-                $item = Transformer::searchDoctorTransform($item);
+                $item = Transformer::searchDoctorTransform($item, $user->id);
             }
 
             return response()->json(compact('data'));
@@ -184,26 +184,26 @@ class SearchController extends BaseController
             $this->groupByDepartments($userItem, $departments, $departmentIdList);
 
             if (strstr($userItem->name, $data['field'])) {
-                array_push($groupByNameArr, Transformer::searchDoctorTransform($userItem));
+                array_push($groupByNameArr, Transformer::searchDoctorTransform($userItem, $user->id));
                 continue;
             }
 
             if (strstr($userItem->hospital, $data['field'])) {
-                array_push($groupByHospitalArr, Transformer::searchDoctorTransform($userItem));
+                array_push($groupByHospitalArr, Transformer::searchDoctorTransform($userItem, $user->id));
                 continue;
             }
 
             if (strstr($userItem->dept, $data['field'])) {
-                array_push($groupByDeptArr, Transformer::searchDoctorTransform($userItem));
+                array_push($groupByDeptArr, Transformer::searchDoctorTransform($userItem, $user->id));
                 continue;
             }
 
             if (strstr($userItem->tag_list, $data['field'])) {
-                array_push($groupByTagArr, Transformer::searchDoctorTransform($userItem));
+                array_push($groupByTagArr, Transformer::searchDoctorTransform($userItem, $user->id));
                 continue;
             }
 
-            array_push($otherArr, Transformer::searchDoctorTransform($userItem));
+            array_push($otherArr, Transformer::searchDoctorTransform($userItem, $user->id));
         }
 
         /**
@@ -356,9 +356,14 @@ class SearchController extends BaseController
      */
     public function findDoctor($id)
     {
-        $user = Doctor::findDoctor($id);
+        $user = User::getAuthenticatedUser();
+        if (!isset($user->id)) {
+            return $user;
+        }
 
-        $data = Transformer::searchDoctorTransform($user);
+        $doctor = Doctor::findDoctor($id);
+
+        $data = Transformer::searchDoctorTransform($doctor, $user->id);
 
         return response()->json(compact('data'));
     }
@@ -375,11 +380,11 @@ class SearchController extends BaseController
             return $user;
         }
 
-        $doctorIdList = Appointment::where('patient_id', $user->id)->distinct()->lists('doctor_id');
+        $doctorIdList = Appointment::getMyDoctors($user->id);
         $doctors = Doctor::whereIn('id', $doctorIdList)->get();
         $data = array();
         foreach ($doctors as $doctor) {
-            array_push($data, Transformer::searchDoctorTransform($doctor));
+            array_push($data, Transformer::searchDoctorTransform($doctor, $user->id));
         }
 
         return response()->json(compact('data'));

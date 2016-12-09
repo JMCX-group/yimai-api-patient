@@ -352,31 +352,31 @@ class UserController extends BaseController
             $this->groupByDepartments($userItem, $departments, $departmentIdList);
 
             if (empty($contactRecordsIdList) && in_array($userItem->id, $contactRecordsIdList)) {
-                array_push($recentContactsArr, Transformer::searchDoctorTransform($userItem, 1));
+                array_push($recentContactsArr, Transformer::searchDoctorTransform($userItem, $user->id));
                 continue;
             }
 
             if (in_array($userItem->id, $friendsIdList)) {
-                array_push($friendArr, Transformer::searchDoctorTransform($userItem, 1));
+                array_push($friendArr, Transformer::searchDoctorTransform($userItem, $user->id));
                 continue;
             }
 
             if (in_array($userItem->id, $friendsFriendsIdList)) {
-                array_push($friendsFriendsArr, Transformer::searchDoctorTransform($userItem, 2));
+                array_push($friendsFriendsArr, Transformer::searchDoctorTransform($userItem, $user->id));
                 continue;
             }
 
             if ($user->city_id == $userItem->city_id) {
-                array_push($sameCityArr, Transformer::searchDoctorTransform($userItem));
+                array_push($sameCityArr, Transformer::searchDoctorTransform($userItem, $user->id));
                 continue;
             }
 
             if (in_array($userItem->city, array('北京', '上海', '广州'))) {
-                array_push($b_s_g_threeA, Transformer::searchDoctorTransform($userItem));
+                array_push($b_s_g_threeA, Transformer::searchDoctorTransform($userItem, $user->id));
                 continue;
             }
 
-            array_push($otherArr, Transformer::searchDoctorTransform($userItem));
+            array_push($otherArr, Transformer::searchDoctorTransform($userItem, $user->id));
         }
 
         /**

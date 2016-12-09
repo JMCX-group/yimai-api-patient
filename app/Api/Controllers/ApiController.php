@@ -103,7 +103,7 @@ class ApiController extends BaseController
                     ]
                 ],
 
-                '订单' =>[
+                '订单' => [
                     '查询订单' => [
                         'url' => $http . '/api/pay/order_query',
                         'method' => 'POST',
@@ -157,6 +157,55 @@ class ApiController extends BaseController
                                     'name' => '用户所在城市名称'
                                 ],
                                 'tags' => '标签； 格式（JSON Encode ）：{"tag_list":"1,2,3,4","illness_list":"3,4,5,6"}'
+                            ],
+                            'my_doctors' => [
+                                'id' => '用户ID',
+                                'name' => '用户姓名',
+                                'head_url' => '头像URL',
+                                'job_title' => '职称',
+                                'province' => [
+                                    'id' => '所属省份ID',
+                                    'name' => '所属省份名称'
+                                ],
+                                'city' => [
+                                    'id' => '所属城市ID',
+                                    'name' => '所属城市名称'
+                                ],
+                                'hospital' => [
+                                    'id' => '用户所在医院ID',
+                                    'name' => '用户所在医院名称'
+                                ],
+                                'department' => [
+                                    'id' => '用户所在科室ID',
+                                    'name' => '用户所在科室名称'
+                                ],
+                                'college' => [
+                                    'id' => '用户所在院校ID',
+                                    'name' => '用户所在院校名称'
+                                ],
+                                'tags' => '医生特长列表',
+                                'personal_introduction' => '个人简介',
+                                'is_auth' => '是否认证,1为认证,0为未认证',
+                                'fee_switch' => '1:开, 0:关',
+                                'fee' => '接诊收费金额',
+                                'fee_face_to_face' => '当面咨询收费金额',
+                                'admission_set_fixed' => [
+                                    '说明' => '接诊时间设置,固定排班; 接收json,直接存库; 需要存7组数据,week分别是:sun,mon,tue,wed,thu,fri,sat',
+                                    '格式案例' => [
+                                        'week' => 'sun',
+                                        'am' => 'true',
+                                        'pm' => 'false',
+                                    ]
+                                ],
+                                'admission_set_flexible' => [
+                                    '说明' => '接诊时间设置,灵活排班; 接收json,读取时会自动过滤过期时间; 会有多组数据,格式一致',
+                                    '格式案例' => [
+                                        'date' => '2016-06-23',
+                                        'am' => 'true',
+                                        'pm' => 'false',
+                                    ]
+                                ],
+                                'is_my_doctor' => 'true：是； false：否； 数据类型：字符串'
                             ],
                             'sys_info' => [
                                 'radio_unread_count' => '未读的广播数量',
@@ -370,7 +419,8 @@ class ApiController extends BaseController
                                             'am' => 'true',
                                             'pm' => 'false',
                                         ]
-                                    ]
+                                    ],
+                                    'is_my_doctor' => 'true：是； false：否； 数据类型：字符串'
                                 ],
                                 'message' => '',
                                 'error' => ''
@@ -432,7 +482,8 @@ class ApiController extends BaseController
                                             'am' => 'true',
                                             'pm' => 'false',
                                         ]
-                                    ]
+                                    ],
+                                    'is_my_doctor' => 'true：是； false：否； 数据类型：字符串'
                                 ],
                                 'message' => '',
                                 'error' => ''
@@ -550,7 +601,8 @@ class ApiController extends BaseController
                                                 'am' => 'true',
                                                 'pm' => 'false',
                                             ]
-                                        ]
+                                        ],
+                                        'is_my_doctor' => 'true：是； false：否； 数据类型：字符串'
                                     ],
                                     'hospital' => [
                                         '说明' => '根据关键字,按医院分组; 数据格式同上',
@@ -571,7 +623,7 @@ class ApiController extends BaseController
                     ],
 
                     '通过医生ID查询其信息' => [
-                        'url' => $http . '/api/doctor/{doctor_id}',
+                        'url' => $http . '/api/search/doctor/{doctor_id}',
                         'method' => 'GET',
                         'params' => [
                             'token' => ''
@@ -623,7 +675,8 @@ class ApiController extends BaseController
                                         'am' => 'true',
                                         'pm' => 'false',
                                     ]
-                                ]
+                                ],
+                                'is_my_doctor' => 'true：是； false：否； 数据类型：字符串'
                             ],
                             'message' => '',
                             'error' => ''

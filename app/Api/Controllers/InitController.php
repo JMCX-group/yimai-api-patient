@@ -11,7 +11,9 @@ namespace App\Api\Controllers;
 use App\AdmissionsMsg;
 use App\Api\Transformers\Transformer;
 use App\Api\Transformers\UserTransformer;
+use App\Appointment;
 use App\AppointmentMsg;
+use App\Doctor;
 use App\DoctorContactRecord;
 use App\DoctorRelation;
 use App\RadioStation;
@@ -37,6 +39,16 @@ class InitController extends BaseController
         $retUser = UserTransformer::transformUser($user);
 
         /**
+         * Get my doctors.
+         */
+        $doctorIdList = Appointment::getMyDoctors($user->id);
+        $doctors = Doctor::whereIn('id', $doctorIdList)->get();
+        $myDoctors = array();
+        foreach ($doctors as $doctor) {
+            array_push($myDoctors, Transformer::searchDoctorTransform($doctor, $user->id));
+        }
+
+        /**
          * Get recent contacts.
          */
         $contactRecords = DoctorContactRecord::where('doctor_id', $user->id)->lists('contacts_id_list');
@@ -49,6 +61,7 @@ class InitController extends BaseController
 
         return [
             'user' => $retUser,
+            'my_doctors' => $myDoctors,
             'sys_info' => [
 //                'radio_unread_count' => $radioStationUnreadCount,
 //                'admissions_unread_count' => $admissionsUnreadCount,

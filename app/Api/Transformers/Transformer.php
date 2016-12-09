@@ -8,6 +8,7 @@
 
 namespace App\Api\Transformers;
 
+use App\Appointment;
 use App\DeptStandard;
 use App\Hospital;
 
@@ -96,9 +97,10 @@ class Transformer
 
     /**
      * @param $user
+     * @param $myId
      * @return array
      */
-    public static function searchDoctorTransform($user)
+    public static function searchDoctorTransform($user, $myId)
     {
         return [
             'id' => $user->id,
@@ -132,7 +134,8 @@ class Transformer
             'fee' => $user->fee,
             'fee_face_to_face' => $user->fee_face_to_face,
             'admission_set_fixed' => $user->admission_set_fixed,
-            'admission_set_flexible' => self::delOutdated(json_decode($user->admission_set_flexible, true))
+            'admission_set_flexible' => self::delOutdated(json_decode($user->admission_set_flexible, true)),
+            'is_my_doctor' => Appointment::where('patient_id', $myId)->where('doctor_id', $user->id)->get()->isEmpty() ? 'false' : 'true'
         ];
     }
 

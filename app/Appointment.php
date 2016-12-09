@@ -67,4 +67,15 @@ class Appointment extends Model
             "select `id` from `appointments` where ((`patient_id`='$id' OR `patient_phone`='$phone') AND `status`='wait-1')"
         );
     }
+
+    /**
+     * @param $id
+     * @return mixed
+     */
+    public static function getMyDoctors($id)
+    {
+        return DB::select(
+            "select distinct `doctor_id` from `appointments` where `patient_id` = '$id' AND (`status`='completed-1' OR `status`='completed-2')"
+        );
+    }
 }
