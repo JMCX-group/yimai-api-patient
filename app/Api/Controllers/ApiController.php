@@ -948,6 +948,22 @@ class ApiController extends BaseController
                             'error' => ''
                         ]
                     ],
+                    '确认改期' => [
+                        '说明' => 'status_code为wait-4的时候，才可以调用',
+                        'url' => $http . '/api/appointment/confirm-rescheduled',
+                        'method' => 'POST',
+                        'params' => [
+                            'token' => ''
+                        ],
+                        'form-data' => [
+                            'id' => '约诊ID'
+                        ],
+                        'response' => [
+                            'success' => '',
+                            'message' => '',
+                            'error' => ''
+                        ]
+                    ],
                     '完成面诊' => [
                         'url' => $http . '/api/appointment/complete',
                         'method' => 'POST',

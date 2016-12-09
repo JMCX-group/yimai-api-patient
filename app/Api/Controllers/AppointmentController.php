@@ -429,7 +429,7 @@ class AppointmentController extends BaseController
     {
         try {
             $order = Order::where('out_trade_no', $appointment->id)->first();
-            if (empty($order->id)){
+            if (empty($order->id)) {
                 $newOrder = [
                     'doctor_id' => $appointment->doctor_id,
                     'patient_id' => $appointment->patient_id,
@@ -462,6 +462,20 @@ class AppointmentController extends BaseController
     {
         $appointmentId = $request['id'];
         Appointment::where('id', $appointmentId)->update(['status' => 'completed-1']);
+
+        return response()->json(['success' => ''], 204);
+    }
+
+    /**
+     * 患者确认改期，wait-4 -> wait-5
+     *
+     * @param AppointmentIdRequest $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function confirmRescheduled(AppointmentIdRequest $request)
+    {
+        $appointmentId = $request['id'];
+        Appointment::where('id', $appointmentId)->update(['status' => 'wait-5']);
 
         return response()->json(['success' => ''], 204);
     }
