@@ -173,6 +173,7 @@ class SearchController extends BaseController
 
         $groupByNameArr = array();
         $groupByHospitalArr = array();
+        $groupByDeptArr = array();
         $groupByTagArr = array();
         $otherArr = array();
 
@@ -189,6 +190,11 @@ class SearchController extends BaseController
 
             if (strstr($userItem->hospital, $data['field'])) {
                 array_push($groupByHospitalArr, Transformer::searchDoctorTransform($userItem));
+                continue;
+            }
+
+            if (strstr($userItem->dept, $data['field'])) {
+                array_push($groupByDeptArr, Transformer::searchDoctorTransform($userItem));
                 continue;
             }
 
@@ -247,11 +253,13 @@ class SearchController extends BaseController
             'citys' => $citys,
             'hospitals' => isset($newHospital) ? $newHospital : $hospitals,
             'departments' => $departments,
-            'count' => (count($groupByNameArr) + count($groupByHospitalArr) + count($groupByTagArr)),
+            'count' => (count($groupByNameArr) + count($groupByHospitalArr) + count($groupByDeptArr) + count($groupByTagArr) + count($otherArr)),
             'users' => [
                 'name' => $groupByNameArr,
                 'hospital' => $groupByHospitalArr,
+                'dept' => $groupByDeptArr,
                 'tag' => $groupByTagArr,
+                'other' => $otherArr
             ]
         ];
 //        }
