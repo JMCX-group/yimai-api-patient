@@ -60,6 +60,7 @@ $api->version('v1', function ($api) {
                 $api->get('phone-code/{doctor}', 'SearchController@findDoctor_byPhoneOrCode');
                 $api->post('/', 'UserController@update');
                 $api->get('/{doctor}', 'SearchController@findDoctor');
+                $api->post('add-doctor', 'UserController@addDoctor');
             });
 
             // Search

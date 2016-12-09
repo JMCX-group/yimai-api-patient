@@ -14,6 +14,7 @@ use App\Api\Requests\UserRequest;
 use App\Api\Transformers\Transformer;
 use App\Api\Transformers\UserTransformer;
 use App\DeptStandard;
+use App\Doctor;
 use App\DoctorContactRecord;
 use App\DoctorRelation;
 use App\Hospital;
@@ -82,7 +83,7 @@ class UserController extends BaseController
         $filename = time() . '.jpg';
 
 //        try {
-            $imgFile->move($destinationPath, $filename);
+        $imgFile->move($destinationPath, $filename);
 //        } catch (\Exception $e) {
 //            Log::info('save img', ['context' => $e->getMessage()]);
 //        }
@@ -154,7 +155,7 @@ class UserController extends BaseController
 
     /**
      * 删除过期时间
-     * 
+     *
      * @param $data
      * @return string
      */
@@ -162,8 +163,8 @@ class UserController extends BaseController
     {
         $now = time();
         $newData = array();
-        foreach ($data as $item){
-            if(strtotime($item['date']) > $now){
+        foreach ($data as $item) {
+            if (strtotime($item['date']) > $now) {
                 array_push($newData, $item);
             }
         }
@@ -261,23 +262,23 @@ class UserController extends BaseController
          * 获取前台传参:
          * 兼容不同形式的……蛋疼:
          */
-        if(isset($request['city']) && !empty($request['city'])){
+        if (isset($request['city']) && !empty($request['city'])) {
             $cityID = $request['city'];
-        } elseif(isset($request['city_id']) && !empty($request['city_id'])){
+        } elseif (isset($request['city_id']) && !empty($request['city_id'])) {
             $cityID = $request['city_id'];
         } else {
             $cityID = false;
         }
-        if(isset($request['hospital']) && !empty($request['hospital'])){
+        if (isset($request['hospital']) && !empty($request['hospital'])) {
             $hospitalID = $request['hospital'];
-        } elseif(isset($request['hospital_id']) && !empty($request['hospital_id'])){
+        } elseif (isset($request['hospital_id']) && !empty($request['hospital_id'])) {
             $hospitalID = $request['hospital_id'];
         } else {
             $hospitalID = false;
         }
-        if(isset($request['department']) && !empty($request['department'])){
+        if (isset($request['department']) && !empty($request['department'])) {
             $deptID = $request['department'];
-        } elseif(isset($request['dept_id']) && !empty($request['dept_id'])){
+        } elseif (isset($request['dept_id']) && !empty($request['dept_id'])) {
             $deptID = $request['dept_id'];
         } else {
             $deptID = false;
@@ -544,5 +545,38 @@ class UserController extends BaseController
         $user['common_friend_list'] = $retData;
 
         return Transformer::findDoctorTransform($user);
+    }
+
+    /**
+     * 扫码添加医生
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse|mixed
+     */
+    public function addDoctor(Request $request)
+    {
+        $my = User::getAuthenticatedUser();
+        if (!isset($my->id)) {
+            return $my;
+        }
+
+        $doctorId = $request['id'];
+        if (Doctor::where('id', $doctorId)->get()->isEmpty()) {
+            $data = ['result' => 'fail'];
+        } else {
+            if($my->my_doctors == null || $my->my_doctors == ''){
+                $my->my_doctors = $doctorId;
+            }else{
+                $myDoctors = explode(',', $my->my_doctors);
+                if (!in_array($doctorId, $myDoctors)) {
+                    array_push($myDoctors, $doctorId);
+                    $my->my_doctors = implode(',', $myDoctors);
+                }
+            }
+            $my->save();
+            $data = ['result' => 'success'];
+        }
+
+        return response()->json(compact('data'));
     }
 }

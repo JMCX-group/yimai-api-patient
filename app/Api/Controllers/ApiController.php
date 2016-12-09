@@ -360,6 +360,24 @@ class ApiController extends BaseController
                             'message' => '',
                             'error' => ''
                         ]
+                    ],
+                    '扫码添加医生' => [
+                        '说明' => '扫码有医生ID，然后调用这个接口添加到我的医生（“约我的医生”）',
+                        'url' => $http . '/api/user/add-doctor',
+                        'method' => 'POST',
+                        'params' => [
+                            'token' => ''
+                        ],
+                        'form-data' => [
+                            'id' => '医生ID'
+                        ],
+                        'response' => [
+                            'data' => [
+                                'result' => 'success或fail'
+                            ],
+                            'message' => '',
+                            'error' => ''
+                        ]
                     ]
                 ],
 

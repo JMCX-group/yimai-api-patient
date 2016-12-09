@@ -74,8 +74,30 @@ class Appointment extends Model
      */
     public static function getMyDoctors($id)
     {
-        return DB::select(
+        /**
+         * 获取约诊成功的医生列表：
+         */
+        $ret = DB::select(
             "select distinct `doctor_id` from `appointments` where `patient_id` = '$id' AND (`status`='completed-1' OR `status`='completed-2')"
         );
+
+        /**
+         * 获取扫码添加的医生列表：
+         */
+        $patientMyDoctors = Patient::select('my_doctors')->where('id', $id)->get()->toArray();
+
+        /**
+         * 去重：
+         */
+        $myDoctors = explode(',', $patientMyDoctors[0]['my_doctors']);
+        $tmpIdArr = array();
+        foreach ($ret as $item) {
+            if (!in_array($item->doctor_id, $myDoctors)) {
+                array_push($tmpIdArr, $item->doctor_id);
+            }
+        }
+        $retArr = array_merge($tmpIdArr, $myDoctors);
+
+        return $retArr;
     }
 }
