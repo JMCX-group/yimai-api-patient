@@ -952,12 +952,20 @@ class ApiController extends BaseController
                         ],
                         'response' => [
                             'doctor_info' => [
-                                'id' => '用户ID',
-                                'name' => '用户姓名',
-                                'head_url' => '头像URL',
-                                'job_title' => '职称',
-                                'hospital' => '所属医院',
-                                'department' => '所属科室'
+                                'id' => '接诊医生ID',
+                                'name' => '接诊医生姓名',
+                                'head_url' => '接诊医生头像URL',
+                                'job_title' => '接诊医生职称',
+                                'hospital' => '接诊医生所属医院',
+                                'department' => '接诊医生所属科室'
+                            ],
+                            'locums_doctor_info' => [
+                                'id' => '代约医生ID； 平台代约为1； 患者自己约的为空字符串',
+                                'name' => '代约医生姓名； 平台代约为【医脉平台】； 患者自己约的为空字符串',
+                                'head_url' => '代约医生头像URL； 平台代约为默认，',
+                                'job_title' => '代约医生职称； 平台代约和患者自己约都为空字符串',
+                                'hospital' => '代约医生所属医院； 平台代约和患者自己约都为空字符串',
+                                'department' => '代约医生所属科室； 平台代约和患者自己约都为空字符串'
                             ],
                             'patient_info' => [
                                 'name' => '患者姓名',

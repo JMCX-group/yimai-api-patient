@@ -289,12 +289,24 @@ class AppointmentController extends BaseController
         /**
          * 查询代约医生的信息:
          */
-        $locumsDoctor = array();
         if ($appointments->locums_id == '1') { //医脉平台代约
-            $locumsDoctor['name'] = '医脉平台';
-            $locumsDoctor = (object)$locumsDoctor;
+            $locumsDoctor = [
+                'id' => 1,
+                'name' => '医脉平台',
+                'head_url' => '/uploads/avatar/default.jpg',
+                'job_title' => '',
+                'hospital' => '',
+                'department' => ''
+            ];
         } elseif ($appointments->locums_id == '0') { //没有代约医生
-            $locumsDoctor = null;
+            $locumsDoctor = [
+                'id' => '',
+                'name' => '',
+                'head_url' => '',
+                'job_title' => '',
+                'hospital' => '',
+                'department' => ''
+            ];
         } else {
             $locumsDoctor = Doctor::where('doctors.id', $appointments->locums_id)
                 ->select(
@@ -309,7 +321,7 @@ class AppointmentController extends BaseController
         $appointments['time_line'] = TimeLineTransformer::generateTimeLine($appointments, $doctors, $user->id, $locumsDoctor);
         $appointments['progress'] = TimeLineTransformer::generateProgressStatus($appointments->status);
 
-        return Transformer::appointmentsTransform($appointments, $doctors);
+        return Transformer::appointmentsTransform($appointments, $doctors, $locumsDoctor);
     }
 
     /**

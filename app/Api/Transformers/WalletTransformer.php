@@ -104,7 +104,8 @@ class WalletTransformer extends TransformerAbstract
                 $retData = '待专家确认';
                 break;
             case 'wait-4':
-                $retData = '专家改期,待您确认';
+//                $retData = '专家改期,待您确认';
+                $retData = '改期待您确认';
                 break;
 
             case 'wait-3':

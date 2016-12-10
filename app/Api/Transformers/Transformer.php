@@ -337,9 +337,10 @@ class Transformer
      *
      * @param $appointments
      * @param $doctor
+     * @param $locumsDoctor
      * @return array
      */
-    public static function appointmentsTransform($appointments, $doctor)
+    public static function appointmentsTransform($appointments, $doctor, $locumsDoctor)
     {
         return [
             'doctor_info' => [
@@ -349,6 +350,14 @@ class Transformer
                 'job_title' => $doctor->title,
                 'hospital' => $doctor->hospital,
                 'department' => $doctor->dept
+            ],
+            'locums_doctor_info' => [
+                'id' => $locumsDoctor->id,
+                'name' => $locumsDoctor->name,
+                'head_url' => ($locumsDoctor->avatar == '') ? null : $doctor->avatar,
+                'job_title' => $locumsDoctor->title,
+                'hospital' => $locumsDoctor->hospital,
+                'department' => $locumsDoctor->dept
             ],
             'patient_info' => [
                 'name' => $appointments->patient_name,
