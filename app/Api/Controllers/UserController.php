@@ -142,6 +142,13 @@ class UserController extends BaseController
             $user->tag_list = $request['tags'];
         }
 
+        /**
+         * Blacklist
+         */
+        if (isset($request['blacklist']) && !empty($request['blacklist'])) {
+            $user->blacklist = $request['blacklist'];
+        }
+
         try {
             if ($user->save()) {
                 return $this->response->item($user, new UserTransformer());

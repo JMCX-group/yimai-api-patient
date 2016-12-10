@@ -336,7 +336,8 @@ class ApiController extends BaseController
                             'birthday' => '生日; Date型',
                             'province' => '用户所在省份ID',
                             'city' => '用户所属城市ID',
-                            'tags' => '标签； 格式（JSON Encode）：{"tag_list":"1,2,3,4","illness_list":"3,4,5,6"}'
+                            'tags' => '标签； 格式（JSON Encode）：{"tag_list":"1,2,3,4","illness_list":"3,4,5,6"}',
+                            'blacklist' => '黑名单； 用户ID list，用逗号分隔'
                         ],
                         'response' => [
                             'user' => [
@@ -355,7 +356,8 @@ class ApiController extends BaseController
                                     'id' => '用户所在城市ID',
                                     'name' => '用户所在城市名称'
                                 ],
-                                'tags' => '标签； 格式（JSON Encode）：{"tag_list":"1,2,3,4","illness_list":"3,4,5,6"}'
+                                'tags' => '标签； 格式（JSON Encode）：{"tag_list":"1,2,3,4","illness_list":"3,4,5,6"}',
+                                'blacklist' => '黑名单； 用户ID list，用逗号分隔； 增加/删除都更新改字段即可'
                             ],
                             'message' => '',
                             'error' => ''

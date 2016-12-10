@@ -41,7 +41,8 @@ class UserTransformer extends TransformerAbstract
             'birthday' => $user['birthday'],
             'province' => $user['province_id'],
             'city' => $user['city_id'],
-            'tags' => $user['tag_list']
+            'tags' => $user['tag_list'],
+            'blacklist' => $user['blacklist']
         ];
     }
 
@@ -123,7 +124,8 @@ class UserTransformer extends TransformerAbstract
             'birthday' => $user['birthday'],
             'province' => $user['province_id'],
             'city' => $user['city_id'],
-            'tags' => $user['tag_list']
+            'tags' => $user['tag_list'],
+            'blacklist' => $user['blacklist']
         ];
     }
 }
