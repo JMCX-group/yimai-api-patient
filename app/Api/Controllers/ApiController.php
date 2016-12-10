@@ -105,9 +105,9 @@ class ApiController extends BaseController
 
                 '订单' => [
                     '查询订单' => [
+                        '说明' => '因为微信不稳定，需要手动查询接口',
                         'url' => $http . '/api/pay/order_query',
                         'method' => 'POST',
-                        '说明' => '因为微信不稳定，需要手动查询接口',
                         'form-data' => [
                             'id' => '约诊ID'
                         ],
@@ -248,13 +248,14 @@ class ApiController extends BaseController
                             'error' => ''
                         ]
                     ],
+
                     '通过用户ID查询其他医生的信息' => [
+                        '说明' => '请前台判断是否在查询自己,自己的信息在登陆时已经有全部的了,而且看自己的没有中间的两个按钮',
                         'url' => $http . '/api/user/{doctor_id}',
                         'method' => 'GET',
                         'params' => [
                             'token' => ''
                         ],
-                        '说明' => '请前台判断是否在查询自己,自己的信息在登陆时已经有全部的了,而且看自己的没有中间的两个按钮',
                         'response' => [
                             'user' => [
                                 'is_friend' => '决定按钮的布局; true | false',
@@ -280,6 +281,7 @@ class ApiController extends BaseController
                             'error' => ''
                         ]
                     ],
+
                     '通过医生手机号或医脉码查询医生的信息' => [
                         'url' => $http . '/api/user/phone-code/{doctor_id_or_code}',
                         'method' => 'GET',
@@ -320,13 +322,14 @@ class ApiController extends BaseController
                             'error' => ''
                         ]
                     ],
+
                     '修改个人信息/修改密码/修改接诊收费信息/修改隐私设置' => [
+                        '说明' => 'form-data项均为可选项,修改任意一个或几个都可以,有什么数据加什么字段',
                         'url' => $http . '/api/user',
                         'method' => 'POST',
                         'params' => [
                             'token' => ''
                         ],
-                        '说明' => '以下form-data项均为可选项,修改任意一个或几个都可以,有什么数据加什么字段',
                         'form-data' => [
                             'password' => '用户密码',
                             'name' => '用户姓名',
@@ -363,6 +366,7 @@ class ApiController extends BaseController
                             'error' => ''
                         ]
                     ],
+
                     '扫码添加医生' => [
                         '说明' => '扫码有医生ID，然后调用这个接口添加到我的医生（“约我的医生”）',
                         'url' => $http . '/api/user/add-doctor',
@@ -385,12 +389,12 @@ class ApiController extends BaseController
 
                 '搜索' => [
                     '进入搜索页面默认加载的信息' => [
+                        '说明' => '该数据通过登录用户填写标签筛选',
                         'url' => $http . '/api/search/default',
                         'method' => 'GET',
                         'params' => [
                             'token' => ''
                         ],
-                        '说明' => '该数据通过登录用户填写标签筛选',
                         'response' =>
                             [
                                 'data' => [
@@ -448,12 +452,12 @@ class ApiController extends BaseController
                     ],
 
                     '进入【约我的医生】加载的医生列表' => [
+                        '说明' => '该数据通过登录用户约诊记录筛选;',
                         'url' => $http . '/api/search/my-doctor',
                         'method' => 'GET',
                         'params' => [
                             'token' => ''
                         ],
-                        '说明' => '该数据通过登录用户约诊记录筛选; 18012345678用户有数据',
                         'response' =>
                             [
                                 'data' => [
@@ -511,6 +515,7 @@ class ApiController extends BaseController
                     ],
 
                     '搜索医生信息' => [
+                        '说明' => '会一次传递所有排好序的数据,按3个分组,每个显示2条数据即可; 如果下拉框为后置条件,建议前端执行过滤; 城市按省份ID分组; 医院按省份ID和城市ID级联分组',
                         'url' => $http . '/api/search',
                         'method' => 'POST',
                         'params' => [
@@ -524,7 +529,6 @@ class ApiController extends BaseController
                             'job_title' => '下拉框选择的职称名称; 可选项;',
                             'format' => '或者什么样的格式; 可选项; 提交该项,且值为android时,hospitals会返回安卓格式',
                         ],
-                        '说明' => '会一次传递所有排好序的数据,按3个分组,每个显示2条数据即可; 如果下拉框为后置条件,建议前端执行过滤; 城市按省份ID分组; 医院按省份ID和城市ID级联分组',
                         'response' =>
                             [
                                 'provinces' => [
@@ -769,6 +773,7 @@ class ApiController extends BaseController
                             'error' => ''
                         ]
                     ],
+
                     '相应标签对应的疾病' => [
                         'url' => $http . '/api/tag/illness',
                         'method' => 'POST',
@@ -787,6 +792,7 @@ class ApiController extends BaseController
                             'error' => ''
                         ]
                     ],
+
                     '获取标签和疾病,并分组' => [
                         'url' => $http . '/api/tag/group',
                         'method' => 'GET',
@@ -831,6 +837,7 @@ class ApiController extends BaseController
                             'error' => ''
                         ]
                     ],
+
                     '新建请求代约:找我的医生代约' => [
                         'url' => $http . '/api/appointment/instead',
                         'method' => 'POST',
@@ -858,6 +865,7 @@ class ApiController extends BaseController
                             'error' => ''
                         ]
                     ],
+
                     '上传图片' => [
                         'url' => $http . '/api/appointment/upload-img',
                         'method' => 'POST',
@@ -874,13 +882,13 @@ class ApiController extends BaseController
                             'error' => ''
                         ]
                     ],
+
                     '获取约诊记录(待确认/待面诊/已结束)' => [
                         'url' => $http . '/api/appointment/list',
                         'method' => 'GET',
                         'params' => [
                             'token' => ''
                         ],
-                        '说明' => '用phone:18812121218,password:123456登陆可以获得所有测试数据',
                         '状态code说明' => 'wait-0: 待医生确认
                                              wait-1: 待患者付款
                                              wait-2: 患者已付款，待医生确认
@@ -932,6 +940,7 @@ class ApiController extends BaseController
                             'error' => ''
                         ]
                     ],
+
                     '获取患者的约诊详细信息' => [
                         'url' => $http . '/api/appointment/detail',
                         'method' => 'POST',
@@ -941,16 +950,6 @@ class ApiController extends BaseController
                         'form-data' => [
                             'id' => '约诊ID'
                         ],
-                        '特别说明1' => '设计样式图《约诊回复3-3、3-4、3-5》内容条目有些不对,参照样式即可,以API返回数据为准',
-                        '特别说明2' => '设计样式图中患者电话部分,全部参照《约诊回复3-5》的患者电话样式',
-                        '测试数据1' => '5个等待状态1的可测试约诊号:011605130001,011605130002,011605130003,011605130004,011605130005',
-                        '测试数据2' => '5个等待状态2的可测试约诊号:011605260001,011605260002,011605260003,011605260004,011605260005',
-                        '测试数据3' => '7个取消状态1的可测试约诊号:011605150001,011605150002,011605150003,011605150004,011605150005,011605150006,011605150007',
-                        '测试数据4' => '7个取消状态2的可测试约诊号:011605160001,011605160002,011605160003,011605160004,011605160005,011605160006,011605160007',
-                        '测试数据5' => '3个关闭状态1的可测试约诊号:011605140001,011605140002,011605140003',
-                        '测试数据6' => '3个关闭状态2的可测试约诊号:011605240001,011605240002,011605240003',
-                        '测试数据7' => '2个完成状态1的可测试约诊号:011605180001,011605180002',
-                        '测试数据8' => '2个完成状态2的可测试约诊号:011605190001,011605190002',
                         'response' => [
                             'doctor_info' => [
                                 'id' => '用户ID',
@@ -1002,6 +1001,7 @@ class ApiController extends BaseController
                             'error' => ''
                         ]
                     ],
+
                     '支付/缴纳保证金/缴纳接诊费' => [
                         'url' => $http . '/api/appointment/pay',
                         'method' => 'POST',
@@ -1011,7 +1011,6 @@ class ApiController extends BaseController
                         'form-data' => [
                             'id' => '约诊ID'
                         ],
-                        '说明' => '该接口目前还没通，key可能不对，在解决中',
                         'APP支付接口调用文档' => 'https://pay.weixin.qq.com/wiki/doc/api/app/app.php?chapter=9_12&index=2',
                         'response' => [
                             'data' => [
@@ -1027,6 +1026,7 @@ class ApiController extends BaseController
                             'error' => ''
                         ]
                     ],
+
                     '确认改期' => [
                         '说明' => 'status_code为wait-4的时候，才可以调用',
                         'url' => $http . '/api/appointment/confirm-rescheduled',
@@ -1043,6 +1043,7 @@ class ApiController extends BaseController
                             'error' => ''
                         ]
                     ],
+
                     '完成面诊' => [
                         'url' => $http . '/api/appointment/complete',
                         'method' => 'POST',
@@ -1135,6 +1136,7 @@ class ApiController extends BaseController
                             'error' => ''
                         ]
                     ],
+
                     '广播已读' => [
                         'url' => $http . '/api/radio/read',
                         'method' => 'POST',
@@ -1158,7 +1160,6 @@ class ApiController extends BaseController
                         'params' => [
                             'token' => ''
                         ],
-                        '说明' => '',
                         'response' => [
                             'data' => [
                                 'id' => '消息ID',
@@ -1172,13 +1173,13 @@ class ApiController extends BaseController
                             'error' => ''
                         ]
                     ],
+
                     '未读信息' => [
                         'url' => $http . '/api/msg/new',
                         'method' => 'GET',
                         'params' => [
                             'token' => ''
                         ],
-                        '说明' => '',
                         'response' => [
                             'data' => [
                                 'id' => '消息ID',
@@ -1192,7 +1193,9 @@ class ApiController extends BaseController
                             'error' => ''
                         ]
                     ],
+
                     '发送已读状态更新' => [
+                        '说明' => 'HTTP状态204',
                         'url' => $http . '/api/msg/read',
                         'method' => 'POST',
                         'params' => [
@@ -1201,7 +1204,6 @@ class ApiController extends BaseController
                         'form-data' => [
                             'id' => '消息ID'
                         ],
-                        '说明' => 'HTTP状态204',
                         'response' => [
                             'success' => '',
                             'message' => '',
@@ -1209,12 +1211,12 @@ class ApiController extends BaseController
                         ]
                     ],
 //                    '全部已读' => [
+//                        '说明' => 'HTTP状态204',
 //                        'url' => $http . '/api/msg/admissions/all-read',
 //                        'method' => 'GET',
 //                        'params' => [
 //                            'token' => ''
 //                        ],
-//                        '说明' => 'HTTP状态204',
 //                        'response' => [
 //                            'success' => '',
 //                            'message' => '',
