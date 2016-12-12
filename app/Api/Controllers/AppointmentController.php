@@ -293,20 +293,22 @@ class AppointmentController extends BaseController
             $locumsDoctor = [
                 'id' => 1,
                 'name' => '医脉平台',
-                'head_url' => '/uploads/avatar/default.jpg',
-                'job_title' => '',
+                'avatar' => '/uploads/avatar/default.jpg',
+                'title' => '',
                 'hospital' => '',
-                'department' => ''
+                'dept' => ''
             ];
+            $locumsDoctor = (object)$locumsDoctor;
         } elseif ($appointments->locums_id == '0') { //没有代约医生
             $locumsDoctor = [
                 'id' => '',
                 'name' => '',
-                'head_url' => '',
-                'job_title' => '',
+                'avatar' => '',
+                'title' => '',
                 'hospital' => '',
-                'department' => ''
+                'dept' => ''
             ];
+            $locumsDoctor = (object)$locumsDoctor;
         } else {
             $locumsDoctor = Doctor::where('doctors.id', $appointments->locums_id)
                 ->select(
