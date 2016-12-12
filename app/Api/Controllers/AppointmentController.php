@@ -35,6 +35,7 @@ class AppointmentController extends BaseController
 
     /**
      * wait:
+     * wait-0: 待代理医生确认
      * wait-1: 待患者付款
      * wait-2: 患者已付款，待医生确认
      * wait-3: 医生确认接诊，待面诊

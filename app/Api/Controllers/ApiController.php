@@ -855,7 +855,6 @@ class ApiController extends BaseController
                             'demand_hospital' => '患者代约请求,需求的医院; 必填',
                             'demand_dept' => '患者代约请求,需求的科室; 必填',
                             'demand_title' => '患者代约请求,需求的医生职称; 必填',
-                            'doctor' => '预约的医生的ID',
                             'locums_doctor' => '预约的医生的ID; 必填',
                             'date' => '预约日期,最多选择3个,用逗号分隔开即可,例:2016-05-01,2016-05-02; 如果是医生决定就是传0即可。',
                             'am_or_pm' => '预约上/下午,和上面的对应的用逗号分隔开即可,例:am,pm; 如果是医生决定随便传什么,都不会处理,取值时为空',
