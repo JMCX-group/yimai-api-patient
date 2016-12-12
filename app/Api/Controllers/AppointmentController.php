@@ -96,7 +96,7 @@ class AppointmentController extends BaseController
         $doctor = Doctor::find($request['doctor']);
         $data = [
             'id' => $frontId . $nowId,
-            'locums_id' => 1, //代理医生ID,1为平台代约,0为没有代约医生
+            'locums_id' => $request['locums_doctor'], //代理医生ID,1为平台代约,0为没有代约医生
             'patient_id' => $user->id,
             'patient_name' => $request['name'],
             'patient_phone' => $request['phone'],
@@ -118,7 +118,7 @@ class AppointmentController extends BaseController
          */
         $msgData = [
             'appointment_id' => $frontId . $nowId,
-            'locums_id' => 1, //代理医生ID； 1为平台代约
+            'locums_id' => $data['locums_id'], //代理医生ID,1为平台代约,0为没有代约医生
             'patient_name' => $data['patient_name'],
             'doctor_id' => $data['doctor_id'],
             'doctor_name' => $doctor->name,

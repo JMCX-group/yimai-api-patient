@@ -33,6 +33,7 @@ class AppointmentRequest extends Request
             'name' => 'required|between:1,10',
             'phone' => 'required',
             'doctor' => 'required',
+            'locums_doctor' => 'required'
         ];
     }
 
@@ -56,6 +57,7 @@ class AppointmentRequest extends Request
             'name' => '姓名',
             'phone' => '手机号码',
             'doctor' => '医生ID',
+            'locums_doctor' => '代约医生'
         ];
     }
 
