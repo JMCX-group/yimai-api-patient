@@ -64,7 +64,7 @@ class AppointmentController extends BaseController
     }
 
     /**
-     * 预约:通过搜索找的医生/预约我的医生
+     * 预约:通过搜索找到我的医生/直接预约我的医生
      *
      * @param AppointmentRequest $request
      * @return array|mixed
@@ -97,7 +97,7 @@ class AppointmentController extends BaseController
         $doctor = Doctor::find($request['doctor']);
         $data = [
             'id' => $frontId . $nowId,
-            'locums_id' => $request['locums_doctor'], //代理医生ID,1为平台代约,0为没有代约医生
+            'locums_id' => 0, //代理医生ID,1为平台代约,0为没有代约医生
             'patient_id' => $user->id,
             'patient_name' => $request['name'],
             'patient_phone' => $request['phone'],
@@ -119,7 +119,7 @@ class AppointmentController extends BaseController
          */
         $msgData = [
             'appointment_id' => $frontId . $nowId,
-            'locums_id' => $data['locums_id'], //代理医生ID,1为平台代约,0为没有代约医生
+            'locums_id' => 0, //代理医生ID,1为平台代约,0为没有代约医生
             'patient_name' => $data['patient_name'],
             'doctor_id' => $data['doctor_id'],
             'doctor_name' => $doctor->name,
@@ -180,8 +180,8 @@ class AppointmentController extends BaseController
             'patient_demand_hospital' => isset($request['demand_hospital']) ? $request['demand_hospital'] : '',
             'patient_demand_dept' => isset($request['demand_dept']) ? $request['demand_dept'] : '',
             'patient_demand_title' => isset($request['demand_title']) ? $request['demand_title'] : '',
-            'request_mode' => '医生代约', //我的医生、找专家、医生代约
-            'platform_or_doctor' => isset($request['demand_hospital']) ? 'd' : '',
+            'request_mode' => ($request['locums_doctor'] == 1) ? '找专家' : '医生代约', //我的医生、找专家、医生代约
+            'platform_or_doctor' => ($request['locums_doctor'] == 1) ? 'p' : 'd',
             'doctor_or_patient' => 'p', //患者发起
             'expect_visit_date' => $request['date'],
             'expect_am_pm' => $request['am_or_pm'],
