@@ -168,7 +168,7 @@ class AppointmentController extends BaseController
          */
         $data = [
             'id' => $frontId . $nowId,
-            'locums_id' => isset($request['demand_hospital']) ? $request['locums_doctor'] : 0, //代理医生ID,1为平台代约,0为没有代约医生
+            'locums_id' => $request['locums_doctor'], //代理医生ID,1为平台代约,0为没有代约医生
             'patient_id' => $user->id,
             'patient_name' => $request['name'],
             'patient_phone' => $request['phone'],
@@ -179,8 +179,7 @@ class AppointmentController extends BaseController
             'patient_demand_hospital' => isset($request['demand_hospital']) ? $request['demand_hospital'] : '',
             'patient_demand_dept' => isset($request['demand_dept']) ? $request['demand_dept'] : '',
             'patient_demand_title' => isset($request['demand_title']) ? $request['demand_title'] : '',
-            'doctor_id' => $request['doctor'],
-            'request_mode' => isset($request['demand_hospital']) ? '医生代约' : '我的医生', //我的医生、找专家、医生代约
+            'request_mode' => '医生代约', //我的医生、找专家、医生代约
             'platform_or_doctor' => isset($request['demand_hospital']) ? 'd' : '',
             'doctor_or_patient' => 'p', //患者发起
             'expect_visit_date' => $request['date'],
@@ -193,11 +192,11 @@ class AppointmentController extends BaseController
          */
         $msgData = [
             'appointment_id' => $frontId . $nowId,
-            'locums_id' => $request['doctor'], //代理医生ID,0为平台代约
-            'locums_name' => Doctor::find($request['doctor'])->first()->name, //代理医生姓名
+            'locums_id' => $request['locums_doctor'], //代理医生ID,1为平台代约,0为没有代约医生
+            'locums_name' => Doctor::find($request['locums_doctor'])->first()->name, //代理医生姓名
             'patient_id' => $user->id,
             'patient_name' => $request['name'],
-            'status' => 'wait-0' //新建约诊之后,进入待患者付款阶段
+            'status' => 'wait-0' //新建约诊之后,进入待代理医生确认环节
         ];
 
         try {
