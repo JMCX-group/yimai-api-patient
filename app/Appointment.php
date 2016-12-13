@@ -31,7 +31,10 @@ class Appointment extends Model
         'patient_imgs',
         'doctor_id',
         'patient_id',
-        'patient_demand',
+        'patient_demand_doctor_name',
+        'patient_demand_hospital',
+        'patient_demand_dept',
+        'patient_demand_title',
         'request_mode',
         'platform_or_doctor',
         'doctor_or_patient',
@@ -51,6 +54,7 @@ class Appointment extends Model
         'new_visit_time',
         'new_am_pm',
         'confirm_rescheduled_time',
+        'is_pay',
         'status'
     ];
 
