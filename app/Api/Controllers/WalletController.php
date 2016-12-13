@@ -68,7 +68,8 @@ class WalletController extends BaseController
     /**
      * 收支明细列表 - 带分类
      *
-     * @return \Dingo\Api\Http\Response|mixed
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse|mixed
      */
     public function record(Request $request)
     {
@@ -121,7 +122,7 @@ class WalletController extends BaseController
             return $user;
         }
 
-        $record = Order::where('doctor_id', $user->id)->orderBy('created_at', 'DESC')->get();
+        $record = Order::where('patient_id', $user->id)->orderBy('created_at', 'DESC')->get();
         $data = array();
         foreach ($record as $item) {
             $recordData = TransactionRecordTransformer::transformData($item);

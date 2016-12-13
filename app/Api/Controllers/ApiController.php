@@ -1118,6 +1118,27 @@ class ApiController extends BaseController
                             'error' => ''
                         ]
                     ],
+
+                    '收支明细列表' => [
+                        'url' => $http . '/api/wallet/record',
+                        'method' => 'GET',
+                        'params' => [
+                            'token' => ''
+                        ],
+                        'response' => [
+                            'data' => [
+                                'id' => 'ID',
+                                'name' => '名目名称',
+                                'transaction_id' => '交易单号/预约号',
+                                'price' => '价格',
+                                'type' => '类型：收入/支出',
+                                'status' => '状态：还没想好怎么用，先传前台去',
+                                'time' => '交易发生时间'
+                            ],
+                            'message' => '',
+                            'error' => ''
+                        ]
+                    ]
                 ],
 
                 '广播信息' => [
