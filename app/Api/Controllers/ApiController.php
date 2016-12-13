@@ -126,6 +126,7 @@ class ApiController extends BaseController
                     '关于我们' => $http . '/about/contact-us',
                     '医脉简介' => $http . '/about/introduction',
                     '律师信息' => $http . '/about/lawyer',
+                    '用户协议' => $http . '/agreement/patient',
                     '分享文案' => $http . '/share/index'
                 ]
             ],
