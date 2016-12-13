@@ -188,13 +188,14 @@ class UserController extends BaseController
      */
     public function avatar($userId, $avatarFile)
     {
+        $domain = \Config::get('constants.DOMAIN');
         $destinationPath = \Config::get('constants.AVATAR_SAVE_PATH');
         $filename = $userId . '.jpg';
         $avatarFile->move($destinationPath, $filename);
 
         Image::make($destinationPath . $filename)->fit(150)->save();
 
-        return '/' . $destinationPath . $filename;
+        return $domain . '/' . $destinationPath . $filename;
     }
 
     /**
