@@ -126,18 +126,6 @@ $api->version('v1', function ($api) {
                 $api->post('confirm-rescheduled', 'AppointmentController@confirmRescheduled');
                 $api->post('complete', 'AppointmentController@complete');
             });
-            
-            //Admissions
-//            $api->group(['prefix' => 'admissions'], function ($api) {
-//                $api->get('list', 'AdmissionsController@getAdmissionsRecord');
-//                $api->get('detail/{admissions}', 'AdmissionsController@getDetailInfo');
-//                $api->post('agree', 'AdmissionsController@agreeAdmissions');
-//                $api->post('refusal', 'AdmissionsController@refusalAdmissions');
-//                $api->post('complete', 'AdmissionsController@completeAdmissions');
-//                $api->post('rescheduled', 'AdmissionsController@rescheduledAdmissions');
-//                $api->post('cancel', 'AdmissionsController@cancelAdmissions');
-//                $api->post('transfer', 'AdmissionsController@transferAdmissions');
-//            });
 
             //Patient
             $api->group(['prefix' => 'patient'], function ($api) {
