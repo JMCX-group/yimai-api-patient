@@ -116,6 +116,7 @@ class PayController extends BaseController
 
             $appointment = Appointment::find($outTradeNo);
             if ($appointment->status == 'wait-1') {
+                $appointment->is_pay = '1';
                 $appointment->status = 'wait-2';
                 $appointment->transaction_id = $wxData['transaction_id'];
                 $appointment->save();
