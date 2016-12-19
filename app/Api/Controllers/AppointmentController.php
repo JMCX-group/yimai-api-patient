@@ -98,6 +98,10 @@ class AppointmentController extends BaseController
         if (substr($expectVisitDate, strlen($expectVisitDate) - 1) == ',') {
             $expectVisitDate = substr($expectVisitDate, 0, strlen($expectVisitDate) - 1);
         }
+        $expectAmPm = $request['am_or_pm'];
+        if (substr($expectAmPm, strlen($expectAmPm) - 1) == ',') {
+            $expectAmPm = substr($expectAmPm, 0, strlen($expectAmPm) - 1);
+        }
 
         /**
          * 发起约诊信息记录
@@ -117,7 +121,7 @@ class AppointmentController extends BaseController
             'platform_or_doctor' => 'p',
             'doctor_or_patient' => 'p', //患者发起
             'expect_visit_date' => $expectVisitDate,
-            'expect_am_pm' => $request['am_or_pm'],
+            'expect_am_pm' => $expectAmPm,
             'price' => $doctor->fee,
             'status' => 'wait-1' //新建约诊之后,进入待患者付款阶段
         ];
@@ -179,6 +183,10 @@ class AppointmentController extends BaseController
         if (substr($expectVisitDate, strlen($expectVisitDate) - 1) == ',') {
             $expectVisitDate = substr($expectVisitDate, 0, strlen($expectVisitDate) - 1);
         }
+        $expectAmPm = $request['am_or_pm'];
+        if (substr($expectAmPm, strlen($expectAmPm) - 1) == ',') {
+            $expectAmPm = substr($expectAmPm, 0, strlen($expectAmPm) - 1);
+        }
 
         /**
          * 发起约诊信息记录
@@ -200,7 +208,7 @@ class AppointmentController extends BaseController
             'platform_or_doctor' => ($request['locums_doctor'] == 1) ? 'p' : 'd',
             'doctor_or_patient' => 'p', //患者发起
             'expect_visit_date' => $expectVisitDate,
-            'expect_am_pm' => $request['am_or_pm'],
+            'expect_am_pm' => $expectAmPm,
             'status' => 'wait-0' //请求代约
         ];
 
