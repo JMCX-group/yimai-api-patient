@@ -77,6 +77,31 @@ class Doctor extends Model
     }
 
     /**
+     * 获取一堆医生信息
+     *
+     * @param $idList
+     * @return mixed
+     */
+    public static function findDoctors($idList)
+    {
+        return Doctor::select(
+            'doctors.id', 'doctors.name', 'doctors.avatar', 'doctors.title', 'doctors.auth',
+            'doctors.province_id', 'doctors.city_id', 'doctors.hospital_id', 'doctors.dept_id', 'doctors.college_id',
+            'doctors.tag_list', 'doctors.profile',
+            'doctors.fee_switch', 'doctors.fee', 'doctors.fee_face_to_face', 'doctors.admission_set_fixed', 'doctors.admission_set_flexible',
+            'provinces.name AS province', 'citys.name AS city',
+            'hospitals.name AS hospital', 'dept_standards.name AS dept',
+            'colleges.name AS college')
+            ->leftJoin('provinces', 'provinces.id', '=', 'doctors.province_id')
+            ->leftJoin('citys', 'citys.id', '=', 'doctors.city_id')
+            ->leftJoin('hospitals', 'hospitals.id', '=', 'doctors.hospital_id')
+            ->leftJoin('dept_standards', 'dept_standards.id', '=', 'doctors.dept_id')
+            ->leftJoin('colleges', 'colleges.id', '=', 'doctors.college_id')
+            ->whereIn('doctors.id', $idList)
+            ->get();
+    }
+
+    /**
      * 根据必填的字段值和可选的城市/医院/科室条件搜索符合条件的医生.
      * id转name.
      * 按是否三甲医院排序.

@@ -381,7 +381,7 @@ class SearchController extends BaseController
         }
 
         $doctorIdList = Appointment::getMyDoctors($user->id);
-        $doctors = Doctor::whereIn('id', $doctorIdList)->get();
+        $doctors = Doctor::findDoctors($doctorIdList);
         $data = array();
         foreach ($doctors as $doctor) {
             array_push($data, Transformer::searchDoctorTransform($doctor, $user->id));
