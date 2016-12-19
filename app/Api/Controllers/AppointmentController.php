@@ -108,7 +108,7 @@ class AppointmentController extends BaseController
             'request_mode' => '找专家', //我的医生、找专家、医生代约
             'platform_or_doctor' => 'p',
             'doctor_or_patient' => 'p', //患者发起
-            'expect_visit_date' => $request['date'],
+            'expect_visit_date' => date('Y-m-d', $request['date']),
             'expect_am_pm' => $request['am_or_pm'],
             'price' => $doctor->fee,
             'status' => 'wait-1' //新建约诊之后,进入待患者付款阶段
@@ -183,7 +183,7 @@ class AppointmentController extends BaseController
             'request_mode' => ($request['locums_doctor'] == 1) ? '找专家' : '医生代约', //我的医生、找专家、医生代约
             'platform_or_doctor' => ($request['locums_doctor'] == 1) ? 'p' : 'd',
             'doctor_or_patient' => 'p', //患者发起
-            'expect_visit_date' => $request['date'],
+            'expect_visit_date' => date('Y-m-d', $request['date']),
             'expect_am_pm' => $request['am_or_pm'],
             'status' => 'wait-0' //请求代约
         ];
