@@ -403,6 +403,24 @@ class ApiController extends BaseController
                             'message' => '',
                             'error' => ''
                         ]
+                    ],
+
+                    '删除我的医生' => [
+                        'url' => $http . '/api/user/del-doctor',
+                        'method' => 'POST',
+                        'params' => [
+                            'token' => ''
+                        ],
+                        'form-data' => [
+                            'id' => '医生ID'
+                        ],
+                        'response' => [
+                            'data' => [
+                                'result' => 'success或fail'
+                            ],
+                            'message' => '',
+                            'error' => ''
+                        ]
                     ]
                 ],
 

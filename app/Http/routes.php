@@ -71,6 +71,7 @@ $api->version('v1', function ($api) {
                 $api->post('/', 'UserController@update');
                 $api->get('/{doctor}', 'SearchController@findDoctor');
                 $api->post('add-doctor', 'UserController@addDoctor');
+                $api->post('del-doctor', 'UserController@delDoctor');
             });
 
             // Search

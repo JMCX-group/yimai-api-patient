@@ -572,14 +572,50 @@ class UserController extends BaseController
         if (Doctor::where('id', $doctorId)->get()->isEmpty()) {
             $data = ['result' => 'fail'];
         } else {
-            if($my->my_doctors == null || $my->my_doctors == ''){
+            if ($my->my_doctors == null || $my->my_doctors == '') {
                 $my->my_doctors = $doctorId;
-            }else{
+            } else {
                 $myDoctors = explode(',', $my->my_doctors);
                 if (!in_array($doctorId, $myDoctors)) {
                     array_push($myDoctors, $doctorId);
                     $my->my_doctors = implode(',', $myDoctors);
                 }
+            }
+            $my->save();
+            $data = ['result' => 'success'];
+        }
+
+        return response()->json(compact('data'));
+    }
+
+    /**
+     * 删除医生
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse|mixed
+     */
+    public function delDoctor(Request $request)
+    {
+        $my = User::getAuthenticatedUser();
+        if (!isset($my->id)) {
+            return $my;
+        }
+
+        $doctorId = $request['id'];
+        if (Doctor::where('id', $doctorId)->get()->isEmpty()) {
+            $data = ['result' => 'fail'];
+        } else {
+            if ($my->my_doctors == null || $my->my_doctors == '') {
+                $my->my_doctors = $doctorId;
+            } else {
+                $myDoctors = explode(',', $my->my_doctors);
+                $saveData = array();
+                foreach ($myDoctors as $myDoctor) {
+                    if ($doctorId != $myDoctor) {
+                        array_push($saveData, $myDoctor);
+                    }
+                }
+                $my->my_doctors = implode(',', $saveData);
             }
             $my->save();
             $data = ['result' => 'success'];
