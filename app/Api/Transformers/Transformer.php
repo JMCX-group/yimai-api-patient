@@ -349,17 +349,17 @@ class Transformer
     {
         return [
             'doctor_info' => [
-                'id' => $doctor->id,
-                'name' => $doctor->name,
-                'head_url' => ($doctor->avatar == '') ? null : $doctor->avatar,
-                'job_title' => $doctor->title,
-                'hospital' => $doctor->hospital,
-                'department' => $doctor->dept
+                'id' => (empty($doctor)) ? null : $doctor->id,
+                'name' => (empty($doctor)) ? null : $doctor->name,
+                'head_url' => (empty($doctor)) ? null : (($doctor->avatar == '') ? null : $doctor->avatar),
+                'job_title' => (empty($doctor)) ? null : $doctor->title,
+                'hospital' => (empty($doctor)) ? null : $doctor->hospital,
+                'department' => (empty($doctor)) ? null : $doctor->dept
             ],
             'locums_doctor_info' => [
                 'id' => $locumsDoctor->id,
                 'name' => $locumsDoctor->name,
-                'head_url' => ($locumsDoctor->avatar == '') ? null : $doctor->avatar,
+                'head_url' => ($locumsDoctor->avatar == '') ? null : ((empty($doctor)) ? null : $doctor->avatar),
                 'job_title' => $locumsDoctor->title,
                 'hospital' => $locumsDoctor->hospital,
                 'department' => $locumsDoctor->dept
