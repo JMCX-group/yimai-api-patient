@@ -443,7 +443,15 @@ class AppointmentController extends BaseController
     {
         $appointmentId = $request['id'];
         $appointment = Appointment::find($appointmentId);
-        $doctorName = Doctor::find($appointment->doctor_id)->first()->name;
+        $doctor = Doctor::find($appointment->doctor_id);
+
+        /**
+         * 没有支付金额修复：
+         */
+        if ($appointment->price == null) {
+            $appointment->price = $doctor->fee;
+        }
+        $doctorName = $doctor->name;
 
         //微信支付
         $data = ['message' => 'false'];
