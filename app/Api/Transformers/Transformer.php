@@ -359,7 +359,7 @@ class Transformer
             'locums_doctor_info' => [
                 'id' => $locumsDoctor->id,
                 'name' => $locumsDoctor->name,
-                'head_url' => ($locumsDoctor->avatar == '') ? null : ((empty($doctor)) ? null : $doctor->avatar),
+                'head_url' => ($locumsDoctor->avatar == '') ? null : $locumsDoctor->avatar,
                 'job_title' => $locumsDoctor->title,
                 'hospital' => $locumsDoctor->hospital,
                 'department' => $locumsDoctor->dept
