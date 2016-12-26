@@ -135,7 +135,12 @@ class Transformer
             'fee_face_to_face' => $user->fee_face_to_face,
             'admission_set_fixed' => $user->admission_set_fixed,
             'admission_set_flexible' => self::delOutdated(json_decode($user->admission_set_flexible, true)),
-            'is_my_doctor' => Appointment::where('patient_id', $myId)->where('doctor_id', $user->id)->get()->isEmpty() ? 'false' : 'true'
+            'is_my_doctor' => Appointment::where('patient_id', $myId)
+                ->where('doctor_id', $user->id)
+                ->whereIn('status', ['completed-1', 'completed-2'])
+                ->get()
+                ->isEmpty()
+                ? 'false' : 'true'
         ];
     }
 
