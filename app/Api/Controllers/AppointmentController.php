@@ -194,6 +194,7 @@ class AppointmentController extends BaseController
         $data = [
             'id' => $frontId . $nowId,
             'locums_id' => $request['locums_doctor'], //代理医生ID,1为平台代约,0为没有代约医生
+            'doctor_id' => $request['doctor'], //请求代约哪个医生
             'patient_id' => $user->id,
             'patient_name' => $request['name'],
             'patient_phone' => $request['phone'],
@@ -215,18 +216,21 @@ class AppointmentController extends BaseController
         /**
          * 推送消息记录
          */
-        $msgData = [
-            'appointment_id' => $frontId . $nowId,
-            'locums_id' => $request['locums_doctor'], //代理医生ID,1为平台代约,0为没有代约医生
-            'locums_name' => Doctor::find($request['locums_doctor'])->first()->name, //代理医生姓名
-            'patient_id' => $user->id,
-            'patient_name' => $request['name'],
-            'status' => 'wait-0' //新建约诊之后,进入待代理医生确认环节
-        ];
+        if($request['locums_doctor'] > 1){
+            $msgData = [
+                'appointment_id' => $frontId . $nowId,
+                'locums_id' => $request['locums_doctor'], //代理医生ID,0为没有代约医生,1为平台代约
+                'locums_name' => Doctor::find($request['locums_doctor'])->first()->name, //代理医生姓名
+                'patient_id' => $user->id,
+                'patient_name' => $request['name'],
+                'status' => 'wait-0' //新建约诊之后,进入待代理医生确认环节
+            ];
+
+            AppointmentMsg::create($msgData);
+        }
 
         try {
             Appointment::create($data);
-            AppointmentMsg::create($msgData);
         } catch (JWTException $e) {
             return response()->json(['error' => $e->getMessage()], $e->getStatusCode());
         }
