@@ -32,10 +32,7 @@ class AppointmentInsteadRequest extends Request
         return [
             'name' => 'required|between:1,10',
             'phone' => 'required',
-            'locums_doctor' => 'required',
-            'demand_hospital' => 'required',
-            'demand_dept' => 'required',
-            'demand_title' => 'required'
+            'locums_doctor' => 'required'
         ];
     }
 
@@ -58,10 +55,7 @@ class AppointmentInsteadRequest extends Request
         return [
             'name' => '姓名',
             'phone' => '手机号码',
-            'locums_doctor' => '代约医生ID',
-            'demand_hospital' => '代约需求-医院',
-            'demand_dept' => '代约需求-科室',
-            'demand_title' => '代约需求-职称'
+            'locums_doctor' => '代约医生ID'
         ];
     }
 
