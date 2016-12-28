@@ -27,6 +27,7 @@ class ApiController extends BaseController
             '统一说明' => [
                 '医生端域名' => 'http://d.medi-link.cn/',
                 '患者端域名' => 'http://p.medi-link.cn/',
+                'CMS域名' => 'http://cms.medi-link.cn/',
                 '数据格式' => 'JSON',
                 'url字段' => 'HTTP请求地址; {}表示在链接后直接跟该数据的ID值即可,例:http://api/hospital/77?token=xx,能获取id为77的医院信息',
                 'method字段' => 'GET / POST',
@@ -60,8 +61,8 @@ class ApiController extends BaseController
                         'response' => [
                             'data' => [
                                 [
-                                    'focus_img_url' => '轮播图URL',
-                                    'content_url' => '跳转文章URL'
+                                    'focus_img_url' => '轮播图URL；绝对地址',
+                                    'content_url' => '跳转文章URL；绝对地址'
                                 ]
                             ],
                             'message' => '',
@@ -1189,8 +1190,8 @@ class ApiController extends BaseController
                             'data' => [
                                 'id' => '广播ID',
                                 'name' => '广播标题',
-                                'url' => '广播链接; 相对地址; 例如:/article/1, 前台请拼成: http://101.201.40.220/article/1 , 即可直接访问,不需要其他get参数',
-                                'img_url' => '首页图片URL; 相对地址; 例如:/uploads/article/1.png, 前台请拼成: http://101.201.40.220/uploads/article/1.png ,即可直接访问',
+                                'url' => '广播链接; 绝对地址',
+                                'img_url' => '首页图片URL; 绝对地址',
                                 'author' => '发表人',
                                 'time' => '发表时间',
                                 'unread' => '是否未读,1为未读,null为已读'
