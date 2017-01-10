@@ -189,6 +189,23 @@ class AppointmentController extends BaseController
         }
 
         /**
+         * 判断我的医生、找专家（平台代约，ID为1）、医生代约
+         */
+        if($request['locums_doctor'] == 1 ){
+            $requestMode = '找专家';
+        }else{
+            $isMyDoctor = Appointment::where('locums_id', $request['locums_doctor'])
+                ->where('patient_id', $user->id)
+                ->first()
+                ->get();
+            if($isMyDoctor == null ){
+                $requestMode = '医生代约';
+            }else{
+                $requestMode = '我的医生';
+            }
+        }
+
+        /**
          * 发起约诊信息记录
          */
         $data = [
@@ -205,7 +222,7 @@ class AppointmentController extends BaseController
             'patient_demand_hospital' => isset($request['demand_hospital']) ? $request['demand_hospital'] : '',
             'patient_demand_dept' => isset($request['demand_dept']) ? $request['demand_dept'] : '',
             'patient_demand_title' => isset($request['demand_title']) ? $request['demand_title'] : '',
-            'request_mode' => ($request['locums_doctor'] == 1) ? '找专家' : '医生代约', //我的医生、找专家、医生代约
+            'request_mode' => $requestMode,
             'platform_or_doctor' => ($request['locums_doctor'] == 1) ? 'p' : 'd',
             'doctor_or_patient' => 'p', //患者发起
             'expect_visit_date' => $expectVisitDate,
