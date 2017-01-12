@@ -25,6 +25,7 @@ class Doctor extends Model
         'email',
         'password',
         'rong_yun_token',
+        'device_token',
         'name',
         'avatar',
         'gender',

@@ -34,6 +34,7 @@ class UserTransformer extends TransformerAbstract
         return [
             'id' => $user['id'],
             'phone' => $user['phone'],
+            'device_token' => $user['device_token'],
             'name' => $user['name'],
             'nickname' => $user['nickname'],
             'head_url' => ($user['avatar'] == '') ? null : $user['avatar'],
@@ -117,6 +118,7 @@ class UserTransformer extends TransformerAbstract
         return [
             'id' => $user['id'],
             'phone' => $user['phone'],
+            'device_token' => $user['device_token'],
             'name' => $user['name'],
             'nickname' => $user['nickname'],
             'head_url' => ($user['avatar'] == '') ? null : $user['avatar'],

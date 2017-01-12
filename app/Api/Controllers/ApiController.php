@@ -163,6 +163,7 @@ class ApiController extends BaseController
                             'user' => [
                                 'id' => '用户id',
                                 'phone' => '用户注册手机号',
+                                'device_token' => '友盟设备token； IOS：64位长，安卓：44位长',
                                 'name' => '用户姓名',
                                 'nickname' => '用户昵称',
                                 'head_url' => '头像URL',
@@ -249,6 +250,7 @@ class ApiController extends BaseController
                             'user' => [
                                 'id' => '用户id',
                                 'phone' => '用户注册手机号',
+                                'device_token' => '友盟设备token； IOS：64位长，安卓：44位长',
                                 'name' => '用户姓名',
                                 'nickname' => '用户昵称',
                                 'head_url' => '头像URL',
@@ -352,6 +354,7 @@ class ApiController extends BaseController
                         ],
                         'form-data' => [
                             'password' => '用户密码',
+                            'device_token' => '友盟设备token； IOS：64位长，安卓：44位长',
                             'name' => '用户姓名',
                             'nickname' => '用户昵称',
                             'head_img' => '用户头像; 直接POST文件,支持后缀:jpg/jpeg/png',
@@ -366,6 +369,7 @@ class ApiController extends BaseController
                             'user' => [
                                 'id' => '用户id',
                                 'phone' => '用户注册手机号',
+                                'device_token' => '友盟设备token； IOS：64位长，安卓：44位长',
                                 'name' => '用户姓名',
                                 'nickname' => '用户昵称',
                                 'head_url' => '头像URL',
@@ -1019,7 +1023,7 @@ class ApiController extends BaseController
                                 'head_url' => '患者头像URL',
                                 'sex' => '患者性别',
                                 'age' => '患者年龄',
-                                'phone' => '所属科室',
+                                'phone' => '患者电话',
                                 'history' => '病情描述',
                                 'img_url' => '病历图片url序列,url中把{_thumb}替换掉就是未压缩图片,例如:/uploads/case-history/2016/05/011605130001/1463539005_thumb.jpg,原图就是:/uploads/case-history/2016/05/011605130001/1463539005.jpg',
                             ],
