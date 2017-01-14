@@ -239,6 +239,31 @@ class ApiController extends BaseController
                     ]
                 ],
 
+                '数据信息' => [
+                    '查询当前登录医生排班信息' => [
+                        '说明' => 'data里总共会有14组数据，依次从当天开始，am和pm后面的是跟的字符串true或false',
+                        'url' => $http . '/api/data/scheduling',
+                        'method' => 'POST',
+                        'params' => [
+                            'token' => ''
+                        ],
+                        'form-data' => [
+                            'id' => '医生ID'
+                        ],
+                        'response' => [
+                            'data' => [
+                                [
+                                    'date' => '2016-06-23',
+                                    'am' => 'true',
+                                    'pm' => 'false',
+                                ]
+                            ],
+                            'message' => '',
+                            'error' => ''
+                        ]
+                    ],
+                ],
+
                 '用户信息' => [
                     '查询登陆用户自己的信息' => [
                         'url' => $http . '/api/user/me',
