@@ -253,9 +253,9 @@ class ApiController extends BaseController
                         'response' => [
                             'data' => [
                                 [
-                                    'date' => '2016-06-23',
-                                    'am' => 'true',
-                                    'pm' => 'false',
+                                    'date' => '日期，数据示例：2016-06-23',
+                                    'am' => '上午，数据示例：true',
+                                    'pm' => '下午，数据示例：false',
                                 ]
                             ],
                             'message' => '',
