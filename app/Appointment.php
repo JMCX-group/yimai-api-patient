@@ -104,4 +104,21 @@ class Appointment extends Model
 
         return $retArr;
     }
+
+    /**
+     * 获取约单数量最多的十名医生ID
+     *
+     * @return mixed
+     */
+    public static function getTop10()
+    {
+        return Appointment::select(DB::raw('count(*) as count, doctor_id'))
+            ->where('doctor_id', '!=', '')
+            ->groupBy('doctor_id')
+            ->orderBy('count', 'desc')
+            ->take(10)
+            ->get()
+            ->lists('doctor_id')
+            ->toArray();
+    }
 }

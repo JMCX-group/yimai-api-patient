@@ -173,6 +173,21 @@ class User extends Model implements AuthenticatableContract,
     }
 
     /**
+     * 默认进入搜索获取的数据,获取相关标签
+     *
+     * @return mixed
+     */
+    public static function newDefaultInfo()
+    {
+        $idArr = Appointment::getTop10();
+        $idList = join(',', $idArr);
+        $condition = "WHERE doctors.id IN (" . $idList . ") ";
+        $order = "ORDER BY FIND_IN_SET(doctors.id, '12,7,8,6,36,52,71,14,17,16')"; //按照whereIn里的排序
+
+        return self::defaultSearchSql($condition, $order);
+    }
+
+    /**
      * 根据必填的字段值和可选的城市/医院/科室条件搜索符合条件的医生.
      * id转name.
      * 按是否三甲医院排序.

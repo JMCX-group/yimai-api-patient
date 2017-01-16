@@ -28,18 +28,22 @@ class SearchController extends BaseController
             return $user;
         }
 
-        if (!empty($user->tag_list)) {
-            $tag = json_decode($user->tag_list, true);
-            $data = User::defaultInfo($tag['tag_list']);
+        /**
+         * 因为没有标签选择，暂时屏蔽：
+         */
+//        if (!empty($user->tag_list)) {
+//            $tag = json_decode($user->tag_list, true);
+//            $data = User::defaultInfo($tag['tag_list']);
+            $data = User::newDefaultInfo();
 
             foreach ($data as &$item) {
                 $item = Transformer::searchDoctorTransform($item, $user->id);
             }
 
             return response()->json(compact('data'));
-        } else {
-            return response()->json(['message' => '标签信息未填写'], 400);
-        }
+//        } else {
+//            return response()->json(['message' => '标签信息未填写'], 400);
+//        }
     }
 
     /**
