@@ -8,16 +8,26 @@
 
 namespace App\Api\Controllers;
 
+use App\Api\Helper\WeiXinPay;
+use App\Api\Requests\RechargeRequest;
 use App\Api\Transformers\TransactionRecordTransformer;
 use App\Api\Transformers\WalletTransformer;
 use App\Appointment;
 use App\Order;
+use App\PatientRechargeRecord;
 use App\PatientWallet;
 use App\User;
-use Illuminate\Http\Request;
+use Tymon\JWTAuth\Exceptions\JWTException;
 
 class WalletController extends BaseController
 {
+    private $wxPayClass;
+
+    public function __construct()
+    {
+        $this->wxPayClass = new WeiXinPay();
+    }
+
     /**
      * 钱包基础信息
      *
@@ -35,15 +45,9 @@ class WalletController extends BaseController
             $walletInfo = PatientWallet::insert(['patient_id' => $user->id]);
         }
 
-//        $total = Order::totalFeeSum($user->id);
-//        $billable = Order::billableSum($user->id);
-//        $pending = Order::pendingSum($user->id);
-//        $walletInfo->total = ($total[0]->sum_value) / 100;
-//        $walletInfo->billable = ($billable[0]->sum_value) / 100; //可提现
-//        $walletInfo->pending = ($pending[0]->sum_value) / 100; //待结算
-//        //$walletInfo->refunded = 0; //已提现
-//        $walletInfo->save();
-        //患者未支付的列表：
+        /**
+         * 患者未支付的列表：
+         */
         $appointments = Appointment::where('appointments.patient_id', $user->id)
             ->leftJoin('doctors', 'doctors.id', '=', 'appointments.doctor_id')
             ->leftJoin('dept_standards', 'dept_standards.id', '=', 'doctors.dept_id')
@@ -53,7 +57,7 @@ class WalletController extends BaseController
             ->orderBy('updated_at', 'desc')
             ->get();
         $retAppointments = array();
-        foreach ($appointments as $appointment){
+        foreach ($appointments as $appointment) {
             array_push($retAppointments, WalletTransformer::appointmentTransform($appointment));
         }
 
@@ -66,56 +70,11 @@ class WalletController extends BaseController
     }
 
     /**
-     * 收支明细列表 - 带分类
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse|mixed
-     */
-    public function record(Request $request)
-    {
-        $user = User::getAuthenticatedUser();
-        if (!isset($user->id)) {
-            return $user;
-        }
-
-        if (isset($request['type'])) {
-            $type = $request['type'];
-            if ($type == 'billable') { //可提现
-                $record = Order::where('doctor_id', $user->id)
-                    ->where('settlement_status', '可提现')
-                    ->orderBy('created_at', 'DESC')
-                    ->get();
-            } elseif ($type == 'pending') { //待结算，
-                $record = Order::where('doctor_id', $user->id)
-                    ->where('settlement_status', '待结算')
-                    ->orderBy('created_at', 'DESC')
-                    ->get();
-            } else {
-                $record = Order::where('doctor_id', $user->id)
-                    ->orderBy('created_at', 'DESC')
-                    ->get();
-            }
-        } else {
-            $record = Order::where('doctor_id', $user->id)
-                ->orderBy('created_at', 'DESC')
-                ->get();
-        }
-
-        $data = array();
-        foreach ($record as $item) {
-            $recordData = TransactionRecordTransformer::transformData($item);
-            array_push($data, $recordData);
-        }
-
-        return response()->json(compact('data'));
-    }
-
-    /**
      * 收支明细列表
      *
      * @return \Illuminate\Http\JsonResponse|mixed
      */
-    public function recordGet()
+    public function record()
     {
         $user = User::getAuthenticatedUser();
         if (!isset($user->id)) {
@@ -133,21 +92,54 @@ class WalletController extends BaseController
     }
 
     /**
-     * 收支细节
+     * 用户充值
      *
-     * @param $id
+     * @param RechargeRequest $request
      * @return \Illuminate\Http\JsonResponse|mixed
      */
-    public function detail($id)
+    public function recharge(RechargeRequest $request)
     {
         $user = User::getAuthenticatedUser();
         if (!isset($user->id)) {
             return $user;
         }
 
-        $order = Order::find($id);
-        $data = TransactionRecordTransformer::transformData($order);
+        /**
+         * 支付信息获取
+         */
+        $outTradeNo = date('YmdHis') . str_pad($user->id, 6, '0', STR_PAD_LEFT);
+        $body = '医者脉连-会员充值';
+        $fee = $request['fee'] * 100; //单位要换算成分
+        $timeExpire = date('YmdHis', (time() + 600)); //过期时间600秒
 
-        return response()->json(compact('data'));
+        /**
+         * 充值记录入库
+         */
+        $rechargeRecord = [
+            'patient_id' => $user->id,
+            'out_trade_no' => $outTradeNo,
+            'total_fee' => $fee,
+            'body' => $body,
+            'detail' => '',
+            'time_start' => date('Y-m-d H:i:s'),
+            'source' => 'WeChat',
+            'status' => 'start' //start:开始; end:结束
+        ];
+        PatientRechargeRecord::create($rechargeRecord);
+
+        /**
+         * 微信支付
+         */
+        if ($fee > 0) {
+            try {
+                $data = $this->wxPayClass->wxPay($outTradeNo, $body, $fee, $timeExpire);
+                //TODO ：回调还需要处理
+                return response()->json(compact('data'), 200);
+            } catch (JWTException $e) {
+                return response()->json(['error' => $e->getMessage()], $e->getStatusCode());
+            }
+        }
+
+        return response()->json(['error' => '金额异常'], 400);
     }
 }

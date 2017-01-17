@@ -1224,7 +1224,32 @@ class ApiController extends BaseController
                             'message' => '',
                             'error' => ''
                         ]
-                    ]
+                    ],
+
+                    '患者会员充值' => [
+                        'APP支付接口调用文档' => 'https://pay.weixin.qq.com/wiki/doc/api/app/app.php?chapter=9_12&index=2',
+                        'url' => $http . '/api/wallet/recharge',
+                        'method' => 'POST',
+                        'params' => [
+                            'token' => ''
+                        ],
+                        'form-data' => [
+                            'fee' => '金额；单位：元'
+                        ],
+                        'response' => [
+                            'data' => [
+                                'appid' => '',
+                                'noncestr' => '',
+                                'package' => '',
+                                'partnerid' => '',
+                                'prepayid' => '',
+                                'timestamp' => '',
+                                'sign' => '',
+                            ],
+                            'message' => '',
+                            'error' => ''
+                        ]
+                    ],
                 ],
 
                 '广播信息' => [

@@ -507,6 +507,7 @@ class AppointmentController extends BaseController
                     'body' => '约诊',
                     'detail' => '',
                     'type' => '收入',
+                    'time_start' => date('Y-m-d H:i:s'),
                     'status' => 'start', //start:开始; end:结束
                     'settlement_status' => '待结算'
                 ];

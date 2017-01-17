@@ -14,6 +14,7 @@ use App\AppointmentMsg;
 use App\Doctor;
 use Illuminate\Http\Request;
 use App\Order;
+use Illuminate\Support\Facades\Log;
 
 class PayController extends BaseController
 {
@@ -57,7 +58,7 @@ class PayController extends BaseController
     public function notifyUrl()
     {
         $wxData = (array)simplexml_load_string(file_get_contents('php://input'), 'SimpleXMLElement', LIBXML_NOCDATA);
-        $this->writeFile(json_encode($wxData)); //测试期间
+        Log::info('appointment-pay', ['context' => json_encode($wxData)]); //测试期间
         if ($wxData['return_code'] == 'SUCCESS' && $wxData['result_code'] == 'SUCCESS') {
             $this->paymentProcessing($wxData);
             echo 'SUCCESS';
