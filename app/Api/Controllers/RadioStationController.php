@@ -26,9 +26,6 @@ class RadioStationController extends BaseController
             return $user;
         }
 
-        /**
-         * 分页获取广播列表,并左连接获取广播已读状态表信息
-         */
         $radioStations = RadioStation::getRadioList($user);
 
         return $this->response->paginator($radioStations, new RadioStationTransformer());
