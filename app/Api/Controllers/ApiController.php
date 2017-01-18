@@ -1300,6 +1300,20 @@ class ApiController extends BaseController
                             'message' => '',
                             'error' => ''
                         ]
+                    ],
+
+                    '全部已读' => [
+                        'url' => $http . '/api/radio/all-read',
+                        'method' => 'GET',
+                        'params' => [
+                            'token' => ''
+                        ],
+                        '说明' => 'HTTP状态204',
+                        'response' => [
+                            'success' => '',
+                            'message' => '',
+                            'error' => ''
+                        ]
                     ]
                 ],
 

@@ -125,6 +125,7 @@ $api->version('v1', function ($api) {
             $api->group(['prefix' => 'radio'], function ($api) {
                 $api->get('/', 'RadioStationController@index');
                 $api->post('read', 'RadioStationController@readStatus');
+                $api->get('all-read', 'RadioStationController@allRead');
             });
 
             //Appointment

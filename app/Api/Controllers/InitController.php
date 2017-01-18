@@ -59,11 +59,16 @@ class InitController extends BaseController
             array_push($retContact, Transformer::contactsTransform($contact));
         }
 
+        /**
+         * Get all system notification.
+         */
+        $radioStationUnreadCount = RadioStation::getUnreadRadioCount($user);
+
         return [
             'user' => $retUser,
             'my_doctors' => $myDoctors,
             'sys_info' => [
-//                'radio_unread_count' => $radioStationUnreadCount,
+                'radio_unread_count' => $radioStationUnreadCount,
 //                'admissions_unread_count' => $admissionsUnreadCount,
 //                'appointment_unread_count' => $appointmentUnreadCount
             ]

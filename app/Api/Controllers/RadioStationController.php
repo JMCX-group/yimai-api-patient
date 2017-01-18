@@ -9,7 +9,7 @@
 namespace App\Api\Controllers;
 
 use App\Api\Transformers\RadioStationTransformer;
-use App\RadioRead;
+use App\PatientRadioRead;
 use App\RadioStation;
 use App\User;
 use Illuminate\Http\Request;
@@ -26,21 +26,17 @@ class RadioStationController extends BaseController
             return $user;
         }
 
-        // 分页获取广播列表,并左连接获取广播已读状态表信息
-        $radioStations = RadioStation::leftJoin('radio_read', function ($join) use ($user) {
-            $join->on('radio_stations.id', '=', 'radio_read.radio_station_id')
-                ->where('radio_read.user_id', '=', $user->id);
-        })
-            ->where('status', 0)
-//            ->where('valid', '>', date('Y-m-d H:i:s'))
-            ->paginate(4);
+        /**
+         * 分页获取广播列表,并左连接获取广播已读状态表信息
+         */
+        $radioStations = RadioStation::getRadioList($user);
 
         return $this->response->paginator($radioStations, new RadioStationTransformer());
     }
 
     /**
      * 已读后删除对应消息
-     * 
+     *
      * @param Request $request
      * @return \Dingo\Api\Http\Response|mixed
      */
@@ -51,11 +47,27 @@ class RadioStationController extends BaseController
             return $user;
         }
 
-        RadioRead::where('user_id', $user->id)
+        PatientRadioRead::where('user_id', $user->id)
             ->where('radio_station_id', $request->id)
             ->delete();
 
-//        return $this->response->noContent();
-        return response()->json(['success' => ''], 204); //给肠媳适配。。
+        return response()->json(['success' => ''], 204);
+    }
+
+    /**
+     * 全部消息已读
+     *
+     * @return \Dingo\Api\Http\Response|mixed
+     */
+    public function allRead()
+    {
+        $user = User::getAuthenticatedUser();
+        if (!isset($user->id)) {
+            return $user;
+        }
+
+        PatientRadioRead::where('user_id', $user->id)->delete();
+
+        return response()->json(['success' => ''], 204);
     }
 }
