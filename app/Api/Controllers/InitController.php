@@ -8,14 +8,12 @@
 
 namespace App\Api\Controllers;
 
-use App\AdmissionsMsg;
+use App\AppointmentMsg;
 use App\Api\Transformers\Transformer;
 use App\Api\Transformers\UserTransformer;
 use App\Appointment;
-use App\AppointmentMsg;
 use App\Doctor;
 use App\DoctorContactRecord;
-use App\DoctorRelation;
 use App\RadioStation;
 use App\User;
 
@@ -69,7 +67,6 @@ class InitController extends BaseController
             'my_doctors' => $myDoctors,
             'sys_info' => [
                 'radio_unread_count' => $radioStationUnreadCount,
-//                'admissions_unread_count' => $admissionsUnreadCount,
 //                'appointment_unread_count' => $appointmentUnreadCount
             ]
         ];
