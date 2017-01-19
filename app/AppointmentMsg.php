@@ -20,13 +20,18 @@ class AppointmentMsg extends Model
      */
     protected $fillable = [
         'appointment_id',
+        'status',
         'locums_id',
         'locums_name',
+        'patient_id',
         'patient_name',
         'doctor_id',
         'doctor_name',
+        'locums_read',
+        'patient_read',
+        'doctor_read',
         'type',
-        'status',
-        'read_status'
+        'created_at',
+        'updated_at'
     ];
 }

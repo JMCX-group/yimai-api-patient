@@ -8,6 +8,7 @@
 
 namespace App\Api\Controllers;
 
+use App\Api\Helper\MsgAndNotification;
 use App\Api\Helper\WeiXinPay;
 use App\Api\Requests\AppointmentDetailRequest;
 use App\Api\Requests\AppointmentIdRequest;
@@ -20,6 +21,7 @@ use App\Appointment;
 use App\AppointmentMsg;
 use App\Doctor;
 use App\Order;
+use App\Patient;
 use App\User;
 use Intervention\Image\Facades\Image;
 use Tymon\JWTAuth\Exceptions\JWTException;
@@ -121,26 +123,20 @@ class AppointmentController extends BaseController
             'status' => 'wait-1' //新建约诊之后,进入待患者付款阶段
         ];
 
-        /**
-         * 推送消息记录
-         */
-        $msgData = [
-            'appointment_id' => $frontId . $nowId,
-            'locums_id' => 0, //代理医生ID,1为平台代约,0为没有代约医生
-            'patient_name' => $data['patient_name'],
-            'doctor_id' => $data['doctor_id'],
-            'doctor_name' => $doctor->name,
-            'status' => 'wait-1' //新建约诊之后,进入待患者付款阶段
-        ];
-
         try {
-            Appointment::create($data);
-            AppointmentMsg::create($msgData);
+            $appointment = Appointment::create($data);
+            $appointment['id'] = $frontId . $nowId;
+
+            MsgAndNotification::sendAppointmentsMsg($appointment); //推送消息
+            $patient = Patient::where('phone', $appointment['patient_phone'])->first();
+            if (isset($patient->id) && ($patient->device_token != '' && $patient->device_token != null)) {
+                MsgAndNotification::pushAppointmentMsg($patient->device_token, $appointment['status'], $appointment['id'], 'patient'); //向患者端推送消息
+            }
+
+            return ['id' => $appointment['id']];
         } catch (JWTException $e) {
             return response()->json(['error' => $e->getMessage()], $e->getStatusCode());
         }
-
-        return ['id' => $frontId . $nowId];
     }
 
     /**
@@ -186,16 +182,16 @@ class AppointmentController extends BaseController
         /**
          * 判断我的医生、找专家（平台代约，ID为1）、医生代约
          */
-        if($request['locums_doctor'] == 1 ){
+        if ($request['locums_doctor'] == 1) {
             $requestMode = '找专家';
-        }else{
+        } else {
             $isMyDoctor = Appointment::where('locums_id', $request['locums_doctor'])
                 ->where('patient_id', $user->id)
                 ->first()
                 ->get();
-            if($isMyDoctor == null ){
+            if ($isMyDoctor == null) {
                 $requestMode = '医生代约';
-            }else{
+            } else {
                 $requestMode = '我的医生';
             }
         }
@@ -225,29 +221,20 @@ class AppointmentController extends BaseController
             'status' => 'wait-0' //请求代约
         ];
 
-        /**
-         * 推送消息记录
-         */
-        if($request['locums_doctor'] > 1){
-            $msgData = [
-                'appointment_id' => $frontId . $nowId,
-                'locums_id' => $request['locums_doctor'], //代理医生ID,0为没有代约医生,1为平台代约
-                'locums_name' => Doctor::find($request['locums_doctor'])->first()->name, //代理医生姓名
-                'patient_id' => $user->id,
-                'patient_name' => $request['name'],
-                'status' => 'wait-0' //新建约诊之后,进入待代理医生确认环节
-            ];
-
-            AppointmentMsg::create($msgData);
-        }
-
         try {
-            Appointment::create($data);
+            $appointment = Appointment::create($data);
+            $appointment['id'] = $frontId . $nowId;
+
+            MsgAndNotification::sendAppointmentsMsg($appointment); //推送消息
+            $doctor = Doctor::where('id', $appointment['locums_id'])->first();
+            if (isset($doctor->id) && ($doctor->device_token != '' && $doctor->device_token != null)) {
+                MsgAndNotification::pushAppointmentMsg($doctor->device_token, $appointment['status'], $appointment['id'], 'doctor'); //向医生端推送消息
+            }
+
+            return ['id' => $appointment['id']];
         } catch (JWTException $e) {
             return response()->json(['error' => $e->getMessage()], $e->getStatusCode());
         }
-
-        return ['id' => $frontId . $nowId];
     }
 
     /**
@@ -498,10 +485,24 @@ class AppointmentController extends BaseController
      */
     public function complete(AppointmentIdRequest $request)
     {
-        $appointmentId = $request['id'];
-        Appointment::where('id', $appointmentId)->update(['status' => 'completed-1']);
+        $appointment = Appointment::where('id', $request['id'])->first();
+        $appointment->status = 'completed-1';
 
-        return response()->json(['success' => ''], 204);
+        try {
+            if ($appointment->save()) {
+                MsgAndNotification::sendAppointmentsMsg($appointment); //推送消息
+                $doctor = Doctor::where('id', $appointment->doctor_id)->first();
+                if (isset($doctor->id) && ($doctor->device_token != '' && $doctor->device_token != null)) {
+                    MsgAndNotification::pushAppointmentMsg($doctor->device_token, $appointment->status, $appointment->id, 'doctor'); //向医生端推送消息
+                }
+
+                return response()->json(['success' => ''], 204);
+            } else {
+                return response()->json(['message' => '保存失败'], 500);
+            }
+        } catch (JWTException $e) {
+            return response()->json(['error' => $e->getMessage()], $e->getStatusCode());
+        }
     }
 
     /**
@@ -512,9 +513,24 @@ class AppointmentController extends BaseController
      */
     public function confirmRescheduled(AppointmentIdRequest $request)
     {
-        $appointmentId = $request['id'];
-        Appointment::where('id', $appointmentId)->update(['status' => 'wait-5']);
+        $appointment = Appointment::where('id', $request['id'])->first();
+        $appointment->status = 'wait-5';
+        $appointment->confirm_rescheduled_time = date('Y-m-d H:i:s');
 
-        return response()->json(['success' => ''], 204);
+        try {
+            if ($appointment->save()) {
+                MsgAndNotification::sendAppointmentsMsg($appointment); //推送消息
+                $doctor = Doctor::where('id', $appointment->doctor_id)->first();
+                if (isset($doctor->id) && ($doctor->device_token != '' && $doctor->device_token != null)) {
+                    MsgAndNotification::pushAppointmentMsg($doctor->device_token, $appointment->status, $appointment->id, 'doctor'); //向医生端推送消息
+                }
+
+                return response()->json(['success' => ''], 204);
+            } else {
+                return response()->json(['message' => '保存失败'], 500);
+            }
+        } catch (JWTException $e) {
+            return response()->json(['error' => $e->getMessage()], $e->getStatusCode());
+        }
     }
 }

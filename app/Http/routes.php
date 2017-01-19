@@ -156,9 +156,6 @@ $api->version('v1', function ($api) {
                 $api->get('all', 'AppointmentMsgController@index');
                 $api->get('new', 'AppointmentMsgController@newMessage');
                 $api->post('read', 'AppointmentMsgController@readMessage');
-//                $api->get('admissions/all', 'AdmissionsMsgController@index');
-//                $api->get('admissions/new', 'AdmissionsMsgController@newMessage');
-//                $api->post('admissions/read', 'AdmissionsMsgController@readMessage');
             });
 
             //Contacts
