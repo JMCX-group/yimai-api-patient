@@ -42,7 +42,9 @@ class WalletController extends BaseController
 
         $walletInfo = PatientWallet::where('patient_id', $user->id)->first();
         if (!isset($walletInfo->patient_id)) {
-            $walletInfo = PatientWallet::insert(['patient_id' => $user->id]);
+            $walletInfo = new PatientWallet();
+            $walletInfo->patient_id = $user->id;
+            $walletInfo->save();
         }
 
         /**
