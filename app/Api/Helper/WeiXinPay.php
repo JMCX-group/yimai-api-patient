@@ -28,7 +28,7 @@ class WeiXinPay
         $this->key = '555d4062c619451b884267c46ab85ca3';
         $this->appId = 'wx2097e8b109f9dc35';
         $this->mchId = '1273535201';
-        $this->notifyUrl = \Config::get('constants.DOMAIN') . '/api/pay/notify_url';
+        $this->notifyUrl = 'http://139.129.167.9/api/pay/notify_url';
 
         $this->orderQueryUrl = 'https://api.mch.weixin.qq.com/pay/orderquery';
     }

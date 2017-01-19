@@ -104,10 +104,11 @@ class MsgAndNotification
      * 推送约诊信息
      *
      * @param $appointments
+     * @param string $status
      */
-    public static function sendAppointmentsMsg($appointments)
+    public static function sendAppointmentsMsg($appointments, $status='')
     {
-        AppointmentMsg::create(self::generateAppointmentsMsg($appointments));
+        AppointmentMsg::create(self::generateAppointmentsMsg($appointments, $status));
     }
 
     /**

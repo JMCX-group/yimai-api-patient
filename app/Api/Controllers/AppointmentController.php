@@ -58,11 +58,6 @@ class AppointmentController extends BaseController
      * completed-2:改期后完成
      */
 
-    public function index()
-    {
-
-    }
-
     /**
      * 预约:通过搜索找到我的医生/直接预约我的医生
      *
@@ -388,32 +383,6 @@ class AppointmentController extends BaseController
          * 更新订单没有id的：
          */
         Appointment::where('patient_phone', $user->phone)->update(['patient_id' => $user->id]);
-
-        /**
-         * 更新过期未支付的：
-         */
-        Appointment::where('patient_id', $user->id)
-            ->where('is_pay', '0')
-            ->where('status', 'wait-1')
-            ->where('updated_at', '<', date('Y-m-d H:i:s', time() - 12 * 3600))
-            ->update(['status' => 'close-1']); //close-1: 待患者付款，关闭
-
-        /**
-         * 更新已付款，48小时未确认的：
-         */
-        Appointment::where('patient_id', $user->id)
-            ->where('status', 'wait-2')
-            ->where('updated_at', '<', date('Y-m-d H:i:s', time() - 48 * 3600))
-            ->update(['status' => 'close-2']); //close-2: 医生过期未接诊,约诊关闭
-
-        /**
-         * 处理一些不可描述的订单：
-         */
-        $needProcessAppointments = Appointment::getAllWait1AppointmentIdList($user->id, $user->phone);
-        if ($needProcessAppointments != '' && $needProcessAppointments != null) {
-            $payCtrl = new PayController();
-            $payCtrl->batProcessing($needProcessAppointments);
-        }
 
         /**
          * 获取该登录用户所有信息：

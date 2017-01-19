@@ -8,10 +8,9 @@
 
 namespace App\Api\Controllers;
 
+use App\Api\Helper\MsgAndNotification;
 use App\Api\Helper\WeiXinPay;
 use App\Appointment;
-use App\AppointmentMsg;
-use App\Doctor;
 use Illuminate\Http\Request;
 use App\Order;
 use Illuminate\Support\Facades\Log;
@@ -94,6 +93,8 @@ class PayController extends BaseController
             $wxData = $this->wxPay->wxOrderQuery($item->id);
             if ($wxData['return_code'] == 'SUCCESS' && $wxData['result_code'] == 'SUCCESS' && $wxData['trade_state'] == 'SUCCESS') {
                 $this->paymentProcessing($wxData);
+            } else {
+                Log::info('wx-order-query-error', ['context' => json_encode($wxData)]);
             }
         }
     }
@@ -121,29 +122,9 @@ class PayController extends BaseController
                 $appointment->status = 'wait-2';
                 $appointment->transaction_id = $wxData['transaction_id'];
                 $appointment->save();
-                /**
-                 * 推送消息记录
-                 */
-                $msgData = [
-                    'appointment_id' => $appointment->id,
-                    'locums_id' => 1, //代理医生ID； 1为平台代约
-                    'patient_name' => $appointment->patient_name,
-                    'doctor_id' => $appointment->doctor_id,
-                    'doctor_name' => Doctor::find($appointment->doctor_id)->first()->name,
-                    'status' => 'wait-2' //患者已付款
-                ];
-                AppointmentMsg::create($msgData);
-            }
 
-            /**
-             * wait:
-             * wait-0: 待代约医生确认
-             * wait-1: 待患者付款
-             * wait-2: 患者已付款，待医生确认
-             * wait-3: 医生确认接诊，待面诊
-             * wait-4: 医生改期，待患者确认
-             * wait-5: 患者确认改期，待面诊
-             */
+                MsgAndNotification::sendAppointmentsMsg($appointment); //推送消息记录
+            }
 
             $data = ['result' => 'success'];
         } else {
