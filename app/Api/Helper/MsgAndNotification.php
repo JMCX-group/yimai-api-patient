@@ -67,7 +67,7 @@ class MsgAndNotification
                 ->update(['status' => $status]); //close-1: 待患者付款，
 
             if ($result) {
-                AppointmentMsg::create($appointmentMsgList); //批量插入推送消息
+                AppointmentMsg::insert($appointmentMsgList); //批量插入推送消息
 
                 foreach ($deviceTokens as $deviceToken) {
                     self::pushAppointmentMsg($deviceToken['device_token'], $status, $deviceToken['id']); //向患者端推送消息
@@ -92,7 +92,7 @@ class MsgAndNotification
             'appointment_id' => $appointments->id,
             'status' => $appointments->status, //根据上面流程赋值
             'locums_id' => $appointments->locums_id, //代理医生ID
-            'locums_name' => Doctor::find($appointments->locums_id)->first()->name, //代理医生姓名
+            'locums_name' => ($appointments->locums_id == 0) ? '无' : Doctor::find($appointments->locums_id)->first()->name, //代理医生姓名
             'patient_name' => $appointments->patient_name,
             'doctor_id' => $appointments->doctor_id,
             'doctor_name' => Doctor::find($appointments->doctor_id)->first()->name, //医生姓名
