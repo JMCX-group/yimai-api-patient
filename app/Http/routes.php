@@ -159,6 +159,7 @@ $api->version('v1', function ($api) {
                 $api->get('all', 'AppointmentMsgController@index');
                 $api->get('new', 'AppointmentMsgController@newMessage');
                 $api->post('read', 'AppointmentMsgController@readMessage');
+                $api->get('all-read', 'AppointmentMsgController@allRead');
             });
 
             //Contacts

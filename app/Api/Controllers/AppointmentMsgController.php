@@ -25,13 +25,16 @@ class AppointmentMsgController extends BaseController
             return $user;
         }
 
-        $allMsg = AppointmentMsg::where('locums_id', $user->id)->get();
+        $allMsg = AppointmentMsg::where('patient_id', $user->id)
+            ->whereIn('status', array('wait-1', 'wait-3', 'wait-4', 'close-2', 'close-3', 'cancel-2', 'cancel-4', 'cancel-7'))
+            ->orderBy('id', 'DESC')
+            ->get();
 
         $retData = array();
         foreach ($allMsg as $item) {
             $text = AppointmentMsgTransformer::transformerMsgList($item);
 
-            if ($text) {
+            if ($text && $text['text']) {
                 array_push($retData, $text);
             }
         }
@@ -51,13 +54,17 @@ class AppointmentMsgController extends BaseController
             return $user;
         }
 
-        $allMsg = AppointmentMsg::where('locums_id', $user->id)->where('read_status', 0)->get();
+        $allMsg = AppointmentMsg::where('patient_id', $user->id)
+            ->where('patient_read', 0)
+            ->whereIn('status', array('wait-1', 'wait-3', 'wait-4', 'close-2', 'close-3', 'cancel-2', 'cancel-4', 'cancel-7'))
+            ->orderBy('id', 'DESC')
+            ->get();
 
         $retData = array();
         foreach ($allMsg as $item) {
             $text = AppointmentMsgTransformer::transformerMsgList($item);
 
-            if ($text) {
+            if ($text && $text['text']) {
                 array_push($retData, $text);
             }
         }
@@ -74,9 +81,26 @@ class AppointmentMsgController extends BaseController
     public function readMessage(Request $request)
     {
         $msg = AppointmentMsg::find($request['id']);
-        $msg->read_status = 1;
+        $msg->patient_read = 1;
         $msg->save();
 
-        return response()->json(['success' => ''], 204); //给肠媳适配。。
+        return response()->json(['success' => ''], 204);
+    }
+
+    /**
+     * All read.
+     *
+     * @return \Illuminate\Http\JsonResponse|mixed
+     */
+    public function allRead()
+    {
+        $user = User::getAuthenticatedUser();
+        if (!isset($user->id)) {
+            return $user;
+        }
+
+        AppointmentMsg::where('patient_id', $user->id)->update(['patient_read' => 1]);
+
+        return response()->json(['success' => ''], 204);
     }
 }
