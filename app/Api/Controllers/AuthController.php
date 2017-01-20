@@ -61,11 +61,12 @@ class AuthController extends BaseController
      */
     public function register(AuthRequest $request)
     {
+        $domain = \Config::get('constants.DOMAIN');
         $newUser = [
             'phone' => $request->get('phone'),
             'password' => bcrypt($request->get('password')),
 
-            'avatar' => '/uploads/avatar/default.jpg'
+            'avatar' => $domain . '/uploads/avatar/default.jpg'
         ];
         $user = User::create($newUser);
         $this->setUserIdToAppointment($user->id, $newUser['phone']);
