@@ -74,7 +74,7 @@ class AppointmentMsgController extends BaseController
 
     /**
      * 已读状态更新。
-     * 
+     *
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
