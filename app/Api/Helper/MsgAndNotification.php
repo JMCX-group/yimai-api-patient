@@ -153,8 +153,6 @@ class MsgAndNotification
      */
     public static function pushAppointmentMsg($deviceToken, $appointmentStatus, $appointmentId, $recipient)
     {
-        require_once('UmengNotification/NotificationPush.php');
-
         /**
          * 获取推送文案和动作
          */
