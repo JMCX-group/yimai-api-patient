@@ -8,14 +8,13 @@
 
 namespace App\Api\Controllers;
 
-use App\Api\Helper\Sms;
+use App\Api\Helper\SmsContent;
 use App\Api\Requests\AuthRequest;
 use App\Api\Requests\InviterRequest;
 use App\Api\Requests\ResetPwdRequest;
 use App\Api\Transformers\UserTransformer;
 use App\Appointment;
 use App\User;
-use App\AppUserVerifyCode;
 use Illuminate\Http\Request;
 use Validator;
 use JWTAuth;
@@ -88,7 +87,7 @@ class AuthController extends BaseController
 
     /**
      * User reset password.
-     * 
+     *
      * @param ResetPwdRequest $request
      * @return mixed
      */
@@ -127,16 +126,16 @@ class AuthController extends BaseController
 
     /**
      * Get logged user info.
-     * 
+     *
      * @return \Dingo\Api\Http\Response|mixed
      */
     public function getAuthenticatedUser()
     {
         $user = User::getAuthenticatedUser();
-        if(!isset($user->id)){
+        if (!isset($user->id)) {
             return $user;
         }
-        
+
         return $this->response->item($user, new UserTransformer());
     }
 
@@ -148,36 +147,12 @@ class AuthController extends BaseController
      */
     public function sendVerifyCode(AuthRequest $request)
     {
-        $newCode = [
-            'phone' => $request->get('phone'),
-            'code' => rand(1001, 9998)
-        ];
-
-        /**
-         * 发送短信:
-         */
-        $sms = new Sms();
-        $txt = '【医者脉连】您的验证码是:' . $newCode['code']; //文案
-        $result = $sms->sendSMS($newCode['phone'], $txt);
-        $result = $sms->execResult($result);
-
-        if ($result[1] == 0) {
-            $code = AppUserVerifyCode::where('phone', '=', $request->get('phone'))->get();
-            if (empty($code->all())) {
-                AppUserVerifyCode::create($newCode);
-            } else {
-                AppUserVerifyCode::where('phone', $request->get('phone'))->update(['code' => $newCode['code']]);
-            }
-
-            return response()->json(['debug' => $newCode['code']], 200);
-        } else {
-            return response()->json(['message' => '短信发送失败'], 500);
-        }
+        return SmsContent::sendSMS_newUser($request->get('phone'));
     }
 
     /**
      * Get inviter name.
-     * 
+     *
      * @param InviterRequest $request
      * @return mixed
      */
