@@ -12,7 +12,7 @@ use App\Api\Helper\MsgAndNotification;
 use App\Api\Helper\WeiXinPay;
 use App\Appointment;
 use App\Doctor;
-use App\Patient;
+use App\PatientRechargeRecord;
 use Illuminate\Http\Request;
 use App\Order;
 use Illuminate\Support\Facades\Log;
@@ -33,27 +33,6 @@ class PayController extends BaseController
     }
 
     /**
-     * Debug
-     *
-     * @param $content
-     */
-    public function writeFile($content)
-    {
-        $fileName = "test-pay/pay.file";
-
-        //以读写方式打写指定文件，如果文件不存则创建
-        if (($TxtRes = fopen($fileName, "w+")) === FALSE) {
-            exit();
-        }
-
-        if (!fwrite($TxtRes, $content)) { //将信息写入文件
-            fclose($TxtRes);
-            exit();
-        }
-        fclose($TxtRes); //关闭指针
-    }
-
-    /**
      * 微信支付回調函數
      */
     public function notifyUrl()
@@ -61,7 +40,12 @@ class PayController extends BaseController
         $wxData = (array)simplexml_load_string(file_get_contents('php://input'), 'SimpleXMLElement', LIBXML_NOCDATA);
         Log::info('appointment-pay', ['context' => json_encode($wxData)]); //测试期间
         if ($wxData['return_code'] == 'SUCCESS' && $wxData['result_code'] == 'SUCCESS') {
-            $this->paymentProcessing($wxData);
+            if ($wxData['attach'] == 'recharge') {
+                $this->rechargeProcessing($wxData);
+            } else {
+                $this->paymentProcessing($wxData);
+            }
+
             echo 'SUCCESS';
         } else {
             echo 'FAIL';
@@ -97,7 +81,7 @@ class PayController extends BaseController
                 $this->paymentProcessing($wxData);
             } else {
                 Log::info('wx-order-query-error', ['context' => json_encode($wxData)]);
-                if($wxData['trade_state'] == 'NOTPAY'){
+                if ($wxData['trade_state'] == 'NOTPAY') {
                     $this->notPayProcessing($wxData);
                 }
             }
@@ -162,6 +146,31 @@ class PayController extends BaseController
             $data = ['result' => 'success'];
         } else {
             $data = ['result' => 'fail', 'debug' => '木有订单信息啊'];
+        }
+
+        return $data;
+    }
+
+    /**
+     * 统一处理
+     *
+     * @param $wxData
+     * @return array
+     */
+    public function rechargeProcessing($wxData)
+    {
+        $outTradeNo = $wxData['out_trade_no'];
+
+        $order = PatientRechargeRecord::where('out_trade_no', $outTradeNo)->first();
+        if (!empty($order->id)) {
+            $order->status = 'end';
+            $order->time_expire = $wxData['time_end'];
+            $order->ret_data = json_encode($wxData);
+            $order->save();
+
+            $data = ['result' => 'success'];
+        } else {
+            $data = ['result' => 'fail'];
         }
 
         return $data;

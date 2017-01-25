@@ -40,12 +40,25 @@ class WalletController extends BaseController
             return $user;
         }
 
+        /**
+         * 查询患者充值总额：
+         */
+        $rechargeRecords = PatientRechargeRecord::rechargeTotal($user->id)[0];
+
+        /**
+         * 查询患者消费总额：
+         */
+
+        /**
+         * 查询患者钱包基本信息：
+         */
         $walletInfo = PatientWallet::where('patient_id', $user->id)->first();
         if (!isset($walletInfo->patient_id)) {
             $walletInfo = new PatientWallet();
             $walletInfo->patient_id = $user->id;
-            $walletInfo->save();
         }
+        $walletInfo->total = ($rechargeRecords->total) / 100; //分转元
+        $walletInfo->save();
 
         /**
          * 患者未支付的列表：
@@ -134,7 +147,7 @@ class WalletController extends BaseController
          */
         if ($fee > 0) {
             try {
-                $data = $this->wxPayClass->wxPay($outTradeNo, $body, $fee, $timeExpire);
+                $data = $this->wxPayClass->wxPay($outTradeNo, $body, $fee, $timeExpire, 'recharge');
                 //TODO ：回调还需要处理
                 return response()->json(compact('data'), 200);
             } catch (JWTException $e) {

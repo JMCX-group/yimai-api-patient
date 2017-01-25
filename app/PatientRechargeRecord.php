@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class PatientRechargeRecord extends Model
 {
@@ -31,4 +32,19 @@ class PatientRechargeRecord extends Model
         'status',
         'settlement_status'
     ];
+
+    /**
+     * 获取某用户充值总额
+     *
+     * @param $userId
+     * @return mixed
+     */
+    public static function rechargeTotal($userId)
+    {
+        return DB::select("
+            SELECT SUM(`total_fee`) AS total 
+            FROM `patient_recharge_records` 
+            WHERE patient_id=$userId AND `status`='end';
+        ");
+    }
 }

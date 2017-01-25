@@ -40,16 +40,17 @@ class WeiXinPay
      * @param $body
      * @param $totalFee
      * @param $timeExpire
+     * @param string $attach
      * @return array
      */
-    public function wxPay($outTradeNo, $body, $totalFee, $timeExpire)
+    public function wxPay($outTradeNo, $body, $totalFee, $timeExpire, $attach = 'WeChatPay')
     {
         /**
          * 参数组:
          */
         $data = array(
             'appid' => $this->appId,
-            'attach' => 'weixinpay',
+            'attach' => $attach, //自定义参数
             'body' => $body,
             'mch_id' => $this->mchId,
             'nonce_str' => $this->random('15'),
