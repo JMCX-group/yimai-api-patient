@@ -13,6 +13,7 @@ use App\Api\Helper\WeiXinPay;
 use App\Appointment;
 use App\Doctor;
 use App\PatientRechargeRecord;
+use App\PatientWallet;
 use Illuminate\Http\Request;
 use App\Order;
 use Illuminate\Support\Facades\Log;
@@ -152,7 +153,7 @@ class PayController extends BaseController
     }
 
     /**
-     * 统一处理
+     * 充值处理
      *
      * @param $wxData
      * @return array
@@ -161,12 +162,22 @@ class PayController extends BaseController
     {
         $outTradeNo = $wxData['out_trade_no'];
 
+        /**
+         * 订单状态更新
+         */
         $order = PatientRechargeRecord::where('out_trade_no', $outTradeNo)->first();
         if (!empty($order->id)) {
             $order->status = 'end';
             $order->time_expire = $wxData['time_end'];
             $order->ret_data = json_encode($wxData);
             $order->save();
+
+            /**
+             * 钱包信息更新
+             */
+            $wallet = PatientWallet::where('patient_id', $order->patient_id)->first();
+            $wallet->total += ($wxData['total_fee'] / 100);
+            $wallet->save();
 
             $data = ['result' => 'success'];
         } else {

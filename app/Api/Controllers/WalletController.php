@@ -8,11 +8,15 @@
 
 namespace App\Api\Controllers;
 
+use App\Api\Helper\MsgAndNotification;
 use App\Api\Helper\WeiXinPay;
+use App\Api\Requests\AppointmentIdRequest;
 use App\Api\Requests\RechargeRequest;
 use App\Api\Transformers\TransactionRecordTransformer;
 use App\Api\Transformers\WalletTransformer;
 use App\Appointment;
+use App\AppointmentFee;
+use App\Doctor;
 use App\Order;
 use App\PatientRechargeRecord;
 use App\PatientWallet;
@@ -46,8 +50,16 @@ class WalletController extends BaseController
         $rechargeRecords = PatientRechargeRecord::rechargeTotal($user->id)[0];
 
         /**
+         * 查询患者冻结总额：
+         */
+        $freezeFees = AppointmentFee::getfreezeFees($user->id)[0];
+
+        /**
          * 查询患者消费总额：
          */
+        $totalFees = AppointmentFee::getTotalFees($user->id)[0];
+        $defaultFees = AppointmentFee::getDefaultFees($user->id)[0];
+        $total = $totalFees->fee + $defaultFees->fee;
 
         /**
          * 查询患者钱包基本信息：
@@ -57,7 +69,8 @@ class WalletController extends BaseController
             $walletInfo = new PatientWallet();
             $walletInfo->patient_id = $user->id;
         }
-        $walletInfo->total = ($rechargeRecords->total) / 100; //分转元
+        $walletInfo->total = (($rechargeRecords->total) / 100) - ($total / 100) - ($freezeFees / 100); //分转元
+        $walletInfo->freeze = ($freezeFees->fee) / 100; //分转元
         $walletInfo->save();
 
         /**
@@ -148,7 +161,6 @@ class WalletController extends BaseController
         if ($fee > 0) {
             try {
                 $data = $this->wxPayClass->wxPay($outTradeNo, $body, $fee, $timeExpire, 'recharge');
-                //TODO ：回调还需要处理
                 return response()->json(compact('data'), 200);
             } catch (JWTException $e) {
                 return response()->json(['error' => $e->getMessage()], $e->getStatusCode());
@@ -156,5 +168,96 @@ class WalletController extends BaseController
         }
 
         return response()->json(['error' => '金额异常'], 400);
+    }
+
+    /**
+     * 使用余额支付
+     *
+     * @param AppointmentIdRequest $request
+     * @return \Illuminate\Http\JsonResponse|mixed
+     */
+    public function pay(AppointmentIdRequest $request)
+    {
+        $user = User::getAuthenticatedUser();
+        if (!isset($user->id)) {
+            return $user;
+        }
+
+        $appointmentId = $request['id'];
+        $appointment = Appointment::find($appointmentId);
+        if ($appointment->patient_id != $user->id || $appointment->status != 'wait-1') {
+            return response()->json(['message' => '状态不对，请刷新再请求'], 400);
+        }
+        $doctor = Doctor::find($appointment->doctor_id);
+
+        /**
+         * 没有支付金额修复：
+         */
+        if ($appointment->price == null) {
+            $appointment->price = $doctor->fee;
+        }
+
+        /**
+         * 支付信息记录和推送
+         */
+        try {
+            /**
+             * 钱包信息判断
+             */
+            $wallet = PatientWallet::where('patient_id', $user->id)->first();
+            if ($wallet->total > $appointment->price) {
+                /**
+                 * 余额支付信息：
+                 */
+                $appointmentFeeData = [
+                    'doctor_id' => $appointment->doctor_id,
+                    'patient_id' => $appointment->patient_id,
+                    'locums_id' => $appointment->locums_id,
+                    'appointment_id' => $appointment->id,
+                    'total_fee' => $appointment->price,
+                    'reception_fee' => 0, //诊疗费
+                    'platform_fee' => 0, //平台费
+                    'intermediary_fee' => 0, //中介费
+                    'guide_fee' => 0, //导诊费
+                    'default_fee' => 0, //违约费用
+                    'status' => 'paid' //资金状态：paid（已支付）、completed（已完成）、cancelled（已取消）
+                ];
+                AppointmentFee::create($appointmentFeeData);
+
+                /**
+                 * 更新订单支付信息
+                 */
+                $appointment->is_pay = '1'; //已经支付记录
+                $appointment->status = 'wait-2'; //使用余额支付无需等待微信支付回调
+                $appointment->save();
+
+                /**
+                 * 钱包信息更新
+                 */
+                $wallet->total -= $appointment->price;
+                $wallet->freeze += $appointment->price;
+                $wallet->save();
+
+                /**
+                 * 推送消息
+                 */
+                MsgAndNotification::sendAppointmentsMsg($appointment); //推送消息记录
+
+                if (isset($doctor->id) && ($doctor->device_token != '' && $doctor->device_token != null)) {
+                    MsgAndNotification::pushAppointmentMsg($doctor->device_token, $appointment->status, $appointment->id, 'doctor'); //向医生端推送消息
+                }
+
+                $data = [
+                    'info' => '支付成功',
+                    'appointment_info' => AppointmentController::appointmentDetailInfo($appointment->id, $user->id)
+                ];
+            } else {
+                $data = ['info' => '余额不足，请去充值'];
+            }
+
+            return response()->json(compact('data'), 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 }

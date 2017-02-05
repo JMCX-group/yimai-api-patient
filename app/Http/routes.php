@@ -167,9 +167,9 @@ $api->version('v1', function ($api) {
             });
 
             //Pay
-//            $api->group(['prefix' => 'pay'], function ($api) {
-//                $api->get('/', 'PayController@pay');
-//            });
+            $api->group(['prefix' => 'pay'], function ($api) {
+                $api->post('appointment', 'WalletController@pay');
+            });
 
             //Wallet
             $api->group(['prefix' => 'wallet'], function ($api) {

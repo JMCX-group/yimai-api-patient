@@ -11,7 +11,6 @@ namespace App\Api\Controllers;
 use App\Api\Helper\MsgAndNotification;
 use App\Api\Helper\WeiXinPay;
 use App\Api\Helper\SaveImage;
-use App\Api\Requests\AppointmentDetailRequest;
 use App\Api\Requests\AppointmentIdRequest;
 use App\Api\Requests\AppointmentInsteadRequest;
 use App\Api\Requests\AppointmentRequest;
@@ -19,11 +18,11 @@ use App\Api\Transformers\ReservationRecordTransformer;
 use App\Api\Transformers\TimeLineTransformer;
 use App\Api\Transformers\Transformer;
 use App\Appointment;
+use App\AppointmentFee;
 use App\Doctor;
 use App\Order;
 use App\Patient;
 use App\User;
-use Tymon\JWTAuth\Exceptions\JWTException;
 
 class AppointmentController extends BaseController
 {
@@ -133,7 +132,7 @@ class AppointmentController extends BaseController
             }
 
             return ['id' => $appointment['id']];
-        } catch (JWTException $e) {
+        } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], $e->getStatusCode());
         }
     }
@@ -231,7 +230,7 @@ class AppointmentController extends BaseController
             }
 
             return ['id' => $appointment['id']];
-        } catch (JWTException $e) {
+        } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], $e->getStatusCode());
         }
     }
@@ -259,18 +258,30 @@ class AppointmentController extends BaseController
     }
 
     /**
-     * @param AppointmentDetailRequest $request
+     * 获取约诊详细信息
+     *
+     * @param AppointmentIdRequest $request
      * @return array|mixed
      */
-    public function getDetailInfo(AppointmentDetailRequest $request)
+    public function getDetailInfo(AppointmentIdRequest $request)
     {
         $user = User::getAuthenticatedUser();
         if (!isset($user->id)) {
             return $user;
         }
 
-        $id = $request['id'];
+        return self::appointmentDetailInfo($request['id'], $user->id);
+    }
 
+    /**
+     * 约诊信息生成
+     *
+     * @param $id
+     * @param $userId
+     * @return array
+     */
+    public static function appointmentDetailInfo($id, $userId)
+    {
         $appointments = Appointment::where('appointments.id', $id)
             ->leftJoin('doctors', 'doctors.id', '=', 'appointments.locums_id')
             ->leftJoin('patients', 'patients.id', '=', 'appointments.patient_id')
@@ -321,7 +332,7 @@ class AppointmentController extends BaseController
                 ->first();
         }
 
-        $appointments['time_line'] = TimeLineTransformer::generateTimeLine($appointments, $doctors, $user->id, $locumsDoctor);
+        $appointments['time_line'] = TimeLineTransformer::generateTimeLine($appointments, $doctors, $userId, $locumsDoctor);
         $appointments['progress'] = TimeLineTransformer::generateProgressStatus($appointments->status);
 
         return Transformer::appointmentsTransform($appointments, $doctors, $locumsDoctor);
@@ -397,12 +408,11 @@ class AppointmentController extends BaseController
         if ($appointment->price == null) {
             $appointment->price = $doctor->fee;
         }
-        $doctorName = $doctor->name;
 
         //微信支付
         $data = ['message' => 'false'];
         if (!($appointment->price == 0 || $appointment->price == null || $appointment->price == '')) {
-            $retData = $this->wxPay($appointment, $doctorName);
+            $retData = $this->wxPay($appointment);
             if ($retData != false) {
                 $appointment->is_pay = '1'; //已经支付记录
                 $appointment->save();
@@ -419,10 +429,9 @@ class AppointmentController extends BaseController
      * 调用微信支付
      *
      * @param $appointment
-     * @param $doctorName
      * @return array|bool
      */
-    public function wxPay($appointment, $doctorName)
+    public function wxPay($appointment)
     {
         try {
             $order = Order::where('out_trade_no', $appointment->id)->first();
@@ -445,7 +454,7 @@ class AppointmentController extends BaseController
 
             $timeExpire = date('YmdHis', (time() + 600)); //过期时间600秒
             return $this->wxPayClass->wxPay($order['out_trade_no'], $order['body'], $order['total_fee'], $timeExpire);
-        } catch (JWTException $e) {
+        } catch (\Exception $e) {
             return false;
         }
     }
@@ -463,6 +472,15 @@ class AppointmentController extends BaseController
 
         try {
             if ($appointment->save()) {
+                /**
+                 * 更新支付信息：
+                 */
+                AppointmentFee::where('appointment_id', $request['id'])
+                    ->update(['status' => 'completed']); //资金状态：paid（已支付）、completed（已完成）、cancelled（已取消）
+
+                /**
+                 * 推送消息
+                 */
                 MsgAndNotification::sendAppointmentsMsg($appointment); //推送消息
                 $doctor = Doctor::where('id', $appointment->doctor_id)->first();
                 if (isset($doctor->id) && ($doctor->device_token != '' && $doctor->device_token != null)) {
@@ -473,7 +491,7 @@ class AppointmentController extends BaseController
             } else {
                 return response()->json(['message' => '保存失败'], 500);
             }
-        } catch (JWTException $e) {
+        } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], $e->getStatusCode());
         }
     }
@@ -502,7 +520,7 @@ class AppointmentController extends BaseController
             } else {
                 return response()->json(['message' => '保存失败'], 500);
             }
-        } catch (JWTException $e) {
+        } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], $e->getStatusCode());
         }
     }
