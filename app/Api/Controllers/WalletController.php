@@ -69,7 +69,7 @@ class WalletController extends BaseController
             $walletInfo = new PatientWallet();
             $walletInfo->patient_id = $user->id;
         }
-        $walletInfo->total = (($rechargeRecords->total) / 100) - ($total / 100) - ($freezeFees / 100); //分转元
+        $walletInfo->total = (($rechargeRecords->total) / 100) - ($total / 100) - ($freezeFees->fee / 100); //分转元
         $walletInfo->freeze = ($freezeFees->fee) / 100; //分转元
         $walletInfo->save();
 

@@ -47,7 +47,7 @@ class AppointmentFee extends Model
         return DB::select("
             SELECT SUM(`total_fee`) AS fee
             FROM `appointment_fees` 
-            WHERE patient_id=$patientId AND `status`=$status;
+            WHERE patient_id=$patientId AND `status`='$status';
         ");
     }
 
