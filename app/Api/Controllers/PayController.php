@@ -39,21 +39,17 @@ class PayController extends BaseController
         Log::info('appointment-pay-time', ['context' => date('Y-m-d H:i:s')]); //测试期间
 
         $wxData = (array)simplexml_load_string(file_get_contents('php://input'), 'SimpleXMLElement', LIBXML_NOCDATA);
-        if ($wxData[0]) {
-            Log::info('appointment-pay', ['context' => json_encode($wxData)]); //测试期间
-            if ($wxData['return_code'] == 'SUCCESS' && $wxData['result_code'] == 'SUCCESS') {
-                if ($wxData['attach'] == 'recharge') {
-                    $this->rechargeProcessing($wxData);
-                } else {
-                    $this->paymentProcessing($wxData);
-                }
-
-                echo 'SUCCESS';
+        Log::info('appointment-pay', ['context' => json_encode($wxData)]); //测试期间
+        if ($wxData['return_code'] == 'SUCCESS' && $wxData['result_code'] == 'SUCCESS') {
+            if ($wxData['attach'] == 'recharge') {
+                $this->rechargeProcessing($wxData);
             } else {
-                echo 'FAIL';
+                $this->paymentProcessing($wxData);
             }
+
+            echo 'SUCCESS';
         } else {
-            echo 'NULL';
+            echo 'FAIL';
         }
     }
 
