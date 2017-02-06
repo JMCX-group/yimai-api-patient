@@ -127,12 +127,12 @@ class PayController extends BaseController
     {
         $outTradeNo = $wxData['out_trade_no'];
 
-        $appointmentFee = AppointmentFee::where('appointment_id', $outTradeNo)->first();
-        if (!empty($appointmentFee->id)) {
-            $appointmentFee->status = 'end';
-            $appointmentFee->time_expire = $wxData['time_end'];
-            $appointmentFee->ret_data = json_encode($wxData);
-            $appointmentFee->save();
+        $rechargeRecord = PatientRechargeRecord::where('out_trade_no', $outTradeNo)->first();
+        if (!empty($rechargeRecord->id)) {
+            $rechargeRecord->status = 'end';
+            $rechargeRecord->time_expire = $wxData['time_end'];
+            $rechargeRecord->ret_data = json_encode($wxData);
+            $rechargeRecord->save();
 
             $appointment = Appointment::find($outTradeNo);
             if ($appointment->status == 'wait-1') {
