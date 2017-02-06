@@ -167,31 +167,36 @@ class PayController extends BaseController
     {
         $outTradeNo = $wxData['out_trade_no'];
 
-        /**
-         * 订单状态更新
-         */
-        $rechargeRecord = PatientRechargeRecord::where('out_trade_no', $outTradeNo)->first();
-        if (!empty($rechargeRecord->id)) {
-            $rechargeRecord->status = 'end';
-            $rechargeRecord->time_expire = $wxData['time_end'];
-            $rechargeRecord->ret_data = json_encode($wxData);
-            $rechargeRecord->save();
-
+        try {
             /**
-             * 钱包信息更新
+             * 订单状态更新
              */
-            $wallet = PatientWallet::where('patient_id', $rechargeRecord->patient_id)->first();
-            if (!isset($wallet->patient_id)) {
-                $wallet = new PatientWallet();
-                $wallet->patient_id = $rechargeRecord->patient_id;
-                $wallet->total = 0;
-            }
-            $wallet->total += ($wxData['total_fee'] / 100);
-            $wallet->save();
+            $rechargeRecord = PatientRechargeRecord::where('out_trade_no', $outTradeNo)->first();
+            if (!empty($rechargeRecord->id)) {
+                $rechargeRecord->status = 'end';
+                $rechargeRecord->time_expire = $wxData['time_end'];
+                $rechargeRecord->ret_data = json_encode($wxData);
+                $rechargeRecord->save();
 
-            $data = ['result' => 'success'];
-        } else {
-            $data = ['result' => 'fail'];
+                /**
+                 * 钱包信息更新
+                 */
+                $wallet = PatientWallet::where('patient_id', $rechargeRecord->patient_id)->first();
+                if (!isset($wallet->patient_id)) {
+                    $wallet = new PatientWallet();
+                    $wallet->patient_id = $rechargeRecord->patient_id;
+                    $wallet->total = 0;
+                }
+                $wallet->total += ($wxData['total_fee'] / 100);
+                $wallet->save();
+
+                $data = ['result' => 'success'];
+            } else {
+                $data = ['result' => 'fail'];
+            }
+        } catch (\Exception $e) {
+            Log::info('appointment-pay', ['context' => $e->getMessage()]);
+            $data = ['result' => 'err'];
         }
 
         return $data;
