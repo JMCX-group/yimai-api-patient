@@ -11,6 +11,7 @@ namespace App\Api\Controllers;
 use App\Api\Helper\MsgAndNotification;
 use App\Api\Helper\WeiXinPay;
 use App\Appointment;
+use App\AppointmentFee;
 use App\Doctor;
 use App\PatientRechargeRecord;
 use App\PatientWallet;
@@ -126,12 +127,12 @@ class PayController extends BaseController
     {
         $outTradeNo = $wxData['out_trade_no'];
 
-        $order = Order::where('out_trade_no', $outTradeNo)->first();
-        if (!empty($order->id)) {
-            $order->status = 'end';
-            $order->time_expire = $wxData['time_end'];
-            $order->ret_data = json_encode($wxData);
-            $order->save();
+        $appointmentFee = AppointmentFee::where('appointment_id', $outTradeNo)->first();
+        if (!empty($appointmentFee->id)) {
+            $appointmentFee->status = 'end';
+            $appointmentFee->time_expire = $wxData['time_end'];
+            $appointmentFee->ret_data = json_encode($wxData);
+            $appointmentFee->save();
 
             $appointment = Appointment::find($outTradeNo);
             if ($appointment->status == 'wait-1') {
