@@ -55,7 +55,7 @@ class TransactionRecordTransformer extends TransformerAbstract
             'id' => $record['id'],
             'name' => '约诊',
             'transaction_id' => $record['appointment_id'],
-            'price' => $record['reception_fee'] / 100, //单位：分
+            'price' => $record['total_fee'] / 100, //单位：分
             'type' => '支出',
             'status' => $record['settlement_status'],
             'time' => $record['created_at']->format('Y-m-d H:i:s')
