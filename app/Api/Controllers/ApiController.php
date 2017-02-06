@@ -1253,7 +1253,7 @@ class ApiController extends BaseController
                             'data' => [
                                 'wallet' => [
                                     'total' => '总额',
-                                    'freeze' => '可提现'
+                                    'freeze' => '冻结中'
                                 ],
                                 'appointment_list' => [
                                     'id' => '约诊ID',
