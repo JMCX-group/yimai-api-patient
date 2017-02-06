@@ -215,7 +215,7 @@ class WalletController extends BaseController
                     'locums_id' => $appointment->locums_id,
                     'appointment_id' => $appointment->id,
                     'total_fee' => $appointment->price * 100, //元转分
-                    'reception_fee' => 0, //诊疗费
+                    'reception_fee' => $appointment->price * 100, //诊疗费; 元转分
                     'platform_fee' => 0, //平台费
                     'intermediary_fee' => 0, //中介费
                     'guide_fee' => 0, //导诊费
