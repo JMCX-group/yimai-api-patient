@@ -31,6 +31,7 @@ class AppointmentFee extends Model
         'guide_fee',
         'default_fee',
         'status',
+        'time_expire',
         'settlement_status'
     ];
 
