@@ -39,17 +39,21 @@ class PayController extends BaseController
     public function notifyUrl()
     {
         $wxData = (array)simplexml_load_string(file_get_contents('php://input'), 'SimpleXMLElement', LIBXML_NOCDATA);
-        Log::info('appointment-pay', ['context' => json_encode($wxData)]); //测试期间
-        if ($wxData['return_code'] == 'SUCCESS' && $wxData['result_code'] == 'SUCCESS') {
-            if ($wxData['attach'] == 'recharge') {
-                $this->rechargeProcessing($wxData);
-            } else {
-                $this->paymentProcessing($wxData);
-            }
+        if ($wxData[0]) {
+            Log::info('appointment-pay', ['context' => json_encode($wxData)]); //测试期间
+            if ($wxData['return_code'] == 'SUCCESS' && $wxData['result_code'] == 'SUCCESS') {
+                if ($wxData['attach'] == 'recharge') {
+                    $this->rechargeProcessing($wxData);
+                } else {
+                    $this->paymentProcessing($wxData);
+                }
 
-            echo 'SUCCESS';
+                echo 'SUCCESS';
+            } else {
+                echo 'FAIL';
+            }
         } else {
-            echo 'FAIL';
+            echo 'NULL';
         }
     }
 
@@ -63,7 +67,7 @@ class PayController extends BaseController
         if ($wxData['return_code'] == 'SUCCESS' && $wxData['trade_state'] == 'SUCCESS') {
             $data = $this->paymentProcessing($wxData);
         } else {
-            $data = ['result' => 'fail'];
+            $data = ['result' => 'fail', 'debug' => $wxData];
         }
 
         return response()->json(compact('data'));
