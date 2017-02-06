@@ -109,10 +109,10 @@ class WalletController extends BaseController
             return $user;
         }
 
-        $record = Order::where('patient_id', $user->id)->orderBy('created_at', 'DESC')->get();
+        $record = AppointmentFee::where('patient_id', $user->id)->orderBy('created_at', 'DESC')->get();
         $data = array();
         foreach ($record as $item) {
-            $recordData = TransactionRecordTransformer::transformData($item);
+            $recordData = TransactionRecordTransformer::transformData_fee($item);
             array_push($data, $recordData);
         }
 
