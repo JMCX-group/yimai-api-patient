@@ -251,11 +251,14 @@ class WalletController extends BaseController
                     'info' => '支付成功',
                     'appointment_info' => AppointmentController::appointmentDetailInfo($appointment->id, $user->id)
                 ];
+
+                return response()->json(compact('data'), 200);
             } else {
                 $data = ['info' => '余额不足，请去充值'];
+
+                return response()->json(compact('data'), 400);
             }
 
-            return response()->json(compact('data'), 200);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }

@@ -134,20 +134,20 @@ class PayController extends BaseController
             $rechargeRecord->ret_data = json_encode($wxData);
             $rechargeRecord->save();
 
-            $appointment = Appointment::find($outTradeNo);
-            if ($appointment->status == 'wait-1') {
-                $appointment->is_pay = '1';
-                $appointment->status = 'wait-2';
-                $appointment->transaction_id = $wxData['transaction_id'];
-                $appointment->save();
-
-                MsgAndNotification::sendAppointmentsMsg($appointment); //推送消息记录
-
-                $doctor = Doctor::where('id', $appointment['doctor_id'])->first();
-                if (isset($doctor->id) && ($doctor->device_token != '' && $doctor->device_token != null)) {
-                    MsgAndNotification::pushAppointmentMsg($doctor->device_token, $appointment->status, $appointment->id, 'doctor'); //向医生端推送消息
-                }
-            }
+//            $appointment = Appointment::find($outTradeNo);
+//            if ($appointment->status == 'wait-1') {
+//                $appointment->is_pay = '1';
+//                $appointment->status = 'wait-2';
+//                $appointment->transaction_id = $wxData['transaction_id'];
+//                $appointment->save();
+//
+//                MsgAndNotification::sendAppointmentsMsg($appointment); //推送消息记录
+//
+//                $doctor = Doctor::where('id', $appointment['doctor_id'])->first();
+//                if (isset($doctor->id) && ($doctor->device_token != '' && $doctor->device_token != null)) {
+//                    MsgAndNotification::pushAppointmentMsg($doctor->device_token, $appointment->status, $appointment->id, 'doctor'); //向医生端推送消息
+//                }
+//            }
 
             $data = ['result' => 'success'];
         } else {
@@ -170,17 +170,22 @@ class PayController extends BaseController
         /**
          * 订单状态更新
          */
-        $order = PatientRechargeRecord::where('out_trade_no', $outTradeNo)->first();
-        if (!empty($order->id)) {
-            $order->status = 'end';
-            $order->time_expire = $wxData['time_end'];
-            $order->ret_data = json_encode($wxData);
-            $order->save();
+        $rechargeRecord = PatientRechargeRecord::where('out_trade_no', $outTradeNo)->first();
+        if (!empty($rechargeRecord->id)) {
+            $rechargeRecord->status = 'end';
+            $rechargeRecord->time_expire = $wxData['time_end'];
+            $rechargeRecord->ret_data = json_encode($wxData);
+            $rechargeRecord->save();
 
             /**
              * 钱包信息更新
              */
-            $wallet = PatientWallet::where('patient_id', $order->patient_id)->first();
+            $wallet = PatientWallet::where('patient_id', $rechargeRecord->patient_id)->first();
+            if (!isset($wallet->patient_id)) {
+                $wallet = new PatientWallet();
+                $wallet->patient_id = $rechargeRecord->patient_id;
+                $wallet->total = 0;
+            }
             $wallet->total += ($wxData['total_fee'] / 100);
             $wallet->save();
 
