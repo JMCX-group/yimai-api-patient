@@ -8,20 +8,13 @@
 
 namespace App\Api\Transformers;
 
-use App\Order;
 use League\Fractal\TransformerAbstract;
 
 class TransactionRecordTransformer extends TransformerAbstract
 {
-    public function transform(Order $order)
+    public function transform()
     {
-        return [
-            'name' => $order['name'],
-            'price' => $order['price'],
-            'type' => $order['type'],
-            'status' => $order['status'],
-            'time' => $order['created_at']
-        ];
+        //
     }
 
     /**

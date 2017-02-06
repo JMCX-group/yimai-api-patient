@@ -10,7 +10,6 @@ namespace App\Api\Transformers;
 
 use App\AppointmentFee;
 use App\Hospital;
-use App\Order;
 
 class TimeLineTransformer
 {

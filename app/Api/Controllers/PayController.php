@@ -8,15 +8,12 @@
 
 namespace App\Api\Controllers;
 
-use App\Api\Helper\MsgAndNotification;
 use App\Api\Helper\WeiXinPay;
 use App\Appointment;
 use App\AppointmentFee;
-use App\Doctor;
 use App\PatientRechargeRecord;
 use App\PatientWallet;
 use Illuminate\Http\Request;
-use App\Order;
 use Illuminate\Support\Facades\Log;
 
 class PayController extends BaseController
@@ -39,6 +36,8 @@ class PayController extends BaseController
      */
     public function notifyUrl()
     {
+        Log::info('appointment-pay-time', ['context' => date('Y-m-d H:i:s')]); //测试期间
+
         $wxData = (array)simplexml_load_string(file_get_contents('php://input'), 'SimpleXMLElement', LIBXML_NOCDATA);
         if ($wxData[0]) {
             Log::info('appointment-pay', ['context' => json_encode($wxData)]); //测试期间
@@ -102,7 +101,8 @@ class PayController extends BaseController
     public function notPayProcessing($wxData)
     {
         $outTradeNo = $wxData['out_trade_no'];
-        $order = Order::where('out_trade_no', $outTradeNo)->first();
+//        $order = Order::where('out_trade_no', $outTradeNo)->first();
+        $order = AppointmentFee::where('appointment_id', $outTradeNo)->first();
         if (!empty($order->id)) {
             $order->ret_data = json_encode($wxData);
             $order->save();

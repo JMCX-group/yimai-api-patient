@@ -20,7 +20,6 @@ use App\Api\Transformers\Transformer;
 use App\Appointment;
 use App\AppointmentFee;
 use App\Doctor;
-use App\Order;
 use App\Patient;
 use App\User;
 
@@ -398,31 +397,31 @@ class AppointmentController extends BaseController
      */
     public function pay(AppointmentIdRequest $request)
     {
-        $appointmentId = $request['id'];
-        $appointment = Appointment::find($appointmentId);
-        $doctor = Doctor::find($appointment->doctor_id);
-
-        /**
-         * 没有支付金额修复：
-         */
-        if ($appointment->price == null) {
-            $appointment->price = $doctor->fee;
-        }
-
-        //微信支付
-        $data = ['message' => 'false'];
-        if (!($appointment->price == 0 || $appointment->price == null || $appointment->price == '')) {
-            $retData = $this->wxPay($appointment);
-            if ($retData != false) {
-                $appointment->is_pay = '1'; //已经支付记录
-                $appointment->save();
-
-                $data = $retData;
-                return response()->json(compact('data'), 200);
-            }
-        }
-
-        return response()->json(compact('data'), 500);
+//        $appointmentId = $request['id'];
+//        $appointment = Appointment::find($appointmentId);
+//        $doctor = Doctor::find($appointment->doctor_id);
+//
+//        /**
+//         * 没有支付金额修复：
+//         */
+//        if ($appointment->price == null) {
+//            $appointment->price = $doctor->fee;
+//        }
+//
+//        //微信支付
+//        $data = ['message' => 'false'];
+//        if (!($appointment->price == 0 || $appointment->price == null || $appointment->price == '')) {
+//            $retData = $this->wxPay($appointment);
+//            if ($retData != false) {
+//                $appointment->is_pay = '1'; //已经支付记录
+//                $appointment->save();
+//
+//                $data = $retData;
+//                return response()->json(compact('data'), 200);
+//            }
+//        }
+//
+//        return response()->json(compact('data'), 500);
     }
 
     /**
@@ -433,30 +432,30 @@ class AppointmentController extends BaseController
      */
     public function wxPay($appointment)
     {
-        try {
-            $order = Order::where('out_trade_no', $appointment->id)->first();
-            if (empty($order->id)) {
-                $newOrder = [
-                    'doctor_id' => $appointment->doctor_id,
-                    'patient_id' => $appointment->patient_id,
-                    'out_trade_no' => $appointment->id,
-//                    'total_fee' => ($appointment->price) * 100,
-                    'total_fee' => 1, //临时测试，只支付一分
-                    'body' => '约诊',
-                    'detail' => '',
-                    'type' => '收入',
-                    'time_start' => date('Y-m-d H:i:s'),
-                    'status' => 'start', //start:开始; end:结束
-                    'settlement_status' => '待结算'
-                ];
-                $order = Order::create($newOrder);
-            }
-
-            $timeExpire = date('YmdHis', (time() + 600)); //过期时间600秒
-            return $this->wxPayClass->wxPay($order['out_trade_no'], $order['body'], $order['total_fee'], $timeExpire);
-        } catch (\Exception $e) {
-            return false;
-        }
+//        try {
+//            $order = Order::where('out_trade_no', $appointment->id)->first();
+//            if (empty($order->id)) {
+//                $newOrder = [
+//                    'doctor_id' => $appointment->doctor_id,
+//                    'patient_id' => $appointment->patient_id,
+//                    'out_trade_no' => $appointment->id,
+////                    'total_fee' => ($appointment->price) * 100,
+//                    'total_fee' => 1, //临时测试，只支付一分
+//                    'body' => '约诊',
+//                    'detail' => '',
+//                    'type' => '收入',
+//                    'time_start' => date('Y-m-d H:i:s'),
+//                    'status' => 'start', //start:开始; end:结束
+//                    'settlement_status' => '待结算'
+//                ];
+//                $order = Order::create($newOrder);
+//            }
+//
+//            $timeExpire = date('YmdHis', (time() + 600)); //过期时间600秒
+//            return $this->wxPayClass->wxPay($order['out_trade_no'], $order['body'], $order['total_fee'], $timeExpire);
+//        } catch (\Exception $e) {
+//            return false;
+//        }
     }
 
     /**

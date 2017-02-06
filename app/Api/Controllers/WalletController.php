@@ -17,7 +17,6 @@ use App\Api\Transformers\WalletTransformer;
 use App\Appointment;
 use App\AppointmentFee;
 use App\Doctor;
-use App\Order;
 use App\PatientRechargeRecord;
 use App\PatientWallet;
 use App\User;

@@ -1106,30 +1106,30 @@ class ApiController extends BaseController
                         ]
                     ],
 
-                    '支付/缴纳保证金/缴纳接诊费' => [
-                        'url' => $http . '/api/appointment/pay',
-                        'method' => 'POST',
-                        'params' => [
-                            'token' => ''
-                        ],
-                        'form-data' => [
-                            'id' => '约诊ID'
-                        ],
-                        'APP支付接口调用文档' => 'https://pay.weixin.qq.com/wiki/doc/api/app/app.php?chapter=9_12&index=2',
-                        'response' => [
-                            'data' => [
-                                'appid' => '',
-                                'noncestr' => '',
-                                'package' => '',
-                                'partnerid' => '',
-                                'prepayid' => '',
-                                'timestamp' => '',
-                                'sign' => '',
-                            ],
-                            'message' => 'false: 表示失败',
-                            'error' => ''
-                        ]
-                    ],
+//                    '支付/缴纳保证金/缴纳接诊费' => [
+//                        'url' => $http . '/api/appointment/pay',
+//                        'method' => 'POST',
+//                        'params' => [
+//                            'token' => ''
+//                        ],
+//                        'form-data' => [
+//                            'id' => '约诊ID'
+//                        ],
+//                        'APP支付接口调用文档' => 'https://pay.weixin.qq.com/wiki/doc/api/app/app.php?chapter=9_12&index=2',
+//                        'response' => [
+//                            'data' => [
+//                                'appid' => '',
+//                                'noncestr' => '',
+//                                'package' => '',
+//                                'partnerid' => '',
+//                                'prepayid' => '',
+//                                'timestamp' => '',
+//                                'sign' => '',
+//                            ],
+//                            'message' => 'false: 表示失败',
+//                            'error' => ''
+//                        ]
+//                    ],
 
                     '确认改期' => [
                         '说明' => 'status_code为wait-4的时候，才可以调用',
