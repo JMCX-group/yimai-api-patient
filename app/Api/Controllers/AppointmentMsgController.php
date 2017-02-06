@@ -81,10 +81,14 @@ class AppointmentMsgController extends BaseController
     public function readMessage(Request $request)
     {
         $msg = AppointmentMsg::find($request['id']);
-        $msg->patient_read = 1;
-        $msg->save();
+        if ($msg) {
+            $msg->patient_read = 1;
+            $msg->save();
+            return response()->json(['success' => ''], 204);
+        } else {
 
-        return response()->json(['success' => ''], 204);
+            return response()->json(['message' => '没有查到此消息'], 400);
+        }
     }
 
     /**
