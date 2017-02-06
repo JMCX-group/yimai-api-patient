@@ -205,7 +205,7 @@ class WalletController extends BaseController
              * 钱包信息判断
              */
             $wallet = PatientWallet::where('patient_id', $user->id)->first();
-            if ($wallet->total > $appointment->price) {
+            if (isset($wallet->patient_id) && $wallet->total > $appointment->price) {
                 /**
                  * 余额支付信息：
                  */
