@@ -175,16 +175,20 @@ class User extends Model implements AuthenticatableContract,
     /**
      * 默认进入搜索获取的数据,获取相关标签
      *
-     * @return mixed
+     * @return array|mixed
      */
     public static function newDefaultInfo()
     {
         $idArr = Appointment::getTop10();
-        $idList = join(',', $idArr);
-        $condition = "WHERE doctors.id IN (" . $idList . ") ";
-        $order = "ORDER BY FIND_IN_SET(doctors.id, '12,7,8,6,36,52,71,14,17,16')"; //按照whereIn里的排序
+        if ($idArr) {
+            $idList = join(',', $idArr);
+            $condition = "WHERE doctors.id IN (" . $idList . ") ";
+            $order = "ORDER BY FIND_IN_SET(doctors.id, $idList)"; //按照whereIn里的排序
 
-        return self::defaultSearchSql($condition, $order);
+            return self::defaultSearchSql($condition, $order);
+        } else {
+            return [];
+        }
     }
 
     /**
