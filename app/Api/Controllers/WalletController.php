@@ -145,7 +145,8 @@ class WalletController extends BaseController
         $rechargeRecord = [
             'patient_id' => $user->id,
             'out_trade_no' => $outTradeNo,
-            'total_fee' => $fee,
+//            'total_fee' => $fee,
+            'total_fee' => $fee * 10000, //TODO 测试期间乘以10000倍
             'body' => $body,
             'detail' => '',
             'time_start' => date('Y-m-d H:i:s'),

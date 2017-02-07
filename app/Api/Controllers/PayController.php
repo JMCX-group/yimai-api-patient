@@ -35,7 +35,7 @@ class PayController extends BaseController
     public function notifyUrl()
     {
         $wxData = (array)simplexml_load_string(file_get_contents('php://input'), 'SimpleXMLElement', LIBXML_NOCDATA);
-        Log::info('appointment-pay', ['context' => json_encode($wxData)]); //测试期间
+        Log::info('recharge-record-wechat-notify', ['context' => json_encode($wxData)]); //测试期间
         if ($wxData['return_code'] == 'SUCCESS' && $wxData['result_code'] == 'SUCCESS') {
 //            if ($wxData['attach'] == 'recharge') {
                 $this->rechargeProcessing($wxData);
@@ -50,12 +50,15 @@ class PayController extends BaseController
     }
 
     /**
+     * 订单查询并处理
+     *
      * @param Request $request
      * @return array
      */
     public function wxPayOrderQuery(Request $request)
     {
         $wxData = $this->wxPay->wxOrderQuery($request['id']);
+        Log::info('recharge-record-wechat-query', ['context' => json_encode($wxData)]); //测试期间
         if ($wxData['return_code'] == 'SUCCESS' && $wxData['trade_state'] == 'SUCCESS') {
             $data = $this->rechargeProcessing($wxData);
         } else {
@@ -180,6 +183,7 @@ class PayController extends BaseController
                     $wallet->total = 0;
                 }
                 $wallet->total += ($wxData['total_fee'] / 100);
+                $wallet->total = $wallet->total * 10000; //TODO 测试期间乘以10000倍
                 $wallet->save();
 
                 $data = ['result' => 'success'];
