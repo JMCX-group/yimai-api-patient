@@ -207,6 +207,21 @@ class WalletController extends BaseController
             $wallet = PatientWallet::where('patient_id', $user->id)->first();
             if (isset($wallet->patient_id) && $wallet->total > $appointment->price) {
                 /**
+                 * 平台费率计算：
+                 */
+                $rate = 0.1; //默认10%
+                if($appointment->doctor_or_patient == 'p' && $appointment->platform_or_doctor == 'p'){
+                    $rate = 0.2; //患者发起的平台代约请求为20%
+                }
+
+                /**
+                 * 费用计算：
+                 */
+                $receptionFee = $appointment->price * 100; //诊疗费; 元转分
+                $platformFee = $receptionFee * $rate; //平台费
+                $totalFee = $receptionFee + $platformFee;
+
+                /**
                  * 余额支付信息：
                  */
                 $appointmentFeeData = [
@@ -214,9 +229,9 @@ class WalletController extends BaseController
                     'patient_id' => $appointment->patient_id,
                     'locums_id' => $appointment->locums_id,
                     'appointment_id' => $appointment->id,
-                    'total_fee' => $appointment->price * 100, //元转分
-                    'reception_fee' => $appointment->price * 100, //诊疗费; 元转分
-                    'platform_fee' => 0, //平台费
+                    'total_fee' => $totalFee,
+                    'reception_fee' => $receptionFee,
+                    'platform_fee' => $platformFee,
                     'intermediary_fee' => 0, //中介费
                     'guide_fee' => 0, //导诊费
                     'default_fee' => 0, //违约费用
