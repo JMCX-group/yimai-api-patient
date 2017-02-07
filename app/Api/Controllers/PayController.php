@@ -9,8 +9,6 @@
 namespace App\Api\Controllers;
 
 use App\Api\Helper\WeiXinPay;
-use App\Appointment;
-use App\AppointmentFee;
 use App\PatientRechargeRecord;
 use App\PatientWallet;
 use Illuminate\Http\Request;
@@ -36,16 +34,14 @@ class PayController extends BaseController
      */
     public function notifyUrl()
     {
-        Log::info('appointment-pay-time', ['context' => date('Y-m-d H:i:s')]); //测试期间
-
         $wxData = (array)simplexml_load_string(file_get_contents('php://input'), 'SimpleXMLElement', LIBXML_NOCDATA);
         Log::info('appointment-pay', ['context' => json_encode($wxData)]); //测试期间
         if ($wxData['return_code'] == 'SUCCESS' && $wxData['result_code'] == 'SUCCESS') {
-            if ($wxData['attach'] == 'recharge') {
+//            if ($wxData['attach'] == 'recharge') {
                 $this->rechargeProcessing($wxData);
-            } else {
-                $this->paymentProcessing($wxData);
-            }
+//            } else {
+//                $this->paymentProcessing($wxData);
+//            }
 
             echo 'SUCCESS';
         } else {
@@ -61,7 +57,7 @@ class PayController extends BaseController
     {
         $wxData = $this->wxPay->wxOrderQuery($request['id']);
         if ($wxData['return_code'] == 'SUCCESS' && $wxData['trade_state'] == 'SUCCESS') {
-            $data = $this->paymentProcessing($wxData);
+            $data = $this->rechargeProcessing($wxData);
         } else {
             $data = ['result' => 'fail', 'debug' => $wxData];
         }
@@ -74,44 +70,44 @@ class PayController extends BaseController
      *
      * @param $idArr
      */
-    public function batProcessing($idArr)
-    {
-        foreach ($idArr as $item) {
-            $wxData = $this->wxPay->wxOrderQuery($item->id);
-            if ($wxData['return_code'] == 'SUCCESS' && $wxData['result_code'] == 'SUCCESS' && $wxData['trade_state'] == 'SUCCESS') {
-                $this->paymentProcessing($wxData);
-            } else {
-                Log::info('wx-order-query-error', ['context' => json_encode($wxData)]);
-                if ($wxData['trade_state'] == 'NOTPAY') {
-                    $this->notPayProcessing($wxData);
-                }
-            }
-        }
-    }
+//    public function batProcessing($idArr)
+//    {
+//        foreach ($idArr as $item) {
+//            $wxData = $this->wxPay->wxOrderQuery($item->id);
+//            if ($wxData['return_code'] == 'SUCCESS' && $wxData['result_code'] == 'SUCCESS' && $wxData['trade_state'] == 'SUCCESS') {
+//                $this->rechargeProcessing($wxData);
+//            } else {
+//                Log::info('wx-order-query-error', ['context' => json_encode($wxData)]);
+//                if ($wxData['trade_state'] == 'NOTPAY') {
+//                    $this->notPayProcessing($wxData);
+//                }
+//            }
+//        }
+//    }
 
     /**
      * 处理未支付的
      *
      * @param $wxData
      */
-    public function notPayProcessing($wxData)
-    {
-        $outTradeNo = $wxData['out_trade_no'];
-//        $order = Order::where('out_trade_no', $outTradeNo)->first();
-        $order = AppointmentFee::where('appointment_id', $outTradeNo)->first();
-        if (!empty($order->id)) {
-            $order->ret_data = json_encode($wxData);
-            $order->save();
-
-            $appointment = Appointment::find($outTradeNo);
-            if (!empty($appointment->id)) {
-                if ($appointment->status == 'wait-1') {
-                    $appointment->is_pay = '0';
-                    $appointment->save();
-                }
-            }
-        }
-    }
+//    public function notPayProcessing($wxData)
+//    {
+//        $outTradeNo = $wxData['out_trade_no'];
+////        $order = Order::where('out_trade_no', $outTradeNo)->first();
+//        $order = AppointmentFee::where('appointment_id', $outTradeNo)->first();
+//        if (!empty($order->id)) {
+//            $order->ret_data = json_encode($wxData);
+//            $order->save();
+//
+//            $appointment = Appointment::find($outTradeNo);
+//            if (!empty($appointment->id)) {
+//                if ($appointment->status == 'wait-1') {
+//                    $appointment->is_pay = '0';
+//                    $appointment->save();
+//                }
+//            }
+//        }
+//    }
 
     /**
      * 统一处理
@@ -119,17 +115,17 @@ class PayController extends BaseController
      * @param $wxData
      * @return array
      */
-    public function paymentProcessing($wxData)
-    {
-        $outTradeNo = $wxData['out_trade_no'];
-
-        $rechargeRecord = PatientRechargeRecord::where('out_trade_no', $outTradeNo)->first();
-        if (!empty($rechargeRecord->id)) {
-            $rechargeRecord->status = 'end';
-            $rechargeRecord->time_expire = $wxData['time_end'];
-            $rechargeRecord->ret_data = json_encode($wxData);
-            $rechargeRecord->save();
-
+//    public function paymentProcessing($wxData)
+//    {
+//        $outTradeNo = $wxData['out_trade_no'];
+//
+//        $rechargeRecord = PatientRechargeRecord::where('out_trade_no', $outTradeNo)->first();
+//        if (!empty($rechargeRecord->id)) {
+//            $rechargeRecord->status = 'end';
+//            $rechargeRecord->time_expire = $wxData['time_end'];
+//            $rechargeRecord->ret_data = json_encode($wxData);
+//            $rechargeRecord->save();
+//
 //            $appointment = Appointment::find($outTradeNo);
 //            if ($appointment->status == 'wait-1') {
 //                $appointment->is_pay = '1';
@@ -144,14 +140,14 @@ class PayController extends BaseController
 //                    MsgAndNotification::pushAppointmentMsg($doctor->device_token, $appointment->status, $appointment->id, 'doctor'); //向医生端推送消息
 //                }
 //            }
-
-            $data = ['result' => 'success'];
-        } else {
-            $data = ['result' => 'fail', 'debug' => '木有订单信息啊'];
-        }
-
-        return $data;
-    }
+//
+//            $data = ['result' => 'success'];
+//        } else {
+//            $data = ['result' => 'fail', 'debug' => '木有订单信息啊'];
+//        }
+//
+//        return $data;
+//    }
 
     /**
      * 充值处理
