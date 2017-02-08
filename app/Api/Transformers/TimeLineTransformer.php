@@ -358,7 +358,7 @@ class TimeLineTransformer
     {
         $appointmentFee = AppointmentFee::where('appointment_id', $appointments->id)->first();
         if ($appointmentFee) {
-            $time = $appointmentFee->time_expire;
+            $time = $appointmentFee->created_at->format('Y-m-d H:i:s');
         } else {
             $time = '';
         }
@@ -443,9 +443,6 @@ class TimeLineTransformer
         ], [
             'name' => \Config::get('constants.TREATMENT_NOTICE'),
             'content' => $appointments->remark
-        ],[
-            'name' => \Config::get('constants.COST'),
-            'content' => $appointments->price
         ]];
     }
 
