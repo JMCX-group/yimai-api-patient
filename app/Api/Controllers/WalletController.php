@@ -85,6 +85,23 @@ class WalletController extends BaseController
             ->get();
         $retAppointments = array();
         foreach ($appointments as $appointment) {
+            /**
+             * 平台费率计算，和约诊文案那段一样：
+             */
+            $rate = 0.1; //默认10%
+            if($appointment->doctor_or_patient == 'p' && $appointment->platform_or_doctor == 'p'){
+                $rate = 0.2; //患者发起的平台代约请求为20%
+            }
+
+            /**
+             * 费用计算，和约诊文案那段一样：
+             */
+            $receptionFee = $appointment->price; //诊疗费; 元转分
+            $platformFee = $receptionFee * $rate; //平台费
+            $totalFee = $receptionFee + $platformFee;
+
+            $appointment->price = $totalFee; //修改实际需要支付的金额
+
             array_push($retAppointments, WalletTransformer::appointmentTransform($appointment));
         }
 
