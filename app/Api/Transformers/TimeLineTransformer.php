@@ -295,17 +295,21 @@ class TimeLineTransformer
         //开始截取
         $dates = $appointments->expect_visit_date;
         $am_pm = $appointments->expect_am_pm;
-        if (strpos($dates, ',')) {
-            $expectVisitDateArr = explode(',', $dates);
-            $expectVisitAmPmArr = explode(',', $am_pm);
-            $expectVisitDate = '';
-            for ($i = 0; $i < count($expectVisitDateArr); $i++) {
-                $expectVisitDate .= $expectVisitDateArr[$i] . ' ' . (($expectVisitAmPmArr[$i] == 'am') ? '上午' : '下午');
-                $expectVisitDate .= ',';
-            }
-            $expectVisitDate = substr($expectVisitDate, 0, strlen($expectVisitDate) - 1);
+        if ($dates == 0 || $dates == '' || $dates == null) {
+            $expectVisitDate = '由专家决定约诊时间';
         } else {
-            $expectVisitDate = $dates . ' ' . (($am_pm == 'am') ? '上午' : '下午');
+            if (strpos($dates, ',')) {
+                $expectVisitDateArr = explode(',', $dates);
+                $expectVisitAmPmArr = explode(',', $am_pm);
+                $expectVisitDate = '';
+                for ($i = 0; $i < count($expectVisitDateArr); $i++) {
+                    $expectVisitDate .= $expectVisitDateArr[$i] . ' ' . (($expectVisitAmPmArr[$i] == 'am') ? '上午' : '下午');
+                    $expectVisitDate .= ',';
+                }
+                $expectVisitDate = substr($expectVisitDate, 0, strlen($expectVisitDate) - 1);
+            } else {
+                $expectVisitDate = $dates . ' ' . (($am_pm == 'am') ? '上午' : '下午');
+            }
         }
 
         return [[
