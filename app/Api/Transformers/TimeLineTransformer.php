@@ -206,7 +206,7 @@ class TimeLineTransformer
                 $retData = self::otherInfoContent_confirmAdmissions($appointments, $doctors, $retData);
 
                 $time = $appointments->completed_admissions_time;
-                $infoText = \Config::get('constants.CONFIRM_ADMISSIONS');
+                $infoText = \Config::get('constants.CONFIRM_FACE_CONSULTATION');
                 $retData = self::copyTransformer($retData, $time, $infoText, null, 'pass');
 
                 $retData = self::otherInfoContent_completed($appointments, $retData);
@@ -411,9 +411,9 @@ class TimeLineTransformer
      */
     private static function otherInfoContent_completed($appointments, $retData)
     {
-        $time = $appointments->updated_at->format('Y-m-d H:i:s');
+//        $time = $appointments->updated_at->format('Y-m-d H:i:s');
         $infoText = \Config::get('constants.FACE_CONSULTATION_COMPLETE');
-        return self::copyTransformer($retData, $time, $infoText, null, 'completed');
+        return self::copyTransformer($retData, null, $infoText, null, 'completed');
     }
 
     /**

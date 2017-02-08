@@ -37,6 +37,7 @@ return [
 
     'CONFIRM_RESCHEDULED_WAIT_FACE_CONSULTATION' => '患者确认改期,待面诊',
     'CONFIRM_RESCHEDULED' => '您已确认改期',
+    'CONFIRM_FACE_CONSULTATION' => '医生已确认面诊',
     'WAIT_FACE_CONSULTATION' => '待面诊',
 
     'UNPAID_APPOINTMENT_CLOSE' => '您过期未付款,约诊关闭',
