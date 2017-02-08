@@ -279,8 +279,8 @@ class TimeLineTransformer
             'name' => '预估金额',
             'content' => $totalFee . '元'
         ], [
-            'name' => '',
-            'content' => '将于' . $time . '过期'
+            'name' => '过期时间',
+            'content' => $time
         ]];
     }
 
