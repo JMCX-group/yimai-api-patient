@@ -453,9 +453,11 @@ class TimeLineTransformer
      */
     private static function infoOther_alreadyPaid($appointments)
     {
+        $appointmentFee = AppointmentFee::where('appointment_id', $appointments->id)->first();
+
         return [[
             'name' => \Config::get('constants.COST'),
-            'content' => ($appointments->deposit == null || $appointments->deposit == '0') ? $appointments->price : $appointments->deposit
+            'content' => $appointmentFee->total_fee / 100 //分转元
         ]];
     }
 
