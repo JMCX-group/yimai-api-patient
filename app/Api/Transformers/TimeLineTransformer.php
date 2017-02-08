@@ -70,8 +70,7 @@ class TimeLineTransformer
 
             case 'wait-1':
                 $infoText = \Config::get('constants.WAIT_PAYMENT');
-                $infoOther = self::otherInfoContent_initiateAppointments($appointments);
-                $retData = self::copyTransformer($retData, null, $infoText, $infoOther, 'wait');
+                $retData = self::copyTransformer($retData, null, $infoText, null, 'wait');
                 break;
 
             case 'wait-2':
