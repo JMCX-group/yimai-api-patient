@@ -1180,7 +1180,7 @@ class ApiController extends BaseController
                         ],
                         'response' => [
                             'data' => [
-                                'info' => '【支付成功】、【余额不足，请去充值】；只要HTTP CODE是200，就一定会返回',
+                                'info' => '【支付成功】HTTP CODE是200；【余额不足，请去充值】HTTP CODE是400',
                                 'appointment_info' => [
                                     '说明' => '和/api/appointment/detail返回信息格式一样',
                                     'doctor_info' => [
