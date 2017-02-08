@@ -1165,7 +1165,23 @@ class ApiController extends BaseController
                             'message' => '',
                             'error' => ''
                         ]
-                    ]
+                    ],
+
+                    '取消约诊' => [
+                        'url' => $http . '/api/appointment/cancel',
+                        'method' => 'POST',
+                        'params' => [
+                            'token' => ''
+                        ],
+                        'form-data' => [
+                            'id' => '约诊ID'
+                        ],
+                        'response' => [
+                            'success' => '',
+                            'message' => '',
+                            'error' => ''
+                        ]
+                    ],
                 ],
 
                 '支付' => [

@@ -29,7 +29,7 @@ class AppointmentFee extends Model
         'platform_fee',
         'intermediary_fee',
         'guide_fee',
-        'default_fee',
+        'default_fee_rate',
         'status',
         'time_expire',
         'settlement_status'
@@ -43,12 +43,12 @@ class AppointmentFee extends Model
      * @param string $status
      * @return mixed
      */
-    public static function getTotalFees($patientId, $status = 'completed')
+    public static function getTotalFees($patientId, $status = '!=')
     {
         return DB::select("
             SELECT SUM(`total_fee`) AS fee
             FROM `appointment_fees` 
-            WHERE patient_id=$patientId AND `status`='$status';
+            WHERE patient_id=$patientId AND `status`$status'paid';
         ");
     }
 
@@ -61,7 +61,7 @@ class AppointmentFee extends Model
     public static function getDefaultFees($patientId)
     {
         return DB::select("
-            SELECT SUM(`default_fee`) AS fee
+            SELECT SUM(`total_fee`) AS fee
             FROM `appointment_fees` 
             WHERE patient_id=$patientId AND `status`='cancelled';
         ");
@@ -75,6 +75,6 @@ class AppointmentFee extends Model
      */
     public static function getFreezeFees($patientId)
     {
-        return self::getTotalFees($patientId, 'paid');
+        return self::getTotalFees($patientId, '=');
     }
 }

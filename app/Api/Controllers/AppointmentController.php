@@ -526,4 +526,89 @@ class AppointmentController extends BaseController
             return response()->json(['error' => $e->getMessage()], $e->getStatusCode());
         }
     }
+
+    /**
+     * 取消约诊
+     *
+     * @param AppointmentIdRequest $request
+     * @return mixed
+     */
+    public function cancel(AppointmentIdRequest $request)
+    {
+        $user = User::getAuthenticatedUser();
+        if (!isset($user->id)) {
+            return $user;
+        }
+
+        $appointmentId = $request['id'];
+        $appointment = Appointment::where('id', $appointmentId)->first();
+
+        /**
+         * Wait:
+         * wait-0: 待代约医生确认
+         * wait-1: 待患者付款
+         * wait-2: 患者已付款，待医生确认
+         * wait-3: 医生确认接诊，待面诊
+         * wait-4: 医生改期，待患者确认
+         * wait-5: 患者确认改期，待面诊
+         *
+         * Close:
+         * close-1: 待患者付款
+         * close-2: 医生过期未接诊,约诊关闭
+         * close-3: 医生拒绝接诊
+         *
+         * Cancel:
+         * cancel-1: 患者取消约诊; 未付款
+         * cancel-2: 医生取消约诊
+         * cancel-3: 患者取消约诊; 已付款后
+         * cancel-4: 医生改期之后,医生取消约诊;
+         * cancel-5: 医生改期之后,患者取消约诊;
+         * cancel-6: 医生改期之后,患者确认之后,患者取消约诊;
+         * cancel-7: 医生改期之后,患者确认之后,医生取消约诊;
+         *
+         * Completed:
+         * completed-1:最简正常流程
+         * completed-2:改期后完成
+         */
+        switch ($appointment->status) {
+            case 'wait-0':
+            case 'wait-1':
+                $appointment->status = 'cancel-1';
+                $needDeductRate = 0; //需要扣除的费率
+                break;
+            case 'wait-3':
+                $appointment->status = 'cancel-3';
+                $appointmentFee = AppointmentFee::where('appointment_id', $appointmentId)->first();
+                if (date('Y-m-d H:i:s', strtotime($appointmentFee->created_at) + 24 * 3600) > date('Y-m-d H:i:s', time())) {
+                    $needDeductRate = 0.8; //需要扣除的费率，超过24小时
+                } else {
+                    $needDeductRate = 0.5; //需要扣除的费率，24小时内
+                }
+                break;
+            default:
+                $appointment->status = 'cancel-3';
+                $needDeductRate = 0; //需要扣除的费率
+                break;
+        }
+
+        try {
+            $appointment->patient_cancel_time = date('Y-m-d H:i:s', time());
+            $appointment->save();
+
+            /**
+             * 如果是wait-3，则需要扣费：
+             */
+            if (isset($appointmentFee)) {
+                $appointmentFee->total_fee = ($appointmentFee->total_fee) * $needDeductRate;
+                $appointmentFee->reception_fee = ($appointmentFee->reception_fee) * $needDeductRate;
+                $appointmentFee->platform_fee = ($appointmentFee->platform_fee) * $needDeductRate;
+                $appointmentFee->default_fee_rate = $needDeductRate;
+                $appointmentFee->save();
+            }
+
+            return response()->json(['success' => ''], 204);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
 }

@@ -138,10 +138,9 @@ $api->version('v1', function ($api) {
                 $api->post('upload-img', 'AppointmentController@uploadImg');
                 $api->post('detail', 'AppointmentController@getDetailInfo');
                 $api->get('list', 'AppointmentController@getReservationRecord');
-
-//                $api->post('pay', 'AppointmentController@pay');
                 $api->post('confirm-rescheduled', 'AppointmentController@confirmRescheduled');
                 $api->post('complete', 'AppointmentController@complete');
+                $api->post('cancel', 'AppointmentController@cancel');
             });
 
             //Patient

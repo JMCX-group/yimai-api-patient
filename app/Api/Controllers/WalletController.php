@@ -315,7 +315,7 @@ class WalletController extends BaseController
                     'platform_fee' => $platformFee,
                     'intermediary_fee' => 0, //中介费
                     'guide_fee' => 0, //导诊费
-                    'default_fee' => 0, //违约费用
+                    'default_fee_rate' => 0, //违约费率
                     'status' => 'paid' //资金状态：paid（已支付）、completed（已完成）、cancelled（已取消）
                 ];
                 AppointmentFee::create($appointmentFeeData);
