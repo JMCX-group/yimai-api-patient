@@ -457,7 +457,7 @@ class TimeLineTransformer
 
         return [[
             'name' => \Config::get('constants.COST'),
-            'content' => $appointmentFee->total_fee / 100 //分转元
+            'content' => ($appointmentFee->total_fee / 100) . '元'//分转元
         ]];
     }
 
