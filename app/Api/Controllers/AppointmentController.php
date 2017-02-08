@@ -44,6 +44,7 @@ class AppointmentController extends BaseController
      * close-1: 待患者付款
      * close-2: 医生过期未接诊,约诊关闭
      * close-3: 医生拒绝接诊
+     * close-4: 患者过期未确认,约诊关闭
      * cancel:
      * cancel-1: 患者取消约诊; 未付款
      * cancel-2: 医生取消约诊
@@ -542,6 +543,7 @@ class AppointmentController extends BaseController
 
         $appointmentId = $request['id'];
         $appointment = Appointment::where('id', $appointmentId)->first();
+        $appointmentFee = AppointmentFee::where('appointment_id', $appointmentId)->first();
 
         /**
          * Wait:
@@ -556,6 +558,7 @@ class AppointmentController extends BaseController
          * close-1: 待患者付款
          * close-2: 医生过期未接诊,约诊关闭
          * close-3: 医生拒绝接诊
+         * close-4: 患者过期未确认,约诊关闭
          *
          * Cancel:
          * cancel-1: 患者取消约诊; 未付款
@@ -576,17 +579,24 @@ class AppointmentController extends BaseController
                 $appointment->status = 'cancel-1';
                 $needDeductRate = 0; //需要扣除的费率
                 break;
+            case 'wait-2':
+                $appointment->status = 'cancel-3';
+                $needDeductRate = 0; //需要扣除的费率
+                break;
             case 'wait-3':
                 $appointment->status = 'cancel-3';
-                $appointmentFee = AppointmentFee::where('appointment_id', $appointmentId)->first();
                 if (date('Y-m-d H:i:s', strtotime($appointmentFee->created_at) + 24 * 3600) > date('Y-m-d H:i:s', time())) {
                     $needDeductRate = 0.8; //需要扣除的费率，超过24小时
                 } else {
                     $needDeductRate = 0.5; //需要扣除的费率，24小时内
                 }
                 break;
-            default:
-                $appointment->status = 'cancel-3';
+            case 'wait-4':
+                $appointment->status = 'cancel-5';
+                $needDeductRate = 0; //需要扣除的费率
+                break;
+            default: //wait-5
+                $appointment->status = 'cancel-6';
                 $needDeductRate = 0; //需要扣除的费率
                 break;
         }
@@ -596,9 +606,9 @@ class AppointmentController extends BaseController
             $appointment->save();
 
             /**
-             * 如果是wait-3，则需要扣费：
+             * 费用计算：
              */
-            if (isset($appointmentFee)) {
+            if ($appointmentFee) {
                 $appointmentFee->total_fee = ($appointmentFee->total_fee) * $needDeductRate;
                 $appointmentFee->reception_fee = ($appointmentFee->reception_fee) * $needDeductRate;
                 $appointmentFee->platform_fee = ($appointmentFee->platform_fee) * $needDeductRate;
