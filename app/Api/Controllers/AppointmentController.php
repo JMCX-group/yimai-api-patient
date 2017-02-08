@@ -131,7 +131,12 @@ class AppointmentController extends BaseController
                 MsgAndNotification::pushAppointmentMsg($patient->device_token, $appointment['status'], $appointment['id'], 'patient'); //向患者端推送消息
             }
 
-            return ['id' => $appointment['id']];
+            $data = [
+                'id' => $appointment['id'],
+                'appointment_info' => $this->appointmentDetailInfo($appointment['id'], $user->id)
+            ];
+
+            return response()->json(compact('data'));
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], $e->getStatusCode());
         }
@@ -229,7 +234,12 @@ class AppointmentController extends BaseController
                 MsgAndNotification::pushAppointmentMsg($doctor->device_token, $appointment['status'], $appointment['id'], 'doctor'); //向医生端推送消息
             }
 
-            return ['id' => $appointment['id']];
+            $data = [
+                'id' => $appointment['id'],
+                'appointment_info' => $this->appointmentDetailInfo($appointment['id'], $user->id)
+            ];
+
+            return response()->json(compact('data'));;
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], $e->getStatusCode());
         }
@@ -463,10 +473,15 @@ class AppointmentController extends BaseController
      * 患者确认完成面诊
      *
      * @param AppointmentIdRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return array|\Illuminate\Http\JsonResponse|mixed
      */
     public function complete(AppointmentIdRequest $request)
     {
+        $user = User::getAuthenticatedUser();
+        if (!isset($user->id)) {
+            return $user;
+        }
+
         $appointment = Appointment::where('id', $request['id'])->first();
         $appointment->status = 'completed-1';
 
@@ -490,7 +505,12 @@ class AppointmentController extends BaseController
                     MsgAndNotification::pushAppointmentMsg($doctor->device_token, $appointment->status, $appointment->id, 'doctor'); //向医生端推送消息
                 }
 
-                return response()->json(['success' => ''], 204);
+                $data = [
+                    'id' => $appointment['id'],
+                    'appointment_info' => $this->appointmentDetailInfo($appointment->id, $user->id)
+                ];
+
+                return response()->json(compact('data'));
             } else {
                 return response()->json(['message' => '保存失败'], 500);
             }
@@ -503,10 +523,15 @@ class AppointmentController extends BaseController
      * 患者确认改期，wait-4 -> wait-5
      *
      * @param AppointmentIdRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return array|\Illuminate\Http\JsonResponse
      */
     public function confirmRescheduled(AppointmentIdRequest $request)
     {
+        $user = User::getAuthenticatedUser();
+        if (!isset($user->id)) {
+            return $user;
+        }
+
         $appointment = Appointment::where('id', $request['id'])->first();
         $appointment->status = 'wait-5';
         $appointment->confirm_rescheduled_time = date('Y-m-d H:i:s');
@@ -519,7 +544,12 @@ class AppointmentController extends BaseController
                     MsgAndNotification::pushAppointmentMsg($doctor->device_token, $appointment->status, $appointment->id, 'doctor'); //向医生端推送消息
                 }
 
-                return response()->json(['success' => ''], 204);
+                $data = [
+                    'id' => $appointment['id'],
+                    'appointment_info' => $this->appointmentDetailInfo($appointment->id, $user->id)
+                ];
+
+                return response()->json(compact('data'));
             } else {
                 return response()->json(['message' => '保存失败'], 500);
             }
@@ -616,7 +646,12 @@ class AppointmentController extends BaseController
                 $appointmentFee->save();
             }
 
-            return response()->json(['success' => ''], 204);
+            $data = [
+                'id' => $appointment['id'],
+                'appointment_info' => $this->appointmentDetailInfo($appointment->id, $user->id)
+            ];
+
+            return response()->json(compact('data'));
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }

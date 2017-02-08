@@ -926,7 +926,66 @@ class ApiController extends BaseController
                             'am_or_pm' => '预约上/下午,和上面的对应的用逗号分隔开即可,例:am,pm; 如果是医生决定随便传什么,都不会处理,取值时为空',
                         ],
                         'response' => [
-                            'id' => '预约码',
+                            'data' => [
+                                'id' => '预约码',
+                                'appointment_info' => [
+                                    '说明' => '和/api/appointment/detail返回信息格式一样',
+                                    'doctor_info' => [
+                                        'id' => '接诊医生ID',
+                                        'name' => '接诊医生姓名',
+                                        'head_url' => '接诊医生头像URL',
+                                        'job_title' => '接诊医生职称',
+                                        'hospital' => '接诊医生所属医院',
+                                        'department' => '接诊医生所属科室'
+                                    ],
+                                    'locums_doctor_info' => [
+                                        'id' => '代约医生ID； 平台代约为1； 患者自己约的为空字符串',
+                                        'name' => '代约医生姓名； 平台代约为【医脉平台】； 患者自己约的为空字符串',
+                                        'head_url' => '代约医生头像URL； 平台代约为默认，',
+                                        'job_title' => '代约医生职称； 平台代约和患者自己约都为空字符串',
+                                        'hospital' => '代约医生所属医院； 平台代约和患者自己约都为空字符串',
+                                        'department' => '代约医生所属科室； 平台代约和患者自己约都为空字符串'
+                                    ],
+                                    'patient_info' => [
+                                        'name' => '患者姓名',
+                                        'head_url' => '患者头像URL',
+                                        'sex' => '患者性别',
+                                        'age' => '患者年龄',
+                                        'phone' => '患者电话',
+                                        'history' => '病情描述',
+                                        'img_url' => '病历图片url序列,url中把{_thumb}替换掉就是未压缩图片,例如:/uploads/case-history/2016/05/011605130001/1463539005_thumb.jpg,原图就是:/uploads/case-history/2016/05/011605130001/1463539005.jpg',
+                                    ],
+                                    'other_info' => [
+                                        'progress' => '顶部进度',
+                                        'time_line' => [
+                                            '说明' => 'time_line数组及其内部other数组下可能有1条或多条信息,需要遍历,0和1的序号不用在意,foreach就好',
+                                            '内容' => [[
+                                                'time' => '时间轴左侧的时间',
+                                                'info' => [
+                                                    'text' => '文案描述',
+                                                    'other' => [
+                                                        '内容' => [[
+                                                            'name' => '其他的信息名称,例如:期望就诊时间',
+                                                            'content' => '其他的信息内容,例如:2016-05-18 上午; 多条时间信息用逗号隔开,展示时则是换行展示,例如:2016-05-12 上午,2016-05-13 下午'
+                                                        ], []]
+                                                    ]
+                                                ],
+                                                'type' => '决定使用什么icon; begin | wait'
+                                            ],
+                                                [
+                                                    'time' => '时间轴左侧的时间, null为没有',
+                                                    'info' => [
+                                                        'text' => '文案描述',
+                                                        'other' => 'null为没有'
+                                                    ],
+                                                    'type' => '决定使用什么icon; begin | wait'
+                                                ]]
+                                        ],
+                                        'status_code' => '状态CODE',
+                                        'is_pay' => '是否支付；0为还未，1为已经支付；有可能wait-1也有已经支付的'
+                                    ]
+                                ]
+                            ],
                             'message' => '',
                             'error' => ''
                         ]
@@ -959,7 +1018,66 @@ class ApiController extends BaseController
                             'am_or_pm' => '预约上/下午,和上面的对应的用逗号分隔开即可,例:am,pm; 如果是医生决定随便传什么,都不会处理,取值时为空',
                         ],
                         'response' => [
-                            'id' => '预约码',
+                            'data' => [
+                                'id' => '预约码',
+                                'appointment_info' => [
+                                    '说明' => '和/api/appointment/detail返回信息格式一样',
+                                    'doctor_info' => [
+                                        'id' => '接诊医生ID',
+                                        'name' => '接诊医生姓名',
+                                        'head_url' => '接诊医生头像URL',
+                                        'job_title' => '接诊医生职称',
+                                        'hospital' => '接诊医生所属医院',
+                                        'department' => '接诊医生所属科室'
+                                    ],
+                                    'locums_doctor_info' => [
+                                        'id' => '代约医生ID； 平台代约为1； 患者自己约的为空字符串',
+                                        'name' => '代约医生姓名； 平台代约为【医脉平台】； 患者自己约的为空字符串',
+                                        'head_url' => '代约医生头像URL； 平台代约为默认，',
+                                        'job_title' => '代约医生职称； 平台代约和患者自己约都为空字符串',
+                                        'hospital' => '代约医生所属医院； 平台代约和患者自己约都为空字符串',
+                                        'department' => '代约医生所属科室； 平台代约和患者自己约都为空字符串'
+                                    ],
+                                    'patient_info' => [
+                                        'name' => '患者姓名',
+                                        'head_url' => '患者头像URL',
+                                        'sex' => '患者性别',
+                                        'age' => '患者年龄',
+                                        'phone' => '患者电话',
+                                        'history' => '病情描述',
+                                        'img_url' => '病历图片url序列,url中把{_thumb}替换掉就是未压缩图片,例如:/uploads/case-history/2016/05/011605130001/1463539005_thumb.jpg,原图就是:/uploads/case-history/2016/05/011605130001/1463539005.jpg',
+                                    ],
+                                    'other_info' => [
+                                        'progress' => '顶部进度',
+                                        'time_line' => [
+                                            '说明' => 'time_line数组及其内部other数组下可能有1条或多条信息,需要遍历,0和1的序号不用在意,foreach就好',
+                                            '内容' => [[
+                                                'time' => '时间轴左侧的时间',
+                                                'info' => [
+                                                    'text' => '文案描述',
+                                                    'other' => [
+                                                        '内容' => [[
+                                                            'name' => '其他的信息名称,例如:期望就诊时间',
+                                                            'content' => '其他的信息内容,例如:2016-05-18 上午; 多条时间信息用逗号隔开,展示时则是换行展示,例如:2016-05-12 上午,2016-05-13 下午'
+                                                        ], []]
+                                                    ]
+                                                ],
+                                                'type' => '决定使用什么icon; begin | wait'
+                                            ],
+                                                [
+                                                    'time' => '时间轴左侧的时间, null为没有',
+                                                    'info' => [
+                                                        'text' => '文案描述',
+                                                        'other' => 'null为没有'
+                                                    ],
+                                                    'type' => '决定使用什么icon; begin | wait'
+                                                ]]
+                                        ],
+                                        'status_code' => '状态CODE',
+                                        'is_pay' => '是否支付；0为还未，1为已经支付；有可能wait-1也有已经支付的'
+                                    ]
+                                ]
+                            ],
                             'message' => '',
                             'error' => ''
                         ]
@@ -1146,7 +1264,66 @@ class ApiController extends BaseController
                             'id' => '约诊ID'
                         ],
                         'response' => [
-                            'success' => '',
+                            'data' => [
+                                'id' => '预约码',
+                                'appointment_info' => [
+                                    '说明' => '和/api/appointment/detail返回信息格式一样',
+                                    'doctor_info' => [
+                                        'id' => '接诊医生ID',
+                                        'name' => '接诊医生姓名',
+                                        'head_url' => '接诊医生头像URL',
+                                        'job_title' => '接诊医生职称',
+                                        'hospital' => '接诊医生所属医院',
+                                        'department' => '接诊医生所属科室'
+                                    ],
+                                    'locums_doctor_info' => [
+                                        'id' => '代约医生ID； 平台代约为1； 患者自己约的为空字符串',
+                                        'name' => '代约医生姓名； 平台代约为【医脉平台】； 患者自己约的为空字符串',
+                                        'head_url' => '代约医生头像URL； 平台代约为默认，',
+                                        'job_title' => '代约医生职称； 平台代约和患者自己约都为空字符串',
+                                        'hospital' => '代约医生所属医院； 平台代约和患者自己约都为空字符串',
+                                        'department' => '代约医生所属科室； 平台代约和患者自己约都为空字符串'
+                                    ],
+                                    'patient_info' => [
+                                        'name' => '患者姓名',
+                                        'head_url' => '患者头像URL',
+                                        'sex' => '患者性别',
+                                        'age' => '患者年龄',
+                                        'phone' => '患者电话',
+                                        'history' => '病情描述',
+                                        'img_url' => '病历图片url序列,url中把{_thumb}替换掉就是未压缩图片,例如:/uploads/case-history/2016/05/011605130001/1463539005_thumb.jpg,原图就是:/uploads/case-history/2016/05/011605130001/1463539005.jpg',
+                                    ],
+                                    'other_info' => [
+                                        'progress' => '顶部进度',
+                                        'time_line' => [
+                                            '说明' => 'time_line数组及其内部other数组下可能有1条或多条信息,需要遍历,0和1的序号不用在意,foreach就好',
+                                            '内容' => [[
+                                                'time' => '时间轴左侧的时间',
+                                                'info' => [
+                                                    'text' => '文案描述',
+                                                    'other' => [
+                                                        '内容' => [[
+                                                            'name' => '其他的信息名称,例如:期望就诊时间',
+                                                            'content' => '其他的信息内容,例如:2016-05-18 上午; 多条时间信息用逗号隔开,展示时则是换行展示,例如:2016-05-12 上午,2016-05-13 下午'
+                                                        ], []]
+                                                    ]
+                                                ],
+                                                'type' => '决定使用什么icon; begin | wait'
+                                            ],
+                                                [
+                                                    'time' => '时间轴左侧的时间, null为没有',
+                                                    'info' => [
+                                                        'text' => '文案描述',
+                                                        'other' => 'null为没有'
+                                                    ],
+                                                    'type' => '决定使用什么icon; begin | wait'
+                                                ]]
+                                        ],
+                                        'status_code' => '状态CODE',
+                                        'is_pay' => '是否支付；0为还未，1为已经支付；有可能wait-1也有已经支付的'
+                                    ]
+                                ]
+                            ],
                             'message' => '',
                             'error' => ''
                         ]
@@ -1162,7 +1339,66 @@ class ApiController extends BaseController
                             'id' => '约诊ID'
                         ],
                         'response' => [
-                            'success' => '',
+                            'data' => [
+                                'id' => '预约码',
+                                'appointment_info' => [
+                                    '说明' => '和/api/appointment/detail返回信息格式一样',
+                                    'doctor_info' => [
+                                        'id' => '接诊医生ID',
+                                        'name' => '接诊医生姓名',
+                                        'head_url' => '接诊医生头像URL',
+                                        'job_title' => '接诊医生职称',
+                                        'hospital' => '接诊医生所属医院',
+                                        'department' => '接诊医生所属科室'
+                                    ],
+                                    'locums_doctor_info' => [
+                                        'id' => '代约医生ID； 平台代约为1； 患者自己约的为空字符串',
+                                        'name' => '代约医生姓名； 平台代约为【医脉平台】； 患者自己约的为空字符串',
+                                        'head_url' => '代约医生头像URL； 平台代约为默认，',
+                                        'job_title' => '代约医生职称； 平台代约和患者自己约都为空字符串',
+                                        'hospital' => '代约医生所属医院； 平台代约和患者自己约都为空字符串',
+                                        'department' => '代约医生所属科室； 平台代约和患者自己约都为空字符串'
+                                    ],
+                                    'patient_info' => [
+                                        'name' => '患者姓名',
+                                        'head_url' => '患者头像URL',
+                                        'sex' => '患者性别',
+                                        'age' => '患者年龄',
+                                        'phone' => '患者电话',
+                                        'history' => '病情描述',
+                                        'img_url' => '病历图片url序列,url中把{_thumb}替换掉就是未压缩图片,例如:/uploads/case-history/2016/05/011605130001/1463539005_thumb.jpg,原图就是:/uploads/case-history/2016/05/011605130001/1463539005.jpg',
+                                    ],
+                                    'other_info' => [
+                                        'progress' => '顶部进度',
+                                        'time_line' => [
+                                            '说明' => 'time_line数组及其内部other数组下可能有1条或多条信息,需要遍历,0和1的序号不用在意,foreach就好',
+                                            '内容' => [[
+                                                'time' => '时间轴左侧的时间',
+                                                'info' => [
+                                                    'text' => '文案描述',
+                                                    'other' => [
+                                                        '内容' => [[
+                                                            'name' => '其他的信息名称,例如:期望就诊时间',
+                                                            'content' => '其他的信息内容,例如:2016-05-18 上午; 多条时间信息用逗号隔开,展示时则是换行展示,例如:2016-05-12 上午,2016-05-13 下午'
+                                                        ], []]
+                                                    ]
+                                                ],
+                                                'type' => '决定使用什么icon; begin | wait'
+                                            ],
+                                                [
+                                                    'time' => '时间轴左侧的时间, null为没有',
+                                                    'info' => [
+                                                        'text' => '文案描述',
+                                                        'other' => 'null为没有'
+                                                    ],
+                                                    'type' => '决定使用什么icon; begin | wait'
+                                                ]]
+                                        ],
+                                        'status_code' => '状态CODE',
+                                        'is_pay' => '是否支付；0为还未，1为已经支付；有可能wait-1也有已经支付的'
+                                    ]
+                                ]
+                            ],
                             'message' => '',
                             'error' => ''
                         ]
@@ -1178,7 +1414,66 @@ class ApiController extends BaseController
                             'id' => '约诊ID'
                         ],
                         'response' => [
-                            'success' => '',
+                            'data' => [
+                                'id' => '预约码',
+                                'appointment_info' => [
+                                    '说明' => '和/api/appointment/detail返回信息格式一样',
+                                    'doctor_info' => [
+                                        'id' => '接诊医生ID',
+                                        'name' => '接诊医生姓名',
+                                        'head_url' => '接诊医生头像URL',
+                                        'job_title' => '接诊医生职称',
+                                        'hospital' => '接诊医生所属医院',
+                                        'department' => '接诊医生所属科室'
+                                    ],
+                                    'locums_doctor_info' => [
+                                        'id' => '代约医生ID； 平台代约为1； 患者自己约的为空字符串',
+                                        'name' => '代约医生姓名； 平台代约为【医脉平台】； 患者自己约的为空字符串',
+                                        'head_url' => '代约医生头像URL； 平台代约为默认，',
+                                        'job_title' => '代约医生职称； 平台代约和患者自己约都为空字符串',
+                                        'hospital' => '代约医生所属医院； 平台代约和患者自己约都为空字符串',
+                                        'department' => '代约医生所属科室； 平台代约和患者自己约都为空字符串'
+                                    ],
+                                    'patient_info' => [
+                                        'name' => '患者姓名',
+                                        'head_url' => '患者头像URL',
+                                        'sex' => '患者性别',
+                                        'age' => '患者年龄',
+                                        'phone' => '患者电话',
+                                        'history' => '病情描述',
+                                        'img_url' => '病历图片url序列,url中把{_thumb}替换掉就是未压缩图片,例如:/uploads/case-history/2016/05/011605130001/1463539005_thumb.jpg,原图就是:/uploads/case-history/2016/05/011605130001/1463539005.jpg',
+                                    ],
+                                    'other_info' => [
+                                        'progress' => '顶部进度',
+                                        'time_line' => [
+                                            '说明' => 'time_line数组及其内部other数组下可能有1条或多条信息,需要遍历,0和1的序号不用在意,foreach就好',
+                                            '内容' => [[
+                                                'time' => '时间轴左侧的时间',
+                                                'info' => [
+                                                    'text' => '文案描述',
+                                                    'other' => [
+                                                        '内容' => [[
+                                                            'name' => '其他的信息名称,例如:期望就诊时间',
+                                                            'content' => '其他的信息内容,例如:2016-05-18 上午; 多条时间信息用逗号隔开,展示时则是换行展示,例如:2016-05-12 上午,2016-05-13 下午'
+                                                        ], []]
+                                                    ]
+                                                ],
+                                                'type' => '决定使用什么icon; begin | wait'
+                                            ],
+                                                [
+                                                    'time' => '时间轴左侧的时间, null为没有',
+                                                    'info' => [
+                                                        'text' => '文案描述',
+                                                        'other' => 'null为没有'
+                                                    ],
+                                                    'type' => '决定使用什么icon; begin | wait'
+                                                ]]
+                                        ],
+                                        'status_code' => '状态CODE',
+                                        'is_pay' => '是否支付；0为还未，1为已经支付；有可能wait-1也有已经支付的'
+                                    ]
+                                ]
+                            ],
                             'message' => '',
                             'error' => ''
                         ]
