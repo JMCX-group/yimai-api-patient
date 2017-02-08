@@ -170,6 +170,7 @@ $api->version('v1', function ($api) {
             //Pay
             $api->group(['prefix' => 'pay'], function ($api) {
                 $api->post('appointment', 'WalletController@pay');
+                $api->post('appointment-list', 'WalletController@payList');
             });
 
             //Wallet

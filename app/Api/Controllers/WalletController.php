@@ -20,6 +20,7 @@ use App\Doctor;
 use App\PatientRechargeRecord;
 use App\PatientWallet;
 use App\User;
+use Illuminate\Http\Request;
 use Tymon\JWTAuth\Exceptions\JWTException;
 
 class WalletController extends BaseController
@@ -89,7 +90,7 @@ class WalletController extends BaseController
              * 平台费率计算，和约诊文案那段一样：
              */
             $rate = 0.1; //默认10%
-            if($appointment->doctor_or_patient == 'p' && $appointment->platform_or_doctor == 'p'){
+            if ($appointment->doctor_or_patient == 'p' && $appointment->platform_or_doctor == 'p') {
                 $rate = 0.2; //患者发起的平台代约请求为20%
             }
 
@@ -214,6 +215,69 @@ class WalletController extends BaseController
             $appointment->price = $doctor->fee;
         }
 
+        $ret = $this->payAndPush($user, $appointment, $doctor);
+        if ($ret['status_code'] == '200') { //成功
+            $data = [
+                'info' => $ret['info'],
+                'appointment_info' => $ret['appointment_info'],
+            ];
+
+            return response()->json(compact('data'), 200);
+        } elseif ($ret['status_code'] == '400') { //余额不足
+            $data = ['info' => $ret['info']];
+
+            return response()->json(compact('data'), 400);
+
+        } else {
+            return response()->json(['error' => $ret['info']], 500); //报错
+        }
+    }
+
+    /**
+     * 支付list
+     *
+     * @param Request $request
+     * @return array|mixed
+     */
+    public function payList(Request $request)
+    {
+        $user = User::getAuthenticatedUser();
+        if (!isset($user->id)) {
+            return $user;
+        }
+
+        $requestIdList = $request->get('id_list');
+        if (substr($requestIdList, strlen($requestIdList) - 1) == ',') {
+            $requestIdList = substr($requestIdList, 0, strlen($requestIdList) - 1);
+        }
+        $idList = explode(',', $requestIdList);
+        $retData = array();
+
+        /**
+         * 批量处理
+         */
+        foreach ($idList as $id) {
+            $appointment = Appointment::find($id);
+            if ($appointment->patient_id == $user->id && $appointment->status == 'wait-1') {
+                $doctor = Doctor::find($appointment->doctor_id);
+
+                array_push($retData, $this->payAndPush($user, $appointment, $doctor));
+            }
+        }
+
+        $data = $retData;
+
+        return response()->json(compact('data'), 200);
+    }
+
+    /**
+     * @param $user
+     * @param $appointment
+     * @param $doctor
+     * @return array
+     */
+    public function payAndPush($user, $appointment, $doctor)
+    {
         /**
          * 支付信息记录和推送
          */
@@ -227,7 +291,7 @@ class WalletController extends BaseController
                  * 平台费率计算，和约诊文案那段一样：
                  */
                 $rate = 0.1; //默认10%
-                if($appointment->doctor_or_patient == 'p' && $appointment->platform_or_doctor == 'p'){
+                if ($appointment->doctor_or_patient == 'p' && $appointment->platform_or_doctor == 'p') {
                     $rate = 0.2; //患者发起的平台代约请求为20%
                 }
 
@@ -279,20 +343,17 @@ class WalletController extends BaseController
                     MsgAndNotification::pushAppointmentMsg($doctor->device_token, $appointment->status, $appointment->id, 'doctor'); //向医生端推送消息
                 }
 
-                $data = [
+                return [
                     'info' => '支付成功',
-                    'appointment_info' => AppointmentController::appointmentDetailInfo($appointment->id, $user->id)
+                    'appointment_id' => '' . $appointment->id,
+                    'appointment_info' => AppointmentController::appointmentDetailInfo($appointment->id, $user->id),
+                    'status_code' => '200'
                 ];
-
-                return response()->json(compact('data'), 200);
             } else {
-                $data = ['info' => '余额不足，请去充值'];
-
-                return response()->json(compact('data'), 400);
+                return ['info' => '余额不足，请去充值', 'status_code' => '400'];
             }
-
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
+            return ['info' => $e->getMessage(), 'status_code' => '500'];
         }
     }
 }
