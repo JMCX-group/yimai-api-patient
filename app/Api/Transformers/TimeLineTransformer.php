@@ -70,7 +70,8 @@ class TimeLineTransformer
 
             case 'wait-1':
                 $infoText = \Config::get('constants.WAIT_PAYMENT');
-                $retData = self::copyTransformer($retData, null, $infoText, null, 'wait');
+                $infoOther = self::otherInfoContent_waitPay($appointments);
+                $retData = self::copyTransformer($retData, null, $infoText, $infoOther, 'wait');
                 break;
 
             case 'wait-2':
@@ -244,6 +245,43 @@ class TimeLineTransformer
             'content' => PublicTransformer::expectVisitDateTransform($appointments->expect_visit_date, $appointments->expect_am_pm)
         ]];
         return self::copyTransformer($retData, $time, $infoText, $infoOther, 'begin');
+    }
+
+    /**
+     * 等待支付的文案
+     *
+     * @param $appointments
+     * @return array
+     */
+    private static function otherInfoContent_waitPay($appointments)
+    {
+        /**
+         * 平台费率计算，和约诊文案那段一样：
+         */
+        $rate = 0.1; //默认10%
+        if ($appointments->doctor_or_patient == 'p' && $appointments->platform_or_doctor == 'p') {
+            $rate = 0.2; //患者发起的平台代约请求为20%
+        }
+        /**
+         * 费用计算，和约诊文案那段一样：
+         */
+        $receptionFee = $appointments->price; //诊疗费; 不需要元转分
+        $platformFee = $receptionFee * $rate; //平台费
+        $totalFee = $receptionFee + $platformFee;
+
+        if ($appointments->confirm_locums_time == '' || $appointments->confirm_locums_time == null) {
+            $time = date('Y-m-d H:i:s', strtotime($appointments->created_at) + 12 * 3600);
+        } else {
+            $time = date('Y-m-d H:i:s', strtotime($appointments->confirm_locums_time) + 12 * 3600);
+        }
+
+        return [[
+            'name' => '预估金额',
+            'content' => $totalFee . '元'
+        ], [
+            'name' => '',
+            'content' => '将于' . $time . '过期'
+        ]];
     }
 
     /**

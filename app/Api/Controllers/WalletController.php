@@ -207,7 +207,7 @@ class WalletController extends BaseController
             $wallet = PatientWallet::where('patient_id', $user->id)->first();
             if (isset($wallet->patient_id) && $wallet->total > $appointment->price) {
                 /**
-                 * 平台费率计算：
+                 * 平台费率计算，和约诊文案那段一样：
                  */
                 $rate = 0.1; //默认10%
                 if($appointment->doctor_or_patient == 'p' && $appointment->platform_or_doctor == 'p'){
@@ -215,7 +215,7 @@ class WalletController extends BaseController
                 }
 
                 /**
-                 * 费用计算：
+                 * 费用计算，和约诊文案那段一样：
                  */
                 $receptionFee = $appointment->price * 100; //诊疗费; 元转分
                 $platformFee = $receptionFee * $rate; //平台费
