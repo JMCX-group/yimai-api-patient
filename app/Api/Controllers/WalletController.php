@@ -262,6 +262,8 @@ class WalletController extends BaseController
                 $doctor = Doctor::find($appointment->doctor_id);
 
                 array_push($retData, $this->payAndPush($user, $appointment, $doctor));
+            } else {
+                array_push($retData, ['info' => '状态不对，请刷新再请求', 'appointment_id' => $appointment->id, 'status_code' => '400']);
             }
         }
 
@@ -350,10 +352,10 @@ class WalletController extends BaseController
                     'status_code' => '200'
                 ];
             } else {
-                return ['info' => '余额不足，请去充值', 'status_code' => '400'];
+                return ['info' => '余额不足，请去充值', 'appointment_id' => $appointment->id, 'status_code' => '400'];
             }
         } catch (\Exception $e) {
-            return ['info' => $e->getMessage(), 'status_code' => '500'];
+            return ['info' => $e->getMessage(), 'appointment_id' => $appointment->id, 'status_code' => '500'];
         }
     }
 }

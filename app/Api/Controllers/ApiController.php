@@ -1270,6 +1270,7 @@ class ApiController extends BaseController
                             'id_list' => '约诊订单ID List，用逗号拼接，例如：100000，100000'
                         ],
                         'response' => [
+                            '说明' => '传来多少个订单ID，data里就会有多少组数据，每组都一定会返回appointment_id和status_code',
                             'data' => [
                                 [
                                     'info' => '支付成功',
@@ -1334,11 +1335,13 @@ class ApiController extends BaseController
                                     'status_code' => '200'
                                 ],
                                 [
-                                    'info' => '余额不足，请去充值',
+                                    'info' => '余额不足，请去充值 | 状态不对，请刷新再请求',
+                                    'appointment_id' => '约诊ID',
                                     'status_code' => '400'
                                 ],
                                 [
                                     'info' => '不知道会是啥的错误信息',
+                                    'appointment_id' => '约诊ID',
                                     'status_code' => '500'
                                 ]
                             ],
