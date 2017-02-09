@@ -136,7 +136,7 @@ $api->version('v1', function ($api) {
                 $api->post('new', 'AppointmentController@store');
                 $api->post('instead', 'AppointmentController@insteadAppointment');
                 $api->post('upload-img', 'AppointmentController@uploadImg');
-                $api->post('detail', 'AppointmentController@getDetailInfo');
+                $api->post('detail', 'AppointmentController@detail');
                 $api->get('list', 'AppointmentController@getReservationRecord');
                 $api->post('confirm-rescheduled', 'AppointmentController@confirmRescheduled');
                 $api->post('complete', 'AppointmentController@complete');

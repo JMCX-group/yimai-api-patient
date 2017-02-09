@@ -273,7 +273,7 @@ class AppointmentController extends BaseController
      * @param AppointmentIdRequest $request
      * @return array|mixed
      */
-    public function getDetailInfo(AppointmentIdRequest $request)
+    public function detail(AppointmentIdRequest $request)
     {
         $user = User::getAuthenticatedUser();
         if (!isset($user->id)) {

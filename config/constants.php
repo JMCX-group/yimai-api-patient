@@ -16,7 +16,7 @@ return [
 
     'demand' => '需求',
 
-    'APPOINTMENT_DEFAULT' => '{代约医生}替您{患者}向{医生}医生发起约诊',
+    'APPOINTMENT_DEFAULT' => '{代约医生}医生替您向{医生}医生发起约诊',
     'APPOINTMENT_DEFAULT_REQUEST' => '{患者}发起代约请求',
 
     'PATIENT_REQUEST_APPOINTMENT' => '您向{医生}发起约诊',

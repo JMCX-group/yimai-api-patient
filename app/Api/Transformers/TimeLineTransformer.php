@@ -18,11 +18,11 @@ class TimeLineTransformer
      *
      * @param $appointments
      * @param $doctors
-     * @param $patientId
+     * @param $myId
      * @param $locumsDoctor
      * @return array|mixed
      */
-    public static function generateTimeLine($appointments, $doctors, $patientId, $locumsDoctor)
+    public static function generateTimeLine($appointments, $doctors, $myId, $locumsDoctor)
     {
         $retData = array();
 
@@ -34,7 +34,6 @@ class TimeLineTransformer
         if($appointments->doctor_or_patient == 'd'){ //医生帮患者约
             $text = \Config::get('constants.APPOINTMENT_DEFAULT');
             $infoText = str_replace('{医生}', $doctors->name, $text);
-            $infoText = str_replace('{患者}', $appointments->patient_name, $infoText);
             $infoText = str_replace('{代约医生}', $locumsDoctor->name, $infoText);
             $infoOther = self::otherInfoContent_initiateAppointments($appointments);
             $retData = self::copyTransformer($retData, $time, $infoText, $infoOther, 'pass');
