@@ -398,7 +398,7 @@ class TimeLineTransformer
         $infoText = \Config::get('constants.DOCTOR_RESCHEDULED');
         $infoOther = [[
             'name' => \Config::get('constants.RESCHEDULED_TIME'),
-            'content' => $appointments->new_visit_time . ' ' . (($appointments->new_am_pm == 'am') ? '上午' : '下午')
+            'content' => date('Y-m-d', strtotime($appointments->new_visit_time)) . ' ' . (($appointments->new_am_pm == 'am') ? '上午' : '下午')
         ]];
         return self::copyTransformer($retData, $time, $infoText, $infoOther, 'time');
     }
