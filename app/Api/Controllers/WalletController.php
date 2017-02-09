@@ -204,7 +204,7 @@ class WalletController extends BaseController
         $appointmentId = $request['id'];
         $appointment = Appointment::find($appointmentId);
         if ($appointment->patient_id != $user->id || $appointment->status != 'wait-1') {
-            return response()->json(['message' => '状态不对，请刷新再请求'], 400);
+            return response()->json(['data' => ['info' => '状态不对，请刷新再请求']], 403);
         }
         $doctor = Doctor::find($appointment->doctor_id);
 
