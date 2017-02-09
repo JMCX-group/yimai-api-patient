@@ -124,7 +124,7 @@ class MsgAndNotification
                     'status' => 'completed', //资金状态：paid（已支付）、completed（已完成）、cancelled（已取消）
                     'time_expire' => date('Y-m-d H:i:s')
                 ]);
-        } elseif (in_array($status, array('close-2', 'close-3', 'close-4'))) {
+        } elseif (in_array($status, array('close-2', 'close-3', 'close-4', 'close-5'))) {
             AppointmentFee::whereIn('appointment_id', $appointmentIdList)
                 ->update([
                     'total_fee' => 0,
@@ -188,13 +188,14 @@ class MsgAndNotification
      * @param $appointmentStatus
      * @param $appointmentId
      * @param $recipient
+     * @param null $appointment
      */
-    public static function pushAppointmentMsg($deviceToken, $appointmentStatus, $appointmentId, $recipient)
+    public static function pushAppointmentMsg($deviceToken, $appointmentStatus, $appointmentId, $recipient, $appointment=null)
     {
         /**
          * 获取推送文案和动作
          */
-        $content = AppointmentStatus::pushContent($appointmentStatus, $recipient);
+        $content = AppointmentStatus::pushContent($appointmentStatus, $recipient, $appointment);
         $action = 'appointment';
 
         if ($recipient == 'doctor') {

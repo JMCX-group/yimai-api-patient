@@ -77,6 +77,7 @@ class WalletTransformer extends TransformerAbstract
      * close-2: 医生过期未接诊,约诊关闭
      * close-3: 医生拒绝接诊
      * close-4: 患者过期未确认,约诊关闭
+     * close-5: 医生转诊,约诊关闭
      * cancel:
      * cancel-1: 患者取消约诊; 未付款
      * cancel-2: 医生取消约诊
@@ -128,6 +129,7 @@ class WalletTransformer extends TransformerAbstract
 
             case 'close-2':
             case 'close-3':
+            case 'close-5':
             case 'cancel-2':
             case 'cancel-4':
             case 'cancel-7':
