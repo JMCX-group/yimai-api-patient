@@ -9,6 +9,7 @@
 namespace App\Api\Transformers;
 
 use App\AppointmentFee;
+use App\Config;
 use App\Hospital;
 
 class TimeLineTransformer
@@ -31,13 +32,13 @@ class TimeLineTransformer
          */
         $time = $appointments->created_at->format('Y-m-d H:i:s');
 
-        if($appointments->doctor_or_patient == 'd'){ //医生帮患者约
+        if ($appointments->doctor_or_patient == 'd') { //医生帮患者约
             $text = \Config::get('constants.APPOINTMENT_DEFAULT');
             $infoText = str_replace('{医生}', $doctors->name, $text);
             $infoText = str_replace('{代约医生}', $locumsDoctor->name, $infoText);
             $infoOther = self::otherInfoContent_initiateAppointments($appointments);
             $retData = self::copyTransformer($retData, $time, $infoText, $infoOther, 'pass');
-        }else {
+        } else {
             if ($appointments->platform_or_doctor == '' || $appointments->platform_or_doctor == null) { //患者直接约诊医生
                 $text = \Config::get('constants.PATIENT_REQUEST_APPOINTMENT');
                 $infoText = str_replace('{医生}', $doctors->name, $text);
@@ -272,13 +273,8 @@ class TimeLineTransformer
      */
     private static function otherInfoContent_waitPay($appointments)
     {
-        /**
-         * 平台费率计算，和约诊文案那段一样：
-         */
-        $rate = 0.1; //默认10%
-        if ($appointments->doctor_or_patient == 'p' && $appointments->platform_or_doctor == 'p') {
-            $rate = 0.2; //患者发起的平台代约请求为20%
-        }
+        $rate = self::getRate($appointments);
+
         /**
          * 费用计算，和约诊文案那段一样：
          */
@@ -299,6 +295,29 @@ class TimeLineTransformer
             'name' => '过期时间',
             'content' => $time
         ]];
+    }
+
+    /**
+     * 计算费率
+     *
+     * @param $appointment
+     * @return float
+     */
+    public static function getRate($appointment)
+    {
+        $configs = Config::find(1);
+        $data = json_decode($configs->json, true);
+        if ($appointment->doctor_or_patient == 'p' && $appointment->platform_or_doctor == 'p') {
+            $rate = (float)$data['patient_to_platform_appointment'] / 100;; //患者发起的平台代约请求为20%
+        } elseif ($appointment->doctor_or_patient == 'd' && $appointment->platform_or_doctor == null) {
+            $rate = (float)$data['doctor_to_appointment'] / 100;; //患者发起的平台代约请求为20%
+        } elseif ($appointment->doctor_or_patient == 'p' && $appointment->platform_or_doctor == 'd') {
+            $rate = (float)$data['patient_to_appointment'] / 100;; //患者发起的平台代约请求为20%
+        } else {
+            $rate = (float)$data['patient_to_admissions'] / 100;; //患者发起的平台代约请求为20%
+        }
+
+        return $rate;
     }
 
     /**

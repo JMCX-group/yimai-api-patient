@@ -16,6 +16,7 @@ use App\Api\Transformers\TransactionRecordTransformer;
 use App\Api\Transformers\WalletTransformer;
 use App\Appointment;
 use App\AppointmentFee;
+use App\Config;
 use App\Doctor;
 use App\PatientRechargeRecord;
 use App\PatientWallet;
@@ -86,13 +87,7 @@ class WalletController extends BaseController
             ->get();
         $retAppointments = array();
         foreach ($appointments as $appointment) {
-            /**
-             * 平台费率计算，和约诊文案那段一样：
-             */
-            $rate = 0.1; //默认10%
-            if ($appointment->doctor_or_patient == 'p' && $appointment->platform_or_doctor == 'p') {
-                $rate = 0.2; //患者发起的平台代约请求为20%
-            }
+            $rate = $this->getRate($appointment);
 
             /**
              * 费用计算，和约诊文案那段一样：
@@ -112,6 +107,29 @@ class WalletController extends BaseController
         ];
 
         return response()->json(compact('data'));
+    }
+
+    /**
+     * 计算费率
+     *
+     * @param $appointment
+     * @return float
+     */
+    public function getRate($appointment)
+    {
+        $configs = Config::find(1);
+        $data = json_decode($configs->json, true);
+        if ($appointment->doctor_or_patient == 'p' && $appointment->platform_or_doctor == 'p') {
+            $rate = (float)$data['patient_to_platform_appointment'] / 100;; //患者发起的平台代约请求为20%
+        } elseif ($appointment->doctor_or_patient == 'd' && $appointment->platform_or_doctor == null) {
+            $rate = (float)$data['doctor_to_appointment'] / 100;; //患者发起的平台代约请求为20%
+        } elseif ($appointment->doctor_or_patient == 'p' && $appointment->platform_or_doctor == 'd') {
+            $rate = (float)$data['patient_to_appointment'] / 100;; //患者发起的平台代约请求为20%
+        } else {
+            $rate = (float)$data['patient_to_admissions'] / 100;; //患者发起的平台代约请求为20%
+        }
+
+        return $rate;
     }
 
     /**
@@ -289,13 +307,7 @@ class WalletController extends BaseController
              */
             $wallet = PatientWallet::where('patient_id', $user->id)->first();
             if (isset($wallet->patient_id) && $wallet->total > $appointment->price) {
-                /**
-                 * 平台费率计算，和约诊文案那段一样：
-                 */
-                $rate = 0.1; //默认10%
-                if ($appointment->doctor_or_patient == 'p' && $appointment->platform_or_doctor == 'p') {
-                    $rate = 0.2; //患者发起的平台代约请求为20%
-                }
+                $rate = $this->getRate($appointment);
 
                 /**
                  * 费用计算，和约诊文案那段一样：

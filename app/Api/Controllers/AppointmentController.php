@@ -19,6 +19,7 @@ use App\Api\Transformers\TimeLineTransformer;
 use App\Api\Transformers\Transformer;
 use App\Appointment;
 use App\AppointmentFee;
+use App\Config;
 use App\Doctor;
 use App\Patient;
 use App\User;
@@ -633,10 +634,28 @@ class AppointmentController extends BaseController
                 break;
             case 'wait-3':
                 $appointment->status = 'cancel-3';
-                if (date('Y-m-d H:i:s', strtotime($appointmentFee->created_at) + 24 * 3600) > date('Y-m-d H:i:s', time())) {
-                    $needDeductRate = 0.8; //需要扣除的费率，超过24小时
+                /**
+                 * 获取配置：
+                 */
+                $configs = Config::find(1);
+                $data = json_decode($configs->json, true);
+
+                /**
+                 * 判断真正的约诊时间：
+                 */
+                if($appointment->new_visit_time == null || $appointment->new_visit_time == ''){
+                    $time = $appointment->visit_time;
+                }else{
+                    $time = $appointment->new_visit_time;
+                }
+
+                /**
+                 * 匹配扣费费率：
+                 */
+                if (date('Y-m-d H:i:s', time()) > date('Y-m-d H:i:s', strtotime($time) - 24 * 3600)) {
+                    $needDeductRate = (float)$data['patient_less_than_24h'] / 100; //距离面诊时间24小时内扣费比例
                 } else {
-                    $needDeductRate = 0.5; //需要扣除的费率，24小时内
+                    $needDeductRate = (float)$data['patient_more_than_24h'] / 100; //距离面诊时间24小时外扣费比例
                 }
                 break;
             case 'wait-4':
