@@ -219,7 +219,7 @@ class AppointmentStatus
         switch ($status) {
             case 'wait-1':
                 $doctorInfo = Doctor::findDoctor($doctorId);
-                $retText = $locums . '医生替您向' . $doctor . '(' .
+                $retText = (($locums == '无') ? '' : ($locums . '医生替')) . '您向' . $doctor . '(' .
                     $doctorInfo['hospital'] . $doctorInfo['dept'] . $doctorInfo['title'] .
                     ')发起了约诊（预约号' . $id . '），请在12小时内缴费确认。';
                 break;
@@ -344,10 +344,9 @@ class AppointmentStatus
      *
      * @param $status
      * @param string $recipient
-     * @param null $appointment
      * @return string
      */
-    public static function pushContent($status, $recipient = 'patient', $appointment = null)
+    public static function pushContent($status, $recipient = 'patient')
     {
         switch ($status) {
             case 'wait-0':
@@ -357,11 +356,7 @@ class AppointmentStatus
                 $retData = '您有新的约诊订单需要支付';
                 break;
             case 'wait-2':
-                if ($appointment != null && $appointment['is_transfer'] == 1) {
-                    $retData = '医生已转诊，请您确认';
-                } else {
-                    $retData = '患者已付款，待您确认';
-                }
+                $retData = '患者已付款，待您确认';
                 break;
             case 'wait-3':
                 $retData = '医生确认接诊，待面诊';
