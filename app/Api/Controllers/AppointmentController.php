@@ -118,8 +118,7 @@ class AppointmentController extends BaseController
             'patient_age' => $request['age'],
             'patient_history' => $request['history'],
             'doctor_id' => $request['doctor'],
-            'request_mode' => '找专家', //我的医生、找专家、医生代约
-            'platform_or_doctor' => 'p',
+            'request_mode' => '我的医生', //我的医生、找专家、医生代约
             'doctor_or_patient' => 'p', //患者发起
             'expect_visit_date' => ($expectVisitDate == '') ? 0 : $expectVisitDate,
             'expect_am_pm' => ($expectAmPm == '') ? 0 : $expectAmPm,
@@ -162,6 +161,13 @@ class AppointmentController extends BaseController
         }
 
         /**
+         * 限定代约医生ID
+         */
+        if ($request['locums_doctor'] != 1 && $request['locums_doctor'] < 6) {
+            return response()->json(['message' => '代约医生ID不对，应该为等于1或大于5的数值'], 400);
+        }
+
+        /**
          * 计算预约码做ID.
          * 规则:01-99 . 年月日各两位长 . 0001-9999
          */
@@ -179,7 +185,7 @@ class AppointmentController extends BaseController
         /**
          * 时间过滤：
          */
-        if(isset($request['date']) && isset($request['am_or_pm'])) {
+        if (isset($request['date']) && isset($request['am_or_pm'])) {
             $expectVisitDate = $request['date'];
             if (substr($expectVisitDate, strlen($expectVisitDate) - 1) == ',') {
                 $expectVisitDate = substr($expectVisitDate, 0, strlen($expectVisitDate) - 1);
@@ -215,7 +221,7 @@ class AppointmentController extends BaseController
          */
         $data = [
             'id' => $frontId . $nowId,
-            'locums_id' => $request['locums_doctor'], //代理医生ID,1为平台代约,0为没有代约医生
+            'locums_id' => $request['locums_doctor'], //代理医生ID,1为平台代约,0为没有代约医生（此处不可能为0）
             'doctor_id' => $request['doctor'], //请求代约哪个医生
             'patient_id' => $user->id,
             'patient_name' => $request['name'],
