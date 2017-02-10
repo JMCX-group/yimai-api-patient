@@ -205,8 +205,7 @@ class AppointmentController extends BaseController
         } else {
             $isMyDoctor = Appointment::where('locums_id', $request['locums_doctor'])
                 ->where('patient_id', $user->id)
-                ->first()
-                ->get();
+                ->first();
             if ($isMyDoctor == null) {
                 $requestMode = '医生代约';
             } else {
