@@ -1857,19 +1857,20 @@ class ApiController extends BaseController
                             'error' => ''
                         ]
                     ],
-//                    '全部已读' => [
-//                        '说明' => 'HTTP状态204',
-//                        'url' => $http . '/api/msg/admissions/all-read',
-//                        'method' => 'GET',
-//                        'params' => [
-//                            'token' => ''
-//                        ],
-//                        'response' => [
-//                            'success' => '',
-//                            'message' => '',
-//                            'error' => ''
-//                        ]
-//                    ]
+
+                    '全部已读' => [
+                        '说明' => 'HTTP状态204',
+                        'url' => $http . '/api/msg/all-read',
+                        'method' => 'GET',
+                        'params' => [
+                            'token' => ''
+                        ],
+                        'response' => [
+                            'success' => '',
+                            'message' => '',
+                            'error' => ''
+                        ]
+                    ]
                 ],
 
             ]
