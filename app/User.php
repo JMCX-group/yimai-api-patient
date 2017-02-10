@@ -183,7 +183,7 @@ class User extends Model implements AuthenticatableContract,
         if ($idArr) {
             $idList = join(',', $idArr);
             $condition = "WHERE doctors.id IN (" . $idList . ") ";
-            $order = "ORDER BY FIND_IN_SET(doctors.id, $idList)"; //按照whereIn里的排序
+            $order = "ORDER BY FIND_IN_SET(doctors.id, '$idList')"; //按照whereIn里的排序
 
             return self::defaultSearchSql($condition, $order);
         } else {
