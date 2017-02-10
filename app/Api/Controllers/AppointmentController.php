@@ -671,6 +671,9 @@ class AppointmentController extends BaseController
                 $appointmentFee->save();
             }
 
+            MsgAndNotification::sendAppointmentsMsg($appointment); //推送消息
+            MsgAndNotification::pushAppointmentMsg_doctor(null, $appointment); //向医生端推送消息
+
             $data = [
                 'id' => $appointment['id'],
                 'appointment_info' => $this->appointmentDetailInfo($appointment->id, $user->id)
