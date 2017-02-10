@@ -73,7 +73,6 @@ class Doctor extends Model
             ->leftJoin('dept_standards', 'dept_standards.id', '=', 'doctors.dept_id')
             ->leftJoin('colleges', 'colleges.id', '=', 'doctors.college_id')
             ->where('doctors.id', $id)
-            ->get()
             ->first();
     }
 
@@ -179,7 +178,6 @@ class Doctor extends Model
             ->leftJoin('dept_standards', 'dept_standards.id', '=', 'doctors.dept_id')
             ->leftJoin('colleges', 'colleges.id', '=', 'doctors.college_id')
             ->where('doctors.phone', $phone)
-            ->get()
             ->first();
     }
 
@@ -208,7 +206,6 @@ class Doctor extends Model
             ->leftJoin('colleges', 'colleges.id', '=', 'doctors.college_id')
             ->where('dept_id', $deptId)
             ->where('dp_code', $dpCode)
-            ->get()
             ->first();
     }
 }

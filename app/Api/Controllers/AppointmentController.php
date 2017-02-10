@@ -307,7 +307,6 @@ class AppointmentController extends BaseController
             ->leftJoin('doctors', 'doctors.id', '=', 'appointments.locums_id')
             ->leftJoin('patients', 'patients.id', '=', 'appointments.patient_id')
             ->select('appointments.*', 'doctors.name as locums_name', 'patients.avatar as patient_avatar')
-            ->get()
             ->first();
 
         $doctors = Doctor::where('doctors.id', $appointments->doctor_id)
@@ -316,7 +315,6 @@ class AppointmentController extends BaseController
                 'hospitals.name AS hospital', 'dept_standards.name AS dept')
             ->leftJoin('hospitals', 'hospitals.id', '=', 'doctors.hospital_id')
             ->leftJoin('dept_standards', 'dept_standards.id', '=', 'doctors.dept_id')
-            ->get()
             ->first();
 
         /**
@@ -349,7 +347,6 @@ class AppointmentController extends BaseController
                     'hospitals.name AS hospital', 'dept_standards.name AS dept')
                 ->leftJoin('hospitals', 'hospitals.id', '=', 'doctors.hospital_id')
                 ->leftJoin('dept_standards', 'dept_standards.id', '=', 'doctors.dept_id')
-                ->get()
                 ->first();
         }
 
