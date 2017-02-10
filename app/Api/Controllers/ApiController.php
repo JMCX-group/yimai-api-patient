@@ -61,6 +61,7 @@ class ApiController extends BaseController
                         '传参' => [
                             'action' => 'appointment',
                             'data-id' => '约诊ID',
+                            'status' => '约诊状态',
                         ],
                         '跳转' => '指定的约诊页面',
                     ],
@@ -69,6 +70,7 @@ class ApiController extends BaseController
                         '传参' => [
                             'action' => 'admissions',
                             'data-id' => '约诊ID',
+                            'status' => '约诊状态',
                         ],
                         '跳转' => '指定的接诊页面',
                     ],
