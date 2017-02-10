@@ -129,13 +129,10 @@ class AppointmentController extends BaseController
 
         try {
             $appointment = Appointment::create($data);
-            $appointment['id'] = $frontId . $nowId;
+            $appointment->id = $frontId . $nowId;
 
             MsgAndNotification::sendAppointmentsMsg($appointment); //推送消息
-            $patient = Patient::where('phone', $appointment['patient_phone'])->first();
-            if (isset($patient->id) && ($patient->device_token != '' && $patient->device_token != null)) {
-                MsgAndNotification::pushAppointmentMsg($patient->device_token, $appointment['status'], $appointment['id'], 'patient'); //向患者端推送消息
-            }
+            MsgAndNotification::pushAppointmentMsg_patient(null, $appointment); //向患者端推送消息
 
             $data = [
                 'id' => $appointment['id'],
@@ -247,10 +244,7 @@ class AppointmentController extends BaseController
             $appointment['id'] = $frontId . $nowId;
 
             MsgAndNotification::sendAppointmentsMsg($appointment); //推送消息
-            $doctor = Doctor::where('id', $appointment['locums_id'])->first();
-            if (isset($doctor->id) && ($doctor->device_token != '' && $doctor->device_token != null)) {
-                MsgAndNotification::pushAppointmentMsg($doctor->device_token, $appointment['status'], $appointment['id'], 'doctor'); //向医生端推送消息
-            }
+            MsgAndNotification::pushAppointmentMsg_doctor(null, $appointment, $appointment['locums_id']); //向医生端推送消息
 
             $data = [
                 'id' => $appointment['id'],
@@ -518,10 +512,7 @@ class AppointmentController extends BaseController
                  * 推送消息
                  */
                 MsgAndNotification::sendAppointmentsMsg($appointment); //推送消息
-                $doctor = Doctor::where('id', $appointment->doctor_id)->first();
-                if (isset($doctor->id) && ($doctor->device_token != '' && $doctor->device_token != null)) {
-                    MsgAndNotification::pushAppointmentMsg($doctor->device_token, $appointment->status, $appointment->id, 'doctor'); //向医生端推送消息
-                }
+                MsgAndNotification::pushAppointmentMsg_doctor(null, $appointment); //向医生端推送消息
 
                 $data = [
                     'id' => $appointment['id'],
@@ -557,10 +548,7 @@ class AppointmentController extends BaseController
         try {
             if ($appointment->save()) {
                 MsgAndNotification::sendAppointmentsMsg($appointment); //推送消息
-                $doctor = Doctor::where('id', $appointment->doctor_id)->first();
-                if (isset($doctor->id) && ($doctor->device_token != '' && $doctor->device_token != null)) {
-                    MsgAndNotification::pushAppointmentMsg($doctor->device_token, $appointment->status, $appointment->id, 'doctor'); //向医生端推送消息
-                }
+                MsgAndNotification::pushAppointmentMsg_doctor(null, $appointment); //向医生端推送消息
 
                 $data = [
                     'id' => $appointment['id'],

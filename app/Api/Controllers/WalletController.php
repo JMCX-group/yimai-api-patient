@@ -352,10 +352,7 @@ class WalletController extends BaseController
                  * 推送消息
                  */
                 MsgAndNotification::sendAppointmentsMsg($appointment); //推送消息记录
-
-                if (isset($doctor->id) && ($doctor->device_token != '' && $doctor->device_token != null)) {
-                    MsgAndNotification::pushAppointmentMsg($doctor->device_token, $appointment->status, $appointment->id, 'doctor'); //向医生端推送消息
-                }
+                MsgAndNotification::pushAppointmentMsg_doctor($doctor, $appointment); //向医生端推送消息
 
                 return [
                     'info' => '支付成功',
