@@ -371,7 +371,9 @@ class AppointmentController extends BaseController
         /**
          * 更新订单没有id的：
          */
-        Appointment::where('patient_phone', $user->phone)->update(['patient_id' => $user->id]);
+        Appointment::where('patient_id', 'null')
+            ->where('patient_phone', $user->phone)
+            ->update(['patient_id' => $user->id]);
 
         /**
          * 获取该登录用户所有信息：
