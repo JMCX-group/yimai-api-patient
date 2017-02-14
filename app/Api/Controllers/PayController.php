@@ -183,7 +183,6 @@ class PayController extends BaseController
                     $wallet->total = 0;
                 }
                 $wallet->total += ($wxData['total_fee'] / 100);
-                $wallet->total = $wallet->total * 10000; //TODO 测试期间乘以10000倍
                 $wallet->save();
 
                 $data = ['result' => 'success'];

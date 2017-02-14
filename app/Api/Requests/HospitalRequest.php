@@ -38,9 +38,6 @@ class HospitalRequest extends Request
         ];
     }
 
-    
-    //TODO 啥都没做还
-    
     /**
      * @return array
      */
