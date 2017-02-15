@@ -250,7 +250,7 @@ class AppointmentController extends BaseController
                 'appointment_info' => $this->appointmentDetailInfo($appointment['id'], $user->id)
             ];
 
-            return response()->json(compact('data'));;
+            return response()->json(compact('data'));
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], $e->getStatusCode());
         }
