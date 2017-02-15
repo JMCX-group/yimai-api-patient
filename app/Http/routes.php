@@ -148,6 +148,11 @@ $api->version('v1', function ($api) {
                 $api->get('get-by-phone', 'PatientController@getInfoByPhone');
             });
 
+            $api->group(['prefix' => 'zone'], function ($api) {
+                $api->get('new', 'CooperationZoneController@create');
+                $api->get('join', 'CooperationZoneController@store');
+            });
+
             //Face-to-face
             $api->group(['prefix' => 'f2f-advice'], function ($api) {
                 $api->post('new', 'FaceToFaceAdviceController@store');

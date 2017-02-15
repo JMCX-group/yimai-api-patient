@@ -209,6 +209,7 @@ class ApiController extends BaseController
                                     'id' => '用户所在城市ID',
                                     'name' => '用户所在城市名称'
                                 ],
+                                'code' => '合作专区健康顾问码，有号码为加入，7位数值，用字符串形式传，因为首位一般是0；如果为null，则未加入合作专区',
                                 'tags' => '标签； 格式（JSON Encode ）：{"tag_list":"1,2,3,4","illness_list":"3,4,5,6"}'
                             ],
                             'my_doctors' => [
@@ -321,6 +322,7 @@ class ApiController extends BaseController
                                     'id' => '用户所在城市ID',
                                     'name' => '用户所在城市名称'
                                 ],
+                                'code' => '合作专区健康顾问码，有号码为加入，7位数值，用字符串形式传，因为首位一般是0；如果为null，则未加入合作专区',
                                 'tags' => '标签； 格式（JSON Encode）：{"tag_list":"1,2,3,4","illness_list":"3,4,5,6"}'
                             ],
                             'message' => '',
@@ -440,6 +442,7 @@ class ApiController extends BaseController
                                     'id' => '用户所在城市ID',
                                     'name' => '用户所在城市名称'
                                 ],
+                                'code' => '合作专区健康顾问码，有号码为加入，7位数值，用字符串形式传，因为首位一般是0；如果为null，则未加入合作专区',
                                 'tags' => '标签； 格式（JSON Encode）：{"tag_list":"1,2,3,4","illness_list":"3,4,5,6"}',
                                 'blacklist' => '黑名单； 用户ID list，用逗号分隔； 增加/删除都更新改字段即可'
                             ],
@@ -1883,6 +1886,56 @@ class ApiController extends BaseController
                     ]
                 ],
 
+                '健康顾问合作专区' => [
+                    '新的健康顾问码' => [
+                        '说明' => '此时获取的顾问码并未存储在数据库中，只是预生成，如果加入之后才会拥有固定的；如果已加入就是返回已有信息',
+                        'url' => $http . '/api/zone/new',
+                        'method' => 'GET',
+                        'params' => [
+                            'token' => ''
+                        ],
+                        'response' => [
+                            'data' => [
+                                'code' => '合作专区健康顾问码;7位数值，用字符串形式传，因为首位一般是0'
+                            ],
+                            'message' => '',
+                            'error' => ''
+                        ]
+                    ],
+                    '加入健康顾问合作专区' => [
+                        '说明' => '此时会生成一个顾问码并存储在数据库中，和预生成有可能不一样，是为了避免同时2人在操作；如果已加入就是返回已有信息',
+                        'url' => $http . '/api/zone/join',
+                        'method' => 'GET',
+                        'params' => [
+                            'token' => ''
+                        ],
+                        'response' => [
+                            'data' => [
+                                'id' => '用户id',
+                                'phone' => '用户注册手机号',
+                                'device_token' => '友盟设备token； IOS：64位长，安卓：44位长',
+                                'name' => '用户姓名',
+                                'nickname' => '用户昵称',
+                                'head_url' => '头像URL',
+                                'sex' => '性别',
+                                'birthday' => '生日; Date型',
+                                'province' => [
+                                    'id' => '用户所在省份ID',
+                                    'name' => '用户所在省份名称'
+                                ],
+                                'city' => [
+                                    'id' => '用户所在城市ID',
+                                    'name' => '用户所在城市名称'
+                                ],
+                                'code' => '合作专区健康顾问码，有号码为加入，7位数值，用字符串形式传，因为首位一般是0；如果为null，则未加入合作专区',
+                                'tags' => '标签； 格式（JSON Encode）：{"tag_list":"1,2,3,4","illness_list":"3,4,5,6"}',
+                                'blacklist' => '黑名单； 用户ID list，用逗号分隔； 增加/删除都更新改字段即可'
+                            ],
+                            'message' => '',
+                            'error' => ''
+                        ]
+                    ],
+                ]
             ]
         ];
 

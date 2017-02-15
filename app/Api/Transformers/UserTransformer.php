@@ -11,6 +11,7 @@ namespace App\Api\Transformers;
 use App\College;
 use App\DeptStandard;
 use App\Hospital;
+use App\Patient;
 use App\User;
 use App\Province;
 use App\City;
@@ -28,6 +29,15 @@ class UserTransformer extends TransformerAbstract
      */
     public function transform(User $user)
     {
+        return self::transformUser($user);
+    }
+
+    /**
+     * @param $user
+     * @return array
+     */
+    public static function transformUser($user)
+    {
         // ID convert id:name
         self::idToName($user);
 
@@ -42,6 +52,7 @@ class UserTransformer extends TransformerAbstract
             'birthday' => $user['birthday'],
             'province' => $user['province_id'],
             'city' => $user['city_id'],
+            'code' => ($user['code']) ? Patient::getHealthConsultantCode($user['city_id']['id'], $user['code']) : $user['code'],
             'tags' => $user['tag_list'],
             'blacklist' => $user['blacklist']
         ];
@@ -104,30 +115,5 @@ class UserTransformer extends TransformerAbstract
         }
 
         return $user;
-    }
-
-    /**
-     * @param $user
-     * @return array
-     */
-    public static function transformUser($user)
-    {
-        // ID convert id:name
-        self::idToName($user);
-
-        return [
-            'id' => $user['id'],
-            'phone' => $user['phone'],
-            'device_token' => $user['device_token'],
-            'name' => $user['name'],
-            'nickname' => $user['nickname'],
-            'head_url' => ($user['avatar'] == '') ? null : $user['avatar'],
-            'sex' => $user['gender'],
-            'birthday' => $user['birthday'],
-            'province' => $user['province_id'],
-            'city' => $user['city_id'],
-            'tags' => $user['tag_list'],
-            'blacklist' => $user['blacklist']
-        ];
     }
 }

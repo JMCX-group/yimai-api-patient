@@ -40,14 +40,18 @@ class User extends Model implements AuthenticatableContract,
     protected $fillable = [
         'phone',
         'password',
+        'device_token',
         'name',
         'nickname',
+        'avatar',
         'gender',
         'birthday',
         'province_id',
         'city_id',
+        'code',
         'tag_list',
-        'my_doctors'
+        'blacklist',
+        'my_doctors',
     ];
 
     /**
