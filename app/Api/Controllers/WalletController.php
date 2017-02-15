@@ -181,7 +181,7 @@ class WalletController extends BaseController
         $rechargeRecord = [
             'patient_id' => $user->id,
             'out_trade_no' => $outTradeNo,
-            'total_fee' => ($fee == 1) ? ($fee * 1000000) : $fee, //TODO 如果充值0.01元，则乘以100万
+            'total_fee' => ($fee == 1) ? ($fee * 10000) : $fee, //TODO 如果充值0.01元，则乘以100万
             'body' => $body,
             'detail' => '',
             'time_start' => date('Y-m-d H:i:s'),
