@@ -200,6 +200,12 @@ $api->version('v1', function ($api) {
                 $api->post('update', 'BankController@update');
                 $api->post('delete', 'BankController@destroy');
             });
+
+            //Withdraw
+            $api->group(['prefix' => 'withdraw'], function ($api) {
+                $api->get('record', 'WithdrawController@record');
+                $api->post('application', 'WithdrawController@application');
+            });
         });
     });
 });

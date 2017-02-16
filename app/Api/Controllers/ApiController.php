@@ -2173,6 +2173,7 @@ class ApiController extends BaseController
                         'response' => [
                             'data' => [
                                 'total' => '总收益',
+                                'can' => '可提现的金额',
                                 'list' => [
                                     [
                                         'date' => '年月，已经按倒序给了；格式：2017年02月',
@@ -2340,6 +2341,52 @@ class ApiController extends BaseController
                             'error' => ''
                         ]
                     ],
+                ],
+
+                '合作专区提现操作' => [
+                    '明细' => [
+                        'url' => $http . '/api/withdraw/record',
+                        'method' => 'GET',
+                        'params' => [
+                            'token' => ''
+                        ],
+                        'response' => [
+                            'data' => [
+                                [
+                                    'total' => '金额；单位：元',
+                                    'status' => '状态',
+                                    'date' => '申请时间'
+                                ]
+                            ],
+                            'message' => '',
+                            'error' => ''
+                        ]
+                    ],
+                    '申请提现' => [
+                        '说明' => '会一次性将可提现提完，然后返回和/api/zone/income接口一样的返回数据，就是我的收益页面所需数据',
+                        'url' => $http . '/api/withdraw/application',
+                        'method' => 'POST',
+                        'params' => [
+                            'token' => ''
+                        ],
+                        'form-data' => [
+                            'id' => '银行卡列表的ID，注意不是卡号'
+                        ],
+                        'response' => [
+                            'data' => [
+                                'total' => '总收益',
+                                'can' => '可提现的金额',
+                                'list' => [
+                                    [
+                                        'date' => '年月，已经按倒序给了；格式：2017年02月',
+                                        'total' => '月总收益，单位：元'
+                                    ]
+                                ]
+                            ],
+                            'message' => '',
+                            'error' => ''
+                        ]
+                    ]
                 ]
             ]
         ];

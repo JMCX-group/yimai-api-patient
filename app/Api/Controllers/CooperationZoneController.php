@@ -11,6 +11,7 @@ namespace App\Api\Controllers;
 use App\Api\Transformers\UserTransformer;
 use App\InvitedDoctor;
 use App\Patient;
+use App\PatientWithdrawRecord;
 use App\User;
 use Illuminate\Http\Request;
 
@@ -72,8 +73,14 @@ class CooperationZoneController extends BaseController
             return $user;
         }
 
+        $sumTotal = InvitedDoctor::sumTotal($user->id)[0]->total;
+        $already = PatientWithdrawRecord::alreadyWithdraw($user->id)[0]->total;
+        $already = empty($already) ? 0 : intval($already);
+        $can = $sumTotal - $already;
+
         $data = [
-            'total' => InvitedDoctor::sumTotal($user->id)[0]->total,
+            'total' => $sumTotal,
+            'can' => $can,
             'list' => InvitedDoctor::sumTotal_month($user->id),
         ];
 
