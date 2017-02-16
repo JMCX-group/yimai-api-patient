@@ -180,7 +180,7 @@ class Appointment extends Model
     }
 
     /**
-     * 获取约单数量最多的十名医生ID
+     * 获取完成约单数量最多的十名医生ID
      *
      * @return mixed
      */
@@ -188,6 +188,7 @@ class Appointment extends Model
     {
         return Appointment::select(DB::raw('count(*) as count, doctor_id'))
             ->where('doctor_id', '!=', '')
+            ->whereIn('status', ['completed-1', 'completed-2'])
             ->groupBy('doctor_id')
             ->orderBy('count', 'desc')
             ->take(10)
