@@ -157,6 +157,7 @@ $api->version('v1', function ($api) {
                 $api->post('del-doctor', 'AddressBookController@delDoctor');
                 $api->post('add-doctor', 'AddressBookController@addDoctor');
                 $api->post('send-invite', 'AddressBookController@invite');
+                $api->get('income', 'CooperationZoneController@income');
             });
 
             //Face-to-face

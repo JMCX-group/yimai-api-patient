@@ -2161,6 +2161,27 @@ class ApiController extends BaseController
                             'message' => '',
                             'error' => ''
                         ]
+                    ],
+                    '近3个月收益数据/历史收益数据列表' => [
+                        '说明' => '会一次性倒序给所有的数据，收益首页显示最前面3条数据和总收益，点查看历史收益，可以将every_month部署即可，名称都不需要翻译',
+                        'url' => $http . '/api/zone/income',
+                        'method' => 'GET',
+                        'params' => [
+                            'token' => ''
+                        ],
+                        'response' => [
+                            'data' => [
+                                'total' => '总收益',
+                                'every_month' => [
+                                    [
+                                        'date' => '年月，已经按倒序给了；格式：2017年02月',
+                                        'total' => '月总收益，单位：元'
+                                    ]
+                                ]
+                            ],
+                            'message' => '',
+                            'error' => ''
+                        ]
                     ]
                 ]
             ]

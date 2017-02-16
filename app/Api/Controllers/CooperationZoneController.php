@@ -9,6 +9,7 @@
 namespace App\Api\Controllers;
 
 use App\Api\Transformers\UserTransformer;
+use App\InvitedDoctor;
 use App\Patient;
 use App\User;
 
@@ -73,5 +74,26 @@ class CooperationZoneController extends BaseController
             return $user;
         }
 
+    }
+
+
+    /**
+     * 获取近3个月收益数据/历史收益数据
+     *
+     * @return \Illuminate\Http\JsonResponse|mixed
+     */
+    public function income()
+    {
+        $user = User::getAuthenticatedUser();
+        if (!isset($user->id)) {
+            return $user;
+        }
+
+        $data = [
+            'total' => InvitedDoctor::sumTotal($user->id)[0]->total,
+            'every_month' => InvitedDoctor::sumTotal_month($user->id),
+        ];
+
+        return response()->json(compact('data'));
     }
 }
