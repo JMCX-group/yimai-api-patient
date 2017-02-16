@@ -13,6 +13,7 @@ use App\Api\Requests\AddressRequest;
 use App\Api\Requests\ZoneDelRequest;
 use App\Api\Transformers\AddressBookTransformer;
 use App\Doctor;
+use App\InvitedDoctor;
 use App\Patient;
 use App\PatientAddressBook;
 use App\User;
@@ -37,23 +38,45 @@ class AddressBookController extends BaseController
             $addressBook = new PatientAddressBook();
         } else {
             /**
-             * 计算是否可以重新邀请了：
+             * 计算是否可以重新邀请和刷新其他的状态：
              */
+            $invitedDoctor = InvitedDoctor::where('patient_id', $user->id)->get();
             $doctorListArr = json_decode($addressBook->doctor_list, true);
             $newDoctorListArr = array();
             foreach ($doctorListArr as $item) {
-                //当前时间如果小于一个月前，则可以重新邀请：
-                if ($item['time'] != '' && (strtotime($item['time']) < date('Y-m-d H:i:s', time() - 30 * 24 * 3600))) {
-                    $tmp = [
-                        'name' => $item['name'],
-                        'phone' => $item['phone'],
-                        'status' => 're-invite', //wait：等待邀请；invited：已邀请/未加入；re-invite：可以重新邀请了；join：已加入；processing：认证中；completed：完成认证
-                        'time' => $item['time']
-                    ];
-                    array_push($newDoctorListArr, $tmp);
-                } else {
-                    array_push($newDoctorListArr, $item);
+                /**
+                 * 刷新已经加入之后的状态：
+                 */
+                foreach ($invitedDoctor as $value) {
+                    if ($item['phone'] == $value->doctor_phone) {
+                        $tmp = [
+                            'name' => $item['name'],
+                            'phone' => $item['phone'],
+                            'status' => $value->status, //wait：等待邀请；invited：已邀请/未加入；re-invite：可以重新邀请了；join：已加入；processing：认证中；completed：完成认证
+                            'time' => ''
+                        ];
+                        break;
+                    }
                 }
+
+                if (!isset($tmp)) {
+                    /**
+                     * 当前时间如果小于一个月前，则可以重新邀请：
+                     */
+                    if ($item['time'] != '' && (strtotime($item['time']) < date('Y-m-d H:i:s', time() - 30 * 24 * 3600))) {
+                        $tmp = [
+                            'name' => $item['name'],
+                            'phone' => $item['phone'],
+                            'status' => 're-invite', //wait：等待邀请；invited：已邀请/未加入；re-invite：可以重新邀请了；join：已加入；processing：认证中；completed：完成认证
+                            'time' => $item['time']
+                        ];
+                        array_push($newDoctorListArr, $tmp);
+                    } else {
+                        $tmp = $item;
+                    }
+                }
+
+                array_push($newDoctorListArr, $tmp);
             }
 
             $addressBook->doctor_list = json_encode($newDoctorListArr);
