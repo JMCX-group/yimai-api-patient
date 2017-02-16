@@ -60,4 +60,44 @@ class InvitedDoctor extends Model
             WHERE `patient_id`=$patientId AND `status`='completed';
         ");
     }
+
+    /**
+     * 每个月收入列表
+     *
+     * @param $patientId
+     * @param $year
+     * @param $month
+     * @return array
+     */
+    public static function monthTotal($patientId, $year, $month)
+    {
+        return DB::select("
+            SELECT invited_doctors.bonus AS total, doctors.name, doctors.title 
+            FROM `invited_doctors` LEFT JOIN `doctors` ON invited_doctors.doctor_id=doctors.id 
+            WHERE invited_doctors.patient_id=$patientId 
+              AND invited_doctors.status='completed' 
+              AND date_format(invited_doctors.updated_at, '%Y')='$year' 
+              AND date_format(invited_doctors.updated_at, '%m')='$month' 
+            ORDER BY invited_doctors.updated_at DESC;
+        ");
+    }
+
+    /**
+     * 每个月的总收入
+     *
+     * @param $patientId
+     * @param $year
+     * @param $month
+     * @return array
+     */
+    public static function sumMonthTotal($patientId, $year, $month)
+    {
+        return DB::select("
+            SELECT sum(`bonus`) AS total 
+            FROM `invited_doctors` 
+            WHERE `patient_id`=$patientId AND `status`='completed' 
+              AND date_format(invited_doctors.updated_at, '%Y')='$year' 
+              AND date_format(invited_doctors.updated_at, '%m')='$month' ;
+        ");
+    }
 }

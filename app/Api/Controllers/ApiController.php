@@ -2172,10 +2172,35 @@ class ApiController extends BaseController
                         'response' => [
                             'data' => [
                                 'total' => '总收益',
-                                'every_month' => [
+                                'list' => [
                                     [
                                         'date' => '年月，已经按倒序给了；格式：2017年02月',
                                         'total' => '月总收益，单位：元'
+                                    ]
+                                ]
+                            ],
+                            'message' => '',
+                            'error' => ''
+                        ]
+                    ],
+                    '月收益数据列表详细信息' => [
+                        '说明' => '会一次性倒序给本月所有的数据',
+                        'url' => $http . '/api/zone/income-detail',
+                        'method' => 'POST',
+                        'params' => [
+                            'token' => ''
+                        ],
+                        'form-data' => [
+                            'date' => '把上面那个接口的date原样传来即可，格式就是：2017年02月；必填'
+                        ],
+                        'response' => [
+                            'data' => [
+                                'total' => '月总收益，单位：元',
+                                'list' => [
+                                    [
+                                        'name' => '医生姓名',
+                                        'title' => '医生头衔',
+                                        'total' => '单个邀请收益，单位：元'
                                     ]
                                 ]
                             ],

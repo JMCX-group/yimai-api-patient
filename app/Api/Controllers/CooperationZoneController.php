@@ -12,17 +12,10 @@ use App\Api\Transformers\UserTransformer;
 use App\InvitedDoctor;
 use App\Patient;
 use App\User;
+use Illuminate\Http\Request;
 
 class CooperationZoneController extends BaseController
 {
-    public function index()
-    {
-        $user = User::getAuthenticatedUser();
-        if (!isset($user->id)) {
-            return $user;
-        }
-    }
-
     /**
      * Get new code.
      *
@@ -67,16 +60,6 @@ class CooperationZoneController extends BaseController
         return response()->json(compact('data'));
     }
 
-    public function myList()
-    {
-        $user = User::getAuthenticatedUser();
-        if (!isset($user->id)) {
-            return $user;
-        }
-
-    }
-
-
     /**
      * 获取近3个月收益数据/历史收益数据
      *
@@ -91,7 +74,35 @@ class CooperationZoneController extends BaseController
 
         $data = [
             'total' => InvitedDoctor::sumTotal($user->id)[0]->total,
-            'every_month' => InvitedDoctor::sumTotal_month($user->id),
+            'list' => InvitedDoctor::sumTotal_month($user->id),
+        ];
+
+        return response()->json(compact('data'));
+    }
+
+    /**
+     * 每个月的收益数据
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse|mixed
+     */
+    public function incomeDetail(Request $request)
+    {
+        $user = User::getAuthenticatedUser();
+        if (!isset($user->id)) {
+            return $user;
+        }
+
+        if (!isset($request['date']) || $request['date'] == '') {
+            return response()->json(['message' => '时间不能为空'], 400);
+        }
+
+        $date = $request['date'];
+        $year = substr($date, 0, 4);
+        $month = substr($date, 7, 2);
+        $data = [
+            'total' => InvitedDoctor::sumMonthTotal($user->id, $year, $month)[0]->total,
+            'list' => InvitedDoctor::monthTotal($user->id, $year, $month)
         ];
 
         return response()->json(compact('data'));
