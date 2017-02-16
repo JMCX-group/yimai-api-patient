@@ -151,6 +151,12 @@ $api->version('v1', function ($api) {
             $api->group(['prefix' => 'zone'], function ($api) {
                 $api->get('new', 'CooperationZoneController@create');
                 $api->get('join', 'CooperationZoneController@store');
+                $api->post('upload-address-book', 'AddressBookController@update');
+                $api->get('address-book', 'AddressBookController@index');
+                $api->post('del-contacts', 'AddressBookController@delContacts');
+                $api->post('del-doctor', 'AddressBookController@delDoctor');
+                $api->post('add-doctor', 'AddressBookController@addDoctor');
+                $api->post('send-invite', 'AddressBookController@invite');
             });
 
             //Face-to-face

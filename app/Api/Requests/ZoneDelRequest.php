@@ -10,7 +10,7 @@ namespace App\Api\Requests;
 
 use App\Http\Requests\Request;
 
-class AddressRequest extends Request
+class ZoneDelRequest extends Request
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -30,7 +30,7 @@ class AddressRequest extends Request
     public function rules()
     {
         return [
-            'view_list' => 'required',
+            'phone' => 'required|digits_between:11,11'
         ];
     }
 
@@ -40,7 +40,8 @@ class AddressRequest extends Request
     public function messages()
     {
         return [
-            'required' => ':attribute不能为空'
+            'required' => ':attribute不能为空',
+            'digits_between' => ':attribute必须为:min位长的数字'
         ];
     }
 
@@ -50,7 +51,7 @@ class AddressRequest extends Request
     public function attributes()
     {
         return [
-            'view_list' => '通讯录信息'
+            'phone' => '手机号'
         ];
     }
 

@@ -1935,6 +1935,233 @@ class ApiController extends BaseController
                             'error' => ''
                         ]
                     ],
+                    '上传/更新通讯录信息' => [
+                        '说明' => [
+                            '测试数据data' => '[{"phone":"18611175657","name":"186111"},{"phone":"18612345678","name":"1861-8"},{"phone":"18611111111","name":"1861"}]',
+                            '数据结构' => '总共有4个部分：view_list(默认显示的)、del_list（删除的，不会传到前台）、invited_list（已经被别人邀请的）、doctor_list（医生列表）'
+                        ],
+                        'url' => $http . '/api/zone/upload-address-book',
+                        'method' => 'POST',
+                        'params' => [
+                            'token' => ''
+                        ],
+                        'form-data' => [
+                            'view_list' => 'json格式的全部通讯录信息，必填; 格式:[{"name":"","phone":""},{"name":"","phone":""}]',
+                            'upload_time' => '选填的通讯录更新时间，随便什么标准版年月日时分秒格式即可，选填；用不用看你们本地缓存机制'
+                        ],
+                        'response' => [
+                            'data' => [
+                                'view_list' => [
+                                    [
+                                        'name' => '',
+                                        'phone' => ''
+                                    ]
+                                ],
+                                'invited_list' => [
+                                    [
+                                        'name' => '',
+                                        'phone' => '',
+                                        'time' => '注册时时间，格式：2017/02/02'
+                                    ]
+                                ],
+                                'doctor_list' => [
+                                    [
+                                        'name' => '',
+                                        'phone' => '',
+                                        'status' => 'wait：等待邀请；invited：已邀请/未加入；re-invite：可以重新邀请了；join：已加入；processing：认证中；completed：完成认证'
+                                    ]
+                                ],
+                                'upload_time' => '选填的通讯录更新时间，返回格式：2017-02-02 18:18:18'
+                            ],
+                            'message' => '',
+                            'error' => ''
+                        ]
+                    ],
+                    '获取通讯录信息' => [
+                        '说明' => '调用该接口能刷新一些跟时间有关的状态；如果没有通讯录信息，会返回一个结构符合的各种空数组',
+                        'url' => $http . '/api/zone/address-book',
+                        'method' => 'GET',
+                        'params' => [
+                            'token' => ''
+                        ],
+                        'response' => [
+                            'data' => [
+                                'view_list' => [
+                                    [
+                                        'name' => '',
+                                        'phone' => ''
+                                    ]
+                                ],
+                                'invited_list' => [
+                                    [
+                                        'name' => '',
+                                        'phone' => '',
+                                        'time' => '注册时时间，格式：2017/02/02'
+                                    ]
+                                ],
+                                'doctor_list' => [
+                                    [
+                                        'name' => '',
+                                        'phone' => '',
+                                        'status' => 'wait：等待邀请；invited：已邀请/未加入；re-invite：可以重新邀请了；join：已加入；processing：认证中；completed：完成认证'
+                                    ]
+                                ],
+                                'upload_time' => '选填的通讯录更新时间，返回格式：2017-02-02 18:18:18'
+                            ],
+                            'message' => '',
+                            'error' => ''
+                        ]
+                    ],
+                    '从默认显示列表删除，标记成不显示' => [
+                        'url' => $http . '/api/zone/del-contacts',
+                        'method' => 'POST',
+                        'params' => [
+                            'token' => ''
+                        ],
+                        'form-data' => [
+                            'phone_list' => '用逗号分隔的手机号列表，只删一个就传一个'
+                        ],
+                        'response' => [
+                            'data' => [
+                                'view_list' => [
+                                    [
+                                        'name' => '',
+                                        'phone' => ''
+                                    ]
+                                ],
+                                'invited_list' => [
+                                    [
+                                        'name' => '',
+                                        'phone' => '',
+                                        'time' => '注册时时间，格式：2017/02/02'
+                                    ]
+                                ],
+                                'doctor_list' => [
+                                    [
+                                        'name' => '',
+                                        'phone' => '',
+                                        'status' => 'wait：等待邀请；invited：已邀请/未加入；re-invite：可以重新邀请了；join：已加入；processing：认证中；completed：完成认证'
+                                    ]
+                                ],
+                                'upload_time' => '选填的通讯录更新时间，返回格式：2017-02-02 18:18:18'
+                            ],
+                            'message' => '',
+                            'error' => ''
+                        ]
+                    ],
+                    '从默认列表添加到医生列表' => [
+                        'url' => $http . '/api/zone/add-doctor',
+                        'method' => 'POST',
+                        'params' => [
+                            'token' => ''
+                        ],
+                        'form-data' => [
+                            'phone' => '需要标记的手机号'
+                        ],
+                        'response' => [
+                            'data' => [
+                                'view_list' => [
+                                    [
+                                        'name' => '',
+                                        'phone' => ''
+                                    ]
+                                ],
+                                'invited_list' => [
+                                    [
+                                        'name' => '',
+                                        'phone' => '',
+                                        'time' => '注册时时间，格式：2017/02/02'
+                                    ]
+                                ],
+                                'doctor_list' => [
+                                    [
+                                        'name' => '',
+                                        'phone' => '',
+                                        'status' => 'wait：等待邀请；invited：已邀请/未加入；re-invite：可以重新邀请了；join：已加入；processing：认证中；completed：完成认证'
+                                    ]
+                                ],
+                                'upload_time' => '选填的通讯录更新时间，返回格式：2017-02-02 18:18:18'
+                            ],
+                            'message' => '',
+                            'error' => ''
+                        ]
+                    ],
+                    '从医生列表删除，标记到默认列表显示' => [
+                        'url' => $http . '/api/zone/del-doctor',
+                        'method' => 'POST',
+                        'params' => [
+                            'token' => ''
+                        ],
+                        'form-data' => [
+                            'phone' => '需要标记的手机号'
+                        ],
+                        'response' => [
+                            'data' => [
+                                'view_list' => [
+                                    [
+                                        'name' => '',
+                                        'phone' => ''
+                                    ]
+                                ],
+                                'invited_list' => [
+                                    [
+                                        'name' => '',
+                                        'phone' => '',
+                                        'time' => '注册时时间，格式：2017/02/02'
+                                    ]
+                                ],
+                                'doctor_list' => [
+                                    [
+                                        'name' => '',
+                                        'phone' => '',
+                                        'status' => 'wait：等待邀请；invited：已邀请/未加入；re-invite：可以重新邀请了；join：已加入；processing：认证中；completed：完成认证'
+                                    ]
+                                ],
+                                'upload_time' => '选填的通讯录更新时间，返回格式：2017-02-02 18:18:18'
+                            ],
+                            'message' => '',
+                            'error' => ''
+                        ]
+                    ],
+                    '发送邀请/重新邀请/单独邀请' => [
+                        '邀请文案' => '【医者脉连】您的朋友XXX邀请您登陆医脉医生端，在医脉平台，您可以建立属于您自己的个人品牌。',
+                        'url' => $http . '/api/zone/send-invite',
+                        'method' => 'POST',
+                        'params' => [
+                            'token' => ''
+                        ],
+                        'form-data' => [
+                            'phone' => '手机号；必填',
+                            'txt' => '在单独邀请接口时，需要把拼接完的文案参数直接传过来；选填'
+                        ],
+                        'response' => [
+                            'data' => [
+                                'view_list' => [
+                                    [
+                                        'name' => '',
+                                        'phone' => ''
+                                    ]
+                                ],
+                                'invited_list' => [
+                                    [
+                                        'name' => '',
+                                        'phone' => '',
+                                        'time' => '注册时时间，格式：2017/02/02'
+                                    ]
+                                ],
+                                'doctor_list' => [
+                                    [
+                                        'name' => '',
+                                        'phone' => '',
+                                        'status' => 'wait：等待邀请；invited：已邀请/未加入；re-invite：可以重新邀请了；join：已加入；processing：认证中；completed：完成认证'
+                                    ]
+                                ],
+                                'upload_time' => '选填的通讯录更新时间，返回格式：2017-02-02 18:18:18'
+                            ],
+                            'message' => '',
+                            'error' => ''
+                        ]
+                    ]
                 ]
             ]
         ];
