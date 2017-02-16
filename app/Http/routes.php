@@ -192,6 +192,14 @@ $api->version('v1', function ($api) {
                 $api->get('record', 'WalletController@record');
                 $api->post('recharge', 'WalletController@recharge');
             });
+
+            //Bank
+            $api->group(['prefix' => 'bank'], function ($api) {
+                $api->get('info', 'BankController@index');
+                $api->post('new', 'BankController@store');
+                $api->post('update', 'BankController@update');
+                $api->post('delete', 'BankController@destroy');
+            });
         });
     });
 });
