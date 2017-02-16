@@ -52,7 +52,10 @@ class MsgAndNotification
             /**
              * 生成推送消息
              */
-            array_push($appointmentMsgList, self::generateAppointmentsMsg($appointment, $status, true));
+            $data = self::generateAppointmentsMsg($appointment, $status, true);
+            if ($data['patient_id'] != '') {
+                array_push($appointmentMsgList, $data);
+            }
 
             /**
              * 符合条件的患者device_token
@@ -151,10 +154,19 @@ class MsgAndNotification
     {
         $status = ($status == '') ? $appointments->status : $status; //有则表示是新状态的，没有则表示通知当前状态
         $type = (in_array($status, array('completed-1', 'completed-2'))) ? 0 : 1; //0为普通，1为重要
-        if (isset($appointments->patient_id) && ($appointments->patient_id != null || $appointments->patient_id != '')) {
-            $patientId = $appointments->patient_id;
-        } else {
-            $patientId = Patient::where('phone', $appointments->patient_phone)->first()->id; //患者ID
+
+        $patientId = ''; //防止患者还未注册就过期了
+        try {
+            if (isset($appointments->patient_id) && ($appointments->patient_id != null || $appointments->patient_id != '')) {
+                $patientId = $appointments->patient_id;
+            } else {
+                $patient = Patient::where('phone', $appointments->patient_phone)->first(); //患者ID
+                if ($patient) {
+                    $patientId = $patient->id;
+                }
+            }
+        } catch (\Exception $e) {
+            Log::info('generateAppointmentsMsg', ['context' => $e->getMessage(), 'appointment' => $appointments]);
         }
 
         return [
@@ -290,7 +302,7 @@ class MsgAndNotification
      * @param $doctorId
      * @param $status
      */
-    public static function pushAddFriendMsg($deviceToken, $doctorId, $status)
+    public static function pushAddFriendMsg($deviceToken, $doctorId, $status='')
     {
         /**
          * 获取推送文案和动作
