@@ -107,4 +107,21 @@ class CooperationZoneController extends BaseController
 
         return response()->json(compact('data'));
     }
+
+    /**
+     * 邀请的医生列表
+     *
+     * @return \Illuminate\Http\JsonResponse|mixed
+     */
+    public function invited()
+    {
+        $user = User::getAuthenticatedUser();
+        if (!isset($user->id)) {
+            return $user;
+        }
+
+        $data = InvitedDoctor::myInvitedList($user->id);
+
+        return response()->json(compact('data'));
+    }
 }

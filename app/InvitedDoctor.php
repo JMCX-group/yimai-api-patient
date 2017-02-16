@@ -72,7 +72,7 @@ class InvitedDoctor extends Model
     public static function monthTotal($patientId, $year, $month)
     {
         return DB::select("
-            SELECT invited_doctors.bonus AS total, doctors.name, doctors.title 
+            SELECT invited_doctors.bonus AS total, doctors.name, doctors.title AS job_title 
             FROM `invited_doctors` LEFT JOIN `doctors` ON invited_doctors.doctor_id=doctors.id 
             WHERE invited_doctors.patient_id=$patientId 
               AND invited_doctors.status='completed' 
@@ -99,5 +99,26 @@ class InvitedDoctor extends Model
               AND date_format(invited_doctors.updated_at, '%Y')='$year' 
               AND date_format(invited_doctors.updated_at, '%m')='$month' ;
         ");
+    }
+
+    /**
+     * 我邀请的医生列表
+     *
+     * @param $patientId
+     * @return mixed
+     */
+    public static function myInvitedList($patientId)
+    {
+        return InvitedDoctor::select(
+            'invited_doctors.bonus AS total',
+            'doctors.id', 'doctors.name', 'doctors.avatar AS head_url', 'doctors.title AS job_title',
+            'hospitals.name AS hospital', 'dept_standards.name AS department')
+            ->leftJoin('doctors', 'doctors.id', '=', 'invited_doctors.doctor_id')
+            ->leftJoin('hospitals', 'hospitals.id', '=', 'doctors.hospital_id')
+            ->leftJoin('dept_standards', 'dept_standards.id', '=', 'doctors.dept_id')
+            ->where('invited_doctors.patient_id', $patientId)
+            ->where('invited_doctors.status', 'completed')
+            ->orderBy('invited_doctors.updated_at', 'DESC')
+            ->get();
     }
 }

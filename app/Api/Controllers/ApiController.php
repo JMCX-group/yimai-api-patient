@@ -2164,6 +2164,7 @@ class ApiController extends BaseController
                     ],
                     '近3个月收益数据/历史收益数据列表' => [
                         '说明' => '会一次性倒序给所有的数据，收益首页显示最前面3条数据和总收益，点查看历史收益，可以将every_month部署即可，名称都不需要翻译',
+                        '测试账号' => '18611175657 | 123456',
                         'url' => $http . '/api/zone/income',
                         'method' => 'GET',
                         'params' => [
@@ -2185,6 +2186,7 @@ class ApiController extends BaseController
                     ],
                     '月收益数据列表详细信息' => [
                         '说明' => '会一次性倒序给本月所有的数据',
+                        '测试账号' => '18611175657 | 123456',
                         'url' => $http . '/api/zone/income-detail',
                         'method' => 'POST',
                         'params' => [
@@ -2199,9 +2201,32 @@ class ApiController extends BaseController
                                 'list' => [
                                     [
                                         'name' => '医生姓名',
-                                        'title' => '医生头衔',
+                                        'job_title' => '用户职称,直接传名称; 总共4个: 主任医师,副主任医师,主治医师,住院医师',
                                         'total' => '单个邀请收益，单位：元'
                                     ]
+                                ]
+                            ],
+                            'message' => '',
+                            'error' => ''
+                        ]
+                    ],
+                    '我邀请的医生列表' => [
+                        '测试账号' => '18611175657 | 123456',
+                        'url' => $http . '/api/zone/invited',
+                        'method' => 'GET',
+                        'params' => [
+                            'token' => ''
+                        ],
+                        'response' => [
+                            'data' => [
+                                [
+                                    'id' => '用户ID',
+                                    'name' => '用户姓名',
+                                    'head_url' => '头像URL',
+                                    'hospital' => '所属医院',
+                                    'department' => '所属科室',
+                                    'job_title' => '用户职称,直接传名称; 总共4个: 主任医师,副主任医师,主治医师,住院医师',
+                                    'total' => '此单收入'
                                 ]
                             ],
                             'message' => '',
