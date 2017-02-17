@@ -155,6 +155,9 @@ class AddressBookController extends BaseController
          */
         $viewListArr = json_decode($addressBook->view_list, true);
         $delListArr = json_decode($addressBook->del_list, true);
+        if (!$delListArr) {
+            $delListArr = array();
+        }
         $newViewListArr = array();
         foreach ($viewListArr as $item) {
             if (in_array($item['phone'], $delPhoneArr)) {
