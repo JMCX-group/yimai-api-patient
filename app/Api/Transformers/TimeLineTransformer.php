@@ -491,10 +491,15 @@ class TimeLineTransformer
     private static function infoOther_alreadyPaid($appointments)
     {
         $appointmentFee = AppointmentFee::where('appointment_id', $appointments->id)->first();
+        if ($appointmentFee) {
+            $content = ($appointmentFee->total_fee / 100) . '元'; //分转元
+        } else {
+            $content = '支付信息获取异常，请联系客服';
+        }
 
         return [[
             'name' => \Config::get('constants.COST'),
-            'content' => ($appointmentFee->total_fee / 100) . '元'//分转元
+            'content' => $content
         ]];
     }
 
