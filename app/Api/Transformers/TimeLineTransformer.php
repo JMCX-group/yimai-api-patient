@@ -132,7 +132,8 @@ class TimeLineTransformer
                 $retData = self::otherInfoContent_alreadyPaid($appointments, $retData);
 
                 $infoText = \Config::get('constants.DOCTOR_APPOINTMENT_CLOSE');
-                $retData = self::copyTransformer($retData, null, $infoText, null, 'close');
+                $infoOther = [['name' => '原因', 'content' => $appointments->refusal_reason]];
+                $retData = self::copyTransformer($retData, null, $infoText, $infoOther, 'close');
                 break;
 
             case 'close-4':
