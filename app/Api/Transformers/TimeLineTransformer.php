@@ -396,11 +396,11 @@ class TimeLineTransformer
         if ($appointmentFee) {
             $time = $appointmentFee->created_at->format('Y-m-d H:i:s');
         } else {
-            $time = '';
+            $time = $appointments->updated_at->format('Y-m-d H:i:s');
         }
 
         $infoText = \Config::get('constants.ALREADY_PAID');
-        $infoOther = self::infoOther_alreadyPaid($appointments);
+        $infoOther = self::infoOther_alreadyPaid($appointmentFee);
         return self::copyTransformer($retData, $time, $infoText, $infoOther, 'pass');
     }
 
@@ -485,12 +485,11 @@ class TimeLineTransformer
     /**
      * 已支付的附加信息段
      *
-     * @param $appointments
+     * @param $appointmentFee
      * @return array
      */
-    private static function infoOther_alreadyPaid($appointments)
+    private static function infoOther_alreadyPaid($appointmentFee)
     {
-        $appointmentFee = AppointmentFee::where('appointment_id', $appointments->id)->first();
         if ($appointmentFee) {
             $content = ($appointmentFee->total_fee / 100) . '元'; //分转元
         } else {
