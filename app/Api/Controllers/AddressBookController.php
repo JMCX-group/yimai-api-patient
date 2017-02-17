@@ -103,7 +103,7 @@ class AddressBookController extends BaseController
         }
 
         $viewList = json_decode($request['view_list'], true);
-        if ($viewList) {
+        if (!$viewList) {
             return response()->json(['message' => '格式错误或数据为空'], 400);
         }
 
