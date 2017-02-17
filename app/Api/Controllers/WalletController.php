@@ -146,7 +146,7 @@ class WalletController extends BaseController
 
         $data = array();
 
-        $recharges = PatientRechargeRecord::where('patient_id', $user->id)->orderBy('created_at', 'DESC')->get();
+        $recharges = PatientRechargeRecord::where('patient_id', $user->id)->where('status', 'end')->orderBy('created_at', 'DESC')->get();
         foreach ($recharges as $recharge) {
             $tmpData = TransactionRecordTransformer::transformData_recharge($recharge);
             array_push($data, $tmpData);
