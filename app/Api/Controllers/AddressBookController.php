@@ -362,6 +362,7 @@ class AddressBookController extends BaseController
         $addressBook = PatientAddressBook::where('patient_id', $user->id)->first();
         $doctorListArr = json_decode($addressBook->doctor_list, true);
         $newDoctorListArr = array();
+        $isAddToArr = false;
         foreach ($doctorListArr as $item) {
             if ($item['phone'] == $phone) {
                 $tmp = [
@@ -372,9 +373,24 @@ class AddressBookController extends BaseController
                 ];
                 $name = $item['name'];
                 array_push($newDoctorListArr, $tmp);
+                $isAddToArr = true;
             } else {
                 array_push($newDoctorListArr, $item);
             }
+        }
+
+        /**
+         * 如果没有加入已知就单独生成一条：
+         */
+        if (!$isAddToArr && isset($request['name']) && $request['name'] != '') {
+            $name = $request['name'];
+            $tmp = [
+                'name' => $name,
+                'phone' => $phone,
+                'status' => 'invited', //wait：等待邀请；invited：已邀请/未加入；re-invite：可以重新邀请了；join：已加入；processing：认证中；completed：完成认证
+                'time' => date('Y-m-d H:i:s')
+            ];
+            array_push($newDoctorListArr, $tmp);
         }
 
         /**

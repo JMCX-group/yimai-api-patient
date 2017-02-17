@@ -2132,6 +2132,7 @@ class ApiController extends BaseController
                         ],
                         'form-data' => [
                             'phone' => '手机号；必填',
+                            'name' => '被邀请者的名称',
                             'txt' => '在单独邀请接口时，需要把拼接完的文案参数直接传过来；选填'
                         ],
                         'response' => [

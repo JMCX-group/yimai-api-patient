@@ -148,6 +148,7 @@ $api->version('v1', function ($api) {
                 $api->get('get-by-phone', 'PatientController@getInfoByPhone');
             });
 
+            //Cooperation Zone
             $api->group(['prefix' => 'zone'], function ($api) {
                 $api->get('new', 'CooperationZoneController@create');
                 $api->get('join', 'CooperationZoneController@store');
