@@ -103,6 +103,9 @@ class AddressBookController extends BaseController
         }
 
         $viewList = json_decode($request['view_list'], true);
+        if ($viewList) {
+            return response()->json(['message' => '格式错误或数据为空'], 400);
+        }
 
         $addressBook = PatientAddressBook::where('patient_id', $user->id)->first();
         if (!isset($addressBook->id)) {
@@ -311,9 +314,14 @@ class AddressBookController extends BaseController
             $newViewListArr = array();
             foreach ($viewListArr as $item) {
                 if (!in_array($item['phone'], $newInvitedPhoneArr)) {
-                    array_push($newViewListArr, $item['phone']);
+                    $tmp = [
+                        'name' => $item['name'],
+                        'phone' => $item['phone']
+                    ];
+                    array_push($newViewListArr, $tmp);
                 }
             }
+
         }
 
         $data = [
