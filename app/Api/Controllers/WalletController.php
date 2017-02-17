@@ -144,12 +144,24 @@ class WalletController extends BaseController
             return $user;
         }
 
-        $record = AppointmentFee::where('patient_id', $user->id)->orderBy('created_at', 'DESC')->get();
         $data = array();
+
+        $recharges = PatientRechargeRecord::where('patient_id', $user->id)->orderBy('created_at', 'DESC')->get();
+        foreach ($recharges as $recharge) {
+            $tmpData = TransactionRecordTransformer::transformData_recharge($recharge);
+            array_push($data, $tmpData);
+        }
+
+        $record = AppointmentFee::where('patient_id', $user->id)->orderBy('created_at', 'DESC')->get();
         foreach ($record as $item) {
             $recordData = TransactionRecordTransformer::transformData_fee($item);
             array_push($data, $recordData);
         }
+
+        /**
+         * 将多维数组按照键值排序
+         */
+        array_multisort(array_column($data, 'time'), SORT_DESC, $data);
 
         return response()->json(compact('data'));
     }

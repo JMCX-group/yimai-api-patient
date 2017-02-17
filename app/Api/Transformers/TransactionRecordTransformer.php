@@ -54,4 +54,23 @@ class TransactionRecordTransformer extends TransformerAbstract
             'time' => $record['created_at']->format('Y-m-d H:i:s')
         ];
     }
+
+    /**
+     * 充值变形
+     *
+     * @param $recharge
+     * @return array
+     */
+    public static function transformData_recharge($recharge)
+    {
+        return [
+            'id' => $recharge['id'],
+            'name' => '充值',
+            'transaction_id' => $recharge['out_trade_no'],
+            'price' => $recharge['total_fee'] / 100, //单位：分
+            'type' => '收入',
+            'status' => $recharge['status'],
+            'time' => $recharge['created_at']->format('Y-m-d H:i:s')
+        ];
+    }
 }
