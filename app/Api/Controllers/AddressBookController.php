@@ -235,6 +235,10 @@ class AddressBookController extends BaseController
         $addressBook = PatientAddressBook::where('patient_id', $user->id)->first();
 
         $viewListArr = json_decode($addressBook->view_list, true);
+        if(!$viewListArr){
+            $viewListArr = array();
+        }
+
         $doctorListArr = json_decode($addressBook->doctor_list, true);
         $newDoctorListArr = array();
         foreach ($doctorListArr as $item) {
