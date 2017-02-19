@@ -21,9 +21,13 @@ class PatientAddressBook extends Model
     protected $fillable = [
         'patient_id',
         'view_list',
+        'view_phone_arr',
         'del_list',
+        'del_phone_arr',
         'invited_list',
+        'invited_phone_arr',
         'doctor_list',
+        'doctor_phone_arr',
         'upload_time'
     ];
 }
