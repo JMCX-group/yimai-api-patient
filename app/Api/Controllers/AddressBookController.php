@@ -196,6 +196,7 @@ class AddressBookController extends BaseController
 
         $viewListArr = json_decode($addressBook->view_list, true);
         $doctorListArr = json_decode($addressBook->doctor_list, true);
+        $doctorListArr = (empty($doctorListArr)) ? array() : $doctorListArr;
         $newViewListArr = array();
         foreach ($viewListArr as $item) {
             if ($item['phone'] == $addPhone) {
