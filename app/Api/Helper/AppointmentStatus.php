@@ -40,6 +40,7 @@ class AppointmentStatus
          * wait-5: 患者确认改期，待面诊
          *
          * Close:
+         * close-0: 代约医生拒绝代约
          * close-1: 待患者付款
          * close-2: 医生过期未接诊,约诊关闭
          * close-3: 医生拒绝接诊
@@ -64,9 +65,15 @@ class AppointmentStatus
             case 'wait-0':
                 $retText = '患者' . $patient . '请求您代约。';
                 break;
+
             case 'wait-1':
                 $retText = '您替' . $patient . '约诊' . $doctor . '医生的信息已发送，等待确认及支付。若12小时内未完成支付则约诊失效。';
                 break;
+
+            case 'close-0':
+                $retText = '您拒绝了患者' . $patient . '请您代约的约诊（预约号' . $id . '），约诊关闭。';
+                break;
+
             case 'close-1':
                 $retText = '患者' . $patient . '逾期未确认您代约' . $doctor . '的约诊（预约号' . $id . '），约诊过期。';
                 break;
@@ -135,6 +142,7 @@ class AppointmentStatus
          * wait-5: 患者确认改期，待面诊
          *
          * Close:
+         * close-0: 代约医生拒绝代约
          * close-1: 待患者付款
          * close-2: 医生过期未接诊,约诊关闭
          * close-3: 医生拒绝接诊
@@ -197,6 +205,7 @@ class AppointmentStatus
          * wait-5: 患者确认改期，待面诊
          *
          * Close:
+         * close-0: 代约医生拒绝代约
          * close-1: 待患者付款
          * close-2: 医生过期未接诊,约诊关闭
          * close-3: 医生拒绝接诊
@@ -219,7 +228,7 @@ class AppointmentStatus
         switch ($status) {
             case 'wait-1':
                 $doctorInfo = Doctor::findDoctor($doctorId);
-                $retText = (($locums == '无') ? '' : ($locums . '医生替')) . '您向' . $doctor . '(' .
+                $retText = $locums . '医生替您向' . $doctor . '(' .
                     $doctorInfo['hospital'] . $doctorInfo['dept'] . $doctorInfo['title'] .
                     ')发起了约诊（预约号' . $id . '），请在12小时内缴费确认。';
                 break;
@@ -286,11 +295,14 @@ class AppointmentStatus
                 $retData = '患者确认改期，待面诊';
                 break;
 
+            case 'close-0':
+                $retData = '代约医生拒绝代约，约诊关闭';
+                break;
             case 'close-1':
                 $retData = '待患者付款';
                 break;
             case 'close-2':
-                $retData = '医生过期未接诊,约诊关闭';
+                $retData = '医生过期未接诊，约诊关闭';
                 break;
             case 'close-3':
                 $retData = '医生拒绝接诊';
@@ -344,9 +356,10 @@ class AppointmentStatus
      *
      * @param $status
      * @param string $recipient
+     * @param null $appointment
      * @return string
      */
-    public static function pushContent($status, $recipient = 'patient')
+    public static function pushContent($status, $recipient = 'patient', $appointment = null)
     {
         switch ($status) {
             case 'wait-0':
@@ -356,7 +369,11 @@ class AppointmentStatus
                 $retData = '您有新的约诊订单需要支付';
                 break;
             case 'wait-2':
-                $retData = '患者已付款，待您确认';
+                if ($appointment != null && $appointment['is_transfer'] == 1) {
+                    $retData = '医生已转诊，请您确认';
+                } else {
+                    $retData = '患者已付款，待您确认';
+                }
                 break;
             case 'wait-3':
                 $retData = '医生确认接诊，待面诊';
@@ -368,6 +385,9 @@ class AppointmentStatus
                 $retData = '患者确认改期，待面诊';
                 break;
 
+            case 'close-0':
+                $retData = '代约医生拒绝代约,约诊关闭';
+                break;
             case 'close-1':
                 $retData = '您逾期未付款,约诊关闭';
                 break;

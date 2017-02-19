@@ -73,6 +73,7 @@ class WalletTransformer extends TransformerAbstract
      * wait-4: 医生改期，待患者确认
      * wait-5: 患者确认改期，待面诊
      * close:
+     * close-0: 代约医生拒绝代约
      * close-1: 待患者付款
      * close-2: 医生过期未接诊,约诊关闭
      * close-3: 医生拒绝接诊
@@ -127,6 +128,7 @@ class WalletTransformer extends TransformerAbstract
                 $retData = '患者关闭';
                 break;
 
+            case 'close-0':
             case 'close-2':
             case 'close-3':
             case 'close-5':

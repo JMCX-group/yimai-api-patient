@@ -66,6 +66,7 @@ class AdmissionsRecordTransformer extends TransformerAbstract
                 $retData = '患者关闭';
                 break;
 
+            case 'close-0':
             case 'close-2':
             case 'close-3':
             case 'close-5':

@@ -42,6 +42,7 @@ class AppointmentController extends BaseController
      * wait-4: 医生改期，待患者确认
      * wait-5: 患者确认改期，待面诊
      * close:
+     * close-0: 代约医生拒绝代约
      * close-1: 待患者付款
      * close-2: 医生过期未接诊,约诊关闭
      * close-3: 医生拒绝接诊
@@ -589,6 +590,7 @@ class AppointmentController extends BaseController
          * wait-5: 患者确认改期，待面诊
          *
          * Close:
+         * close-0: 代约医生拒绝代约
          * close-1: 待患者付款
          * close-2: 医生过期未接诊,约诊关闭
          * close-3: 医生拒绝接诊
