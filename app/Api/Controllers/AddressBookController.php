@@ -43,9 +43,10 @@ class AddressBookController extends BaseController
             $invitedDoctor = InvitedDoctor::where('patient_id', $user->id)->get();
             $doctorListArr = json_decode($addressBook->doctor_list, true);
             $newDoctorListArr = array();
+            $newDoctorPhoneArr = array();
             foreach ($doctorListArr as $item) {
                 /**
-                 * 刷新已经加入之后的状态：
+                 * 刷新我邀请的已经加入之后的状态：
                  */
                 foreach ($invitedDoctor as $value) {
                     if ($item['phone'] == $value->doctor_phone) {
@@ -59,39 +60,56 @@ class AddressBookController extends BaseController
                     }
                 }
 
+                /**
+                 * 刷新其他的状态
+                 */
                 if (!isset($tmp)) {
+                    /**
+                     * 获取该用户状态：
+                     * wait：等待邀请；invited：已邀请/未加入；re-invite：可以重新邀请了；join：已加入；processing：认证中；completed：完成认证
+                     */
+                    $doctor = Doctor::where('phone', $item['phone'])->first();
+                    if (isset($doctor->auth)) { //已加入
+                        if ($doctor->auth == '' || $doctor->auth == null) {
+                            $status = 'join'; //已加入还未申请认证
+                        } else {
+                            $status = ($doctor->auth == 'completed') ? 'completed' : 'processing';
+                        }
+                        $time = $doctor->created_at->format('Y/m/d');
+                    }
+
+                    $tmp = [
+                        'name' => $item['name'],
+                        'phone' => $item['phone'],
+                        'status' => isset($status) ? $status : $item['status'], //wait：等待邀请；invited：已邀请/未加入；re-invite：可以重新邀请了；join：已加入；processing：认证中；completed：完成认证
+                        'time' => isset($time) ? $time : $item['time']
+                    ];
+
                     /**
                      * 当前时间如果小于一个月前，则可以重新邀请：
                      */
-                    if ($item['time'] != '' && (strtotime($item['time']) < date('Y-m-d H:i:s', time() - 30 * 24 * 3600))) {
-                        $tmp = [
-                            'name' => $item['name'],
-                            'phone' => $item['phone'],
-                            'status' => 're-invite', //wait：等待邀请；invited：已邀请/未加入；re-invite：可以重新邀请了；join：已加入；processing：认证中；completed：完成认证
-                            'time' => $item['time']
-                        ];
-                        array_push($newDoctorListArr, $tmp);
-                    } else {
-                        $tmp = $item;
+                    if ($tmp['status'] == 'invited' && $tmp['time'] != '' && (strtotime($tmp['time']) < date('Y-m-d H:i:s', time() - 30 * 24 * 3600))) {
+                        $tmp['status'] = 're-invite'; //wait：等待邀请；invited：已邀请/未加入；re-invite：可以重新邀请了；join：已加入；processing：认证中；completed：完成认证
                     }
                 }
 
                 array_push($newDoctorListArr, $tmp);
+                array_push($newDoctorPhoneArr, $tmp['phone']);
             }
 
             $addressBook->doctor_list = json_encode($newDoctorListArr);
+            $addressBook->doctor_phone_arr = json_encode($newDoctorPhoneArr);
+
+            /**
+             * 刷新view和已被别人邀请的：
+             */
+            $viewList = json_decode($addressBook->view_list, true);
+            $lists = $this->analysisInvitedList($user, $viewList, $addressBook);
+            $addressBook->view_list = json_encode($lists['view_list']);
+            $addressBook->view_phone_arr = json_encode($lists['view_phone_arr']);
+            $addressBook->invited_list = json_encode($lists['invited_list']);
+            $addressBook->invited_phone_arr = json_encode($lists['invited_phone_arr']);
         }
-
-        /**
-         * 刷新已被邀请的：
-         */
-        $viewList = json_decode($addressBook->view_list, true);
-        $lists = $this->analysisInvitedList($user, $viewList, $addressBook);
-        $addressBook->view_list = json_encode($lists['view_list']);
-        $addressBook->view_phone_arr = json_encode($lists['view_phone_arr']);
-        $addressBook->invited_list = json_encode($lists['invited_list']);
-        $addressBook->invited_phone_arr = json_encode($lists['invited_phone_arr']);
-
         $addressBook->save();
 
         $data = AddressBookTransformer::transform($addressBook);
