@@ -113,10 +113,12 @@ class AddressBookController extends BaseController
             $addressBook->patient_id = $user->id;
         }
 
-        $lists = $this->analysisInvitedList($user, $viewList, json_decode($addressBook->invited_list, true));
+        $lists = $this->analysisInvitedList($user, $viewList, $addressBook);
 
         $addressBook->view_list = json_encode($lists['view_list']);
+        $addressBook->view_phone_arr = json_encode($lists['view_phone_arr']);
         $addressBook->invited_list = json_encode($lists['invited_list']);
+        $addressBook->invited_phone_arr = json_encode($lists['invited_phone_arr']);
         $addressBook->upload_time = (isset($request['upload_time']) && $request['upload_time'] != '') ? date('Y-m-d H:i:s', strtotime($request['upload_time'])) : $addressBook->upload_time;
         $addressBook->save();
 
@@ -267,37 +269,38 @@ class AddressBookController extends BaseController
      *
      * @param $user
      * @param $viewListArr
-     * @param $invitedListArr
+     * @param $addressBook
      * @return array
      */
-    public function analysisInvitedList($user, $viewListArr, $invitedListArr)
+    public function analysisInvitedList($user, $viewListArr, $addressBook)
     {
+        $invitedListArr = json_decode($addressBook->invited_list, true);
+        $invitedListArr = (empty($invitedListArr)) ? array() : $invitedListArr;
+        $invitedPhoneArr = json_decode($addressBook->invited_phone_arr, true);
+        $invitedPhoneArr = (empty($invitedPhoneArr)) ? array() : $invitedPhoneArr;
+        $oldViewListArr = json_decode($addressBook->view_list, true);
+        $oldViewListArr = (empty($oldViewListArr)) ? array() : $oldViewListArr;
+        $oldViewPhoneArr = json_decode($addressBook->view_phone_arr, true);
+        $oldViewPhoneArr = (empty($oldViewPhoneArr)) ? array() : $oldViewPhoneArr;
+
         /**
          * 获取邀请code：
          */
         $code = Patient::getHealthConsultantCode($user->city_id, $user->code);
 
         /**
-         * 1、剥离通讯录中的phone；
-         * 2、剔除已有invited list中的phone，如果没有则不进行剔除；
-         * 3、通过phone批量找出已注册，有code，且不是自己code的phone list。
+         * 剔除已有invited list中的phone，如果被邀请或在原有列表里，则进行剔除
          */
-        $invitedPhoneArr = array();
-        if (empty($invitedListArr)) {
-            $invitedListArr = array();
-        } else {
-            foreach ($invitedListArr as $item) {
-                array_push($invitedPhoneArr, $item['phone']);
-            }
-        }
-
         $newPhoneArr = array();
         foreach ($viewListArr as $item) {
-            if (!in_array($item['phone'], $invitedPhoneArr)) {
+            if ((!in_array($item['phone'], $invitedPhoneArr)) && (!in_array($item['phone'], $oldViewPhoneArr))) {
                 array_push($newPhoneArr, $item['phone']);
             }
         }
 
+        /**
+         * 通过phone批量找出已注册，有code，且不是自己code的phone list
+         */
         $newInvitedList = Doctor::where('inviter_dp_code', $code)
             ->whereIn('phone', $newPhoneArr)
             ->get();
@@ -306,7 +309,9 @@ class AddressBookController extends BaseController
          * 如果返回不为空，则遍历view list分成两组返回：
          */
         if (!empty($newInvitedList)) {
-            $newInvitedPhoneArr = array();
+            /**
+             * 将新上传已注册的加入invited组
+             */
             foreach ($newInvitedList as $item) {
                 $tmp = [
                     'name' => $item->name,
@@ -314,26 +319,30 @@ class AddressBookController extends BaseController
                     'time' => $item->created_at->format('Y/m/d')
                 ];
                 array_push($invitedListArr, $tmp);
-
-                array_push($newInvitedPhoneArr, $item['phone']);
+                array_push($invitedPhoneArr, $item['phone']);
             }
 
-            $newViewListArr = array();
+            /**
+             * 将新上传未注册的加入view组
+             */
             foreach ($viewListArr as $item) {
-                if (!in_array($item['phone'], $newInvitedPhoneArr)) {
+                if (!in_array($item['phone'], $invitedPhoneArr)) {
                     $tmp = [
                         'name' => $item['name'],
                         'phone' => $item['phone']
                     ];
-                    array_push($newViewListArr, $tmp);
+                    array_push($oldViewListArr, $tmp);
+                    array_push($oldViewPhoneArr, $item['phone']);
                 }
             }
 
         }
 
         $data = [
-            'view_list' => isset($newViewListArr) ? $newViewListArr : $viewListArr,
-            'invited_list' => $invitedListArr
+            'view_list' => $oldViewListArr,
+            'view_phone_arr' => $oldViewPhoneArr,
+            'invited_list' => $invitedListArr,
+            'invited_phone_arr' => $invitedPhoneArr
         ];
 
         return $data;
