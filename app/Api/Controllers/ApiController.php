@@ -2124,7 +2124,7 @@ class ApiController extends BaseController
                         ]
                     ],
                     '发送邀请/重新邀请/单独邀请' => [
-                        '邀请文案' => '【医者脉连】您的朋友XXX邀请您登陆医脉医生端，在医脉平台，您可以建立属于您自己的个人品牌。',
+                        '邀请文案' => '您的朋友XXX邀请您登陆医脉医生端，在医脉平台，您可以建立属于您自己的个人品牌。',
                         'url' => $http . '/api/zone/send-invite',
                         'method' => 'POST',
                         'params' => [

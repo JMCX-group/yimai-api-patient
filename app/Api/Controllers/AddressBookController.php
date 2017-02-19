@@ -359,6 +359,9 @@ class AddressBookController extends BaseController
         $name = '';
         if (isset($request['txt']) && $request['txt'] != '') {
             $txt = $request['txt'];
+            if(strpos($txt, '【医者脉连】') === false){
+                $txt = '【医者脉连】' . $txt;
+            }
         } else {
             $txt = '';
         }
