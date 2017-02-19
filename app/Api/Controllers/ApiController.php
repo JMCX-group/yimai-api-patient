@@ -2180,6 +2180,12 @@ class ApiController extends BaseController
                                         'date' => '年月，已经按倒序给了；格式：2017年02月',
                                         'total' => '月总收益，单位：元'
                                     ]
+                                ],
+                                'month-3' => [
+                                    [
+                                        'date' => '最近三个月的年月，已经按倒序给了；格式：2017年02月',
+                                        'total' => '月总收益，单位：元'
+                                    ]
                                 ]
                             ],
                             'message' => '',

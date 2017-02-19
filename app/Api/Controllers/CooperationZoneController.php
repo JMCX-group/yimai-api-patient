@@ -77,11 +77,35 @@ class CooperationZoneController extends BaseController
         $already = PatientWithdrawRecord::alreadyWithdraw($user->id)[0]->total;
         $already = empty($already) ? 0 : intval($already);
         $can = $sumTotal - $already;
+        $list = InvitedDoctor::sumTotal_month($user->id);
+
+        /**
+         * 给予最近3个月数据：
+         */
+        $month3 = [
+            ['date' => date('Y年m月'), 'total' => 0],
+            ['date' => date('Y年m月', strtotime('-1 month')), 'total' => 0],
+            ['date' => date('Y年m月', strtotime('-2 month')), 'total' => 0],
+        ];
+        $i = 0;
+        foreach ($list as $value) {
+            $i++;
+            foreach ($month3 as &$item) {
+                if ($value->date == $item['date']) {
+                    $item['total'] = $value->total;
+                    break;
+                }
+            }
+            if ($i == 2) {
+                break;
+            }
+        }
 
         $data = [
             'total' => $sumTotal,
             'can' => $can,
-            'list' => InvitedDoctor::sumTotal_month($user->id),
+            'list' => $list,
+            'month-3' => $month3
         ];
 
         return response()->json(compact('data'));
