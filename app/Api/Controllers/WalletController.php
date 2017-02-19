@@ -22,7 +22,7 @@ use App\PatientRechargeRecord;
 use App\PatientWallet;
 use App\User;
 use Illuminate\Http\Request;
-use Tymon\JWTAuth\Exceptions\JWTException;
+use Illuminate\Support\Facades\Log;
 
 class WalletController extends BaseController
 {
@@ -209,7 +209,8 @@ class WalletController extends BaseController
             try {
                 $data = $this->wxPayClass->wxPay($outTradeNo, $body, ($fee / 10000), $timeExpire, 'recharge'); //TODO 测试期间除以10000
                 return response()->json(compact('data'), 200);
-            } catch (JWTException $e) {
+            } catch (\Exception $e) {
+                Log::info('recharge-record-err', ['context' => $e->getMessage()]);
                 return response()->json(['error' => $e->getMessage()], $e->getStatusCode());
             }
         }
