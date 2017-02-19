@@ -326,7 +326,7 @@ class AddressBookController extends BaseController
              * 将新上传未注册的加入view组
              */
             foreach ($viewListArr as $item) {
-                if (!in_array($item['phone'], $invitedPhoneArr)) {
+                if ((!in_array($item['phone'], $invitedPhoneArr)) && (!in_array($item['phone'], $oldViewPhoneArr))) {
                     $tmp = [
                         'name' => $item['name'],
                         'phone' => $item['phone']
