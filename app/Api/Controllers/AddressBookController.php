@@ -82,6 +82,16 @@ class AddressBookController extends BaseController
             $addressBook->doctor_list = json_encode($newDoctorListArr);
         }
 
+        /**
+         * 刷新已被邀请的：
+         */
+        $viewList = json_decode($addressBook->view_list, true);
+        $lists = $this->analysisInvitedList($user, $viewList, $addressBook);
+        $addressBook->view_list = json_encode($lists['view_list']);
+        $addressBook->view_phone_arr = json_encode($lists['view_phone_arr']);
+        $addressBook->invited_list = json_encode($lists['invited_list']);
+        $addressBook->invited_phone_arr = json_encode($lists['invited_phone_arr']);
+
         $addressBook->save();
 
         $data = AddressBookTransformer::transform($addressBook);
@@ -157,20 +167,29 @@ class AddressBookController extends BaseController
          */
         $viewListArr = json_decode($addressBook->view_list, true);
         $delListArr = json_decode($addressBook->del_list, true);
+        $oldDelPhoneArr = json_decode($addressBook->del_phone_arr, true);
+        $oldDelPhoneArr = (empty($oldDelPhoneArr)) ? array() : $oldDelPhoneArr;
         if (!$delListArr) {
             $delListArr = array();
         }
         $newViewListArr = array();
+        $newViewPhoneArr = array();
         foreach ($viewListArr as $item) {
-            if (in_array($item['phone'], $delPhoneArr)) {
-                array_push($delListArr, $item);
-            } else {
+            if (in_array($item['phone'], $delPhoneArr)) { //在新增删除列表的中加入
+                if (!in_array($item['phone'], $oldDelPhoneArr)) { //但如果在旧的里面已经有了，则抛弃
+                    array_push($delListArr, $item);
+                    array_push($oldDelPhoneArr, $item['phone']);
+                }
+            } else { //不在新增删除列表的中的原view加入新的
                 array_push($newViewListArr, $item);
+                array_push($newViewPhoneArr, $item['phone']);
             }
         }
 
         $addressBook->view_list = json_encode($newViewListArr);
+        $addressBook->view_phone_arr = json_encode($newViewPhoneArr);
         $addressBook->del_list = json_encode($delListArr);
+        $addressBook->del_phone_arr = json_encode($oldDelPhoneArr);
         $addressBook->save();
 
         $data = AddressBookTransformer::transform($addressBook);
@@ -197,23 +216,47 @@ class AddressBookController extends BaseController
         $viewListArr = json_decode($addressBook->view_list, true);
         $doctorListArr = json_decode($addressBook->doctor_list, true);
         $doctorListArr = (empty($doctorListArr)) ? array() : $doctorListArr;
+        $doctorPhoneArr = json_decode($addressBook->doctor_phone_arr, true);
+        $doctorPhoneArr = (empty($doctorPhoneArr)) ? array() : $doctorPhoneArr;
         $newViewListArr = array();
+        $newViewPhoneArr = array();
         foreach ($viewListArr as $item) {
             if ($item['phone'] == $addPhone) {
+                /**
+                 * 获取该用户状态：
+                 * wait：等待邀请；invited：已邀请/未加入；re-invite：可以重新邀请了；join：已加入；processing：认证中；completed：完成认证
+                 */
+                $doctor = Doctor::where('phone', $addPhone)->first();
+                if (isset($doctor->auth)) { //已加入
+                    if ($doctor->auth == '' || $doctor->auth == null) {
+                        $status = 'join'; //已加入还未申请认证
+                    } else {
+                        $status = ($doctor->auth == 'completed') ? 'completed' : 'processing';
+                    }
+                    $time = $doctor->created_at->format('Y/m/d');
+                } else {
+                    $status = 'wait';
+                    $time = '';
+                }
+
                 $tmp = [
                     'name' => $item['name'],
                     'phone' => $item['phone'],
-                    'status' => 'wait', //wait：等待邀请；invited：已邀请/未加入；re-invite：可以重新邀请了；join：已加入；processing：认证中；completed：完成认证
-                    'time' => ''
+                    'status' => $status, //wait：等待邀请；invited：已邀请/未加入；re-invite：可以重新邀请了；join：已加入；processing：认证中；completed：完成认证
+                    'time' => $time
                 ];
                 array_push($doctorListArr, $tmp);
+                array_push($doctorPhoneArr, $item['phone']);
             } else {
                 array_push($newViewListArr, $item);
+                array_push($newViewPhoneArr, $item['phone']);
             }
         }
 
         $addressBook->view_list = json_encode($newViewListArr);
+        $addressBook->view_phone_arr = json_encode($newViewPhoneArr);
         $addressBook->doctor_list = json_encode($doctorListArr);
+        $addressBook->doctor_phone_arr = json_encode($doctorPhoneArr);
         $addressBook->save();
 
         $data = AddressBookTransformer::transform($addressBook);
@@ -283,6 +326,10 @@ class AddressBookController extends BaseController
         $oldViewListArr = (empty($oldViewListArr)) ? array() : $oldViewListArr;
         $oldViewPhoneArr = json_decode($addressBook->view_phone_arr, true);
         $oldViewPhoneArr = (empty($oldViewPhoneArr)) ? array() : $oldViewPhoneArr;
+        $delPhoneArr = json_decode($addressBook->del_phone_arr, true);
+        $delPhoneArr = (empty($delPhoneArr)) ? array() : $delPhoneArr;
+        $doctorPhoneArr = json_decode($addressBook->doctor_phone_arr, true);
+        $doctorPhoneArr = (empty($doctorPhoneArr)) ? array() : $doctorPhoneArr;
 
         /**
          * 获取邀请code：
@@ -294,7 +341,12 @@ class AddressBookController extends BaseController
          */
         $newPhoneArr = array();
         foreach ($viewListArr as $item) {
-            if ((!in_array($item['phone'], $invitedPhoneArr)) && (!in_array($item['phone'], $oldViewPhoneArr))) {
+            if ((!in_array($item['phone'], $invitedPhoneArr))
+                && (!in_array($item['phone'], $oldViewPhoneArr))
+                && (!in_array($item['phone'], $delPhoneArr))
+                && (!in_array($item['phone'], $doctorPhoneArr))
+                && ($item['phone'] != $user->phone)
+            ) {
                 array_push($newPhoneArr, $item['phone']);
             }
         }
@@ -324,10 +376,16 @@ class AddressBookController extends BaseController
             }
 
             /**
-             * 将新上传未注册的加入view组
+             * 将新上传未注册/未加入删除组/未加入我的医生的加入view组
              */
             foreach ($viewListArr as $item) {
-                if ((!in_array($item['phone'], $invitedPhoneArr)) && (!in_array($item['phone'], $oldViewPhoneArr))) {
+                if ((!in_array($item['phone'], $invitedPhoneArr))
+                    && (!in_array($item['phone'], $oldViewPhoneArr))
+                    && (!in_array($item['phone'], $delPhoneArr))
+                    && (!in_array($item['phone'], $doctorPhoneArr))
+                    && ($item['phone'] != $user->phone)
+                    && ($item['phone'] != '')
+                ) {
                     $tmp = [
                         'name' => $item['name'],
                         'phone' => $item['phone']
