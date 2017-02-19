@@ -238,7 +238,7 @@ class AddressBookController extends BaseController
         $addressBook = PatientAddressBook::where('patient_id', $user->id)->first();
 
         $viewListArr = json_decode($addressBook->view_list, true);
-        if(!$viewListArr){
+        if (!$viewListArr) {
             $viewListArr = array();
         }
 
@@ -366,10 +366,9 @@ class AddressBookController extends BaseController
          * 数据获取
          */
         $phone = $request['phone'];
-        $name = '';
         if (isset($request['txt']) && $request['txt'] != '') {
             $txt = $request['txt'];
-            if(strpos($txt, '【医者脉连】') === false){
+            if (strpos($txt, '【医者脉连】') === false) {
                 $txt = '【医者脉连】' . $txt;
             }
         } else {
@@ -391,7 +390,7 @@ class AddressBookController extends BaseController
         $doctorListArr = json_decode($addressBook->doctor_list, true);
         $newDoctorListArr = array();
         $isAddToArr = false;
-        if($doctorListArr) {
+        if ($doctorListArr) {
             foreach ($doctorListArr as $item) {
                 if ($item['phone'] == $phone) {
                     $tmp = [
@@ -400,7 +399,6 @@ class AddressBookController extends BaseController
                         'status' => 'invited', //wait：等待邀请；invited：已邀请/未加入；re-invite：可以重新邀请了；join：已加入；processing：认证中；completed：完成认证
                         'time' => date('Y-m-d H:i:s')
                     ];
-                    $name = $item['name'];
                     array_push($newDoctorListArr, $tmp);
                     $isAddToArr = true;
                 } else {
@@ -413,9 +411,8 @@ class AddressBookController extends BaseController
          * 如果没有加入已知就单独生成一条：
          */
         if (!$isAddToArr && isset($request['name']) && $request['name'] != '') {
-            $name = $request['name'];
             $tmp = [
-                'name' => $name,
+                'name' => $request['name'],
                 'phone' => $phone,
                 'status' => 'invited', //wait：等待邀请；invited：已邀请/未加入；re-invite：可以重新邀请了；join：已加入；processing：认证中；completed：完成认证
                 'time' => date('Y-m-d H:i:s')
@@ -426,7 +423,7 @@ class AddressBookController extends BaseController
         /**
          * 发送短信和保存数据
          */
-        $ret = SmsContent::sendSMS_zoneInvite($phone, $name, $txt);
+        $ret = SmsContent::sendSMS_zoneInvite($phone, $user->name, $txt);
         if ($ret) {
             $addressBook->doctor_list = json_encode($newDoctorListArr);
             $addressBook->save();
