@@ -45,6 +45,8 @@ class AddressBookController extends BaseController
             $newDoctorListArr = array();
             $newDoctorPhoneArr = array();
             foreach ($doctorListArr as $item) {
+                $tmp = null;
+
                 /**
                  * 刷新我邀请的已经加入之后的状态：
                  */
@@ -63,7 +65,7 @@ class AddressBookController extends BaseController
                 /**
                  * 刷新其他的状态
                  */
-                if (!isset($tmp)) {
+                if ($tmp == null) {
                     /**
                      * 获取该用户状态：
                      * wait：等待邀请；invited：已邀请/未加入；re-invite：可以重新邀请了；join：已加入；processing：认证中；completed：完成认证
