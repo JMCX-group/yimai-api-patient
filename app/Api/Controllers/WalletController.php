@@ -193,7 +193,7 @@ class WalletController extends BaseController
         $rechargeRecord = [
             'patient_id' => $user->id,
             'out_trade_no' => $outTradeNo,
-            'total_fee' => ($fee == 1) ? 1000000 : $fee, //TODO 如果充值0.01元，则乘以100万
+            'total_fee' => $fee,
             'body' => $body,
             'detail' => '',
             'time_start' => date('Y-m-d H:i:s'),
@@ -207,7 +207,7 @@ class WalletController extends BaseController
          */
         if ($fee > 0) {
             try {
-                $data = $this->wxPayClass->wxPay($outTradeNo, $body, $fee, $timeExpire, 'recharge');
+                $data = $this->wxPayClass->wxPay($outTradeNo, $body, ($fee / 10000), $timeExpire, 'recharge'); //TODO 测试期间除以10000
                 return response()->json(compact('data'), 200);
             } catch (JWTException $e) {
                 return response()->json(['error' => $e->getMessage()], $e->getStatusCode());

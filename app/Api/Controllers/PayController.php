@@ -182,7 +182,7 @@ class PayController extends BaseController
                     $wallet->patient_id = $rechargeRecord->patient_id;
                     $wallet->total = 0;
                 }
-                $wallet->total += (($wxData['total_fee'] == 1) ? 10000 : ($wxData['total_fee'] / 100)); //TODO 如果充值0.01元，则乘以100万
+                $wallet->total += ($wxData['total_fee'] * 10000); // //TODO 测试期间除以10000，入库需要乘以回来
                 $wallet->save();
 
                 $data = ['result' => 'success'];
