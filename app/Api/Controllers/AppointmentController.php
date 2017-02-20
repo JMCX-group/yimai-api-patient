@@ -362,7 +362,7 @@ class AppointmentController extends BaseController
      *
      * @return array|mixed
      */
-    public function getReservationRecord()
+    public function myList()
     {
         $user = User::getAuthenticatedUser();
         if (!isset($user->id)) {
