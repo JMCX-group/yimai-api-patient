@@ -347,11 +347,13 @@ class Transformer
      */
     public static function appointmentsTransform($appointments, $doctor, $locumsDoctor)
     {
+        $domain = \Config::get('constants.DOMAIN');
+
         return [
             'doctor_info' => [
                 'id' => (empty($doctor)) ? null : $doctor->id,
-                'name' => (empty($doctor)) ? null : $doctor->name,
-                'head_url' => (empty($doctor)) ? null : (($doctor->avatar == '') ? null : $doctor->avatar),
+                'name' => (empty($doctor)) ? '待确认' : $doctor->name,
+                'head_url' => (empty($doctor) || $doctor->avatar == '') ? $domain . '/uploads/avatar/default.jpg' : $doctor->avatar,
                 'job_title' => (empty($doctor)) ? null : $doctor->title,
                 'hospital' => (empty($doctor)) ? null : $doctor->hospital,
                 'department' => (empty($doctor)) ? null : $doctor->dept
