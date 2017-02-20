@@ -467,9 +467,11 @@ class AddressBookController extends BaseController
         $addressBook = PatientAddressBook::where('patient_id', $user->id)->first();
         $doctorListArr = json_decode($addressBook->doctor_list, true);
         $newDoctorListArr = array();
+        $newDoctorPhoneArr = array();
         $isAddToArr = false;
         if ($doctorListArr) {
             foreach ($doctorListArr as $item) {
+                $tmp = null;
                 if ($item['phone'] == $phone) {
                     $tmp = [
                         'name' => $item['name'],
@@ -478,9 +480,11 @@ class AddressBookController extends BaseController
                         'time' => date('Y-m-d H:i:s')
                     ];
                     array_push($newDoctorListArr, $tmp);
+                    array_push($newDoctorPhoneArr, $tmp['phone']);
                     $isAddToArr = true;
                 } else {
                     array_push($newDoctorListArr, $item);
+                    array_push($newDoctorPhoneArr, $item['phone']);
                 }
             }
         }
@@ -496,6 +500,7 @@ class AddressBookController extends BaseController
                 'time' => date('Y-m-d H:i:s')
             ];
             array_push($newDoctorListArr, $tmp);
+            array_push($newDoctorPhoneArr, $tmp['phone']);
         }
 
         /**
@@ -504,6 +509,7 @@ class AddressBookController extends BaseController
         $ret = SmsContent::sendSMS_zoneInvite($phone, Patient::getHealthConsultantCode($user->city_id, $user->code), $user->name, $txt);
         if ($ret) {
             $addressBook->doctor_list = json_encode($newDoctorListArr);
+            $addressBook->doctor_phone_arr = json_encode($newDoctorPhoneArr);
             $addressBook->save();
 
             $data = AddressBookTransformer::transform($addressBook);
