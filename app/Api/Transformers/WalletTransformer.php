@@ -41,11 +41,13 @@ class WalletTransformer extends TransformerAbstract
      */
     public static function appointmentTransform($appointment)
     {
+        $domain = \Config::get('constants.DOMAIN');
+
         return [
             'id' => $appointment['id'],
             'doctor_id' => $appointment['doctor_id'],
             'doctor_name' => $appointment['name'],
-            'doctor_head_url' => ($appointment['avatar'] == '') ? null : $appointment['avatar'],
+            'doctor_head_url' => ($appointment['avatar'] == '') ? $domain . '/uploads/avatar/default.jpg' : $appointment['avatar'],
             'doctor_job_title' => $appointment['title'],
             'doctor_is_auth' => $appointment['auth'],
             'doctor_dept' => $appointment['dept_name'],
