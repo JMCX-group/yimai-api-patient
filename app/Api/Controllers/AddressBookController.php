@@ -300,27 +300,34 @@ class AddressBookController extends BaseController
         $delPhone = $request['phone'];
         $addressBook = PatientAddressBook::where('patient_id', $user->id)->first();
 
-        $viewListArr = json_decode($addressBook->view_list, true);
-        if (!$viewListArr) {
-            $viewListArr = array();
-        }
+        $oldViewListArr = json_decode($addressBook->view_list, true);
+        $oldViewListArr = (empty($oldViewListArr)) ? array() : $oldViewListArr;
+        $oldViewPhoneArr = json_decode($addressBook->view_phone_arr, true);
+        $oldViewPhoneArr = (empty($oldViewPhoneArr)) ? array() : $oldViewPhoneArr;
 
         $doctorListArr = json_decode($addressBook->doctor_list, true);
         $newDoctorListArr = array();
+        $newDoctorPhoneArr = array();
         foreach ($doctorListArr as $item) {
             if ($item['phone'] == $delPhone) {
                 $tmp = [
                     'name' => $item['name'],
                     'phone' => $item['phone'],
                 ];
-                array_push($viewListArr, $tmp);
+                if (!in_array($item['phone'], $oldViewPhoneArr)) { //不在原有列表再添加
+                    array_push($oldViewListArr, $tmp);
+                    array_push($oldViewPhoneArr, $tmp['phone']);
+                }
             } else {
                 array_push($newDoctorListArr, $item);
+                array_push($newDoctorPhoneArr, $item['phone']);
             }
         }
 
-        $addressBook->view_list = json_encode($viewListArr);
+        $addressBook->view_list = json_encode($oldViewListArr);
+        $addressBook->view_phone_arr = json_encode($oldViewPhoneArr);
         $addressBook->doctor_list = json_encode($newDoctorListArr);
+        $addressBook->doctor_phone_arr = json_encode($newDoctorPhoneArr);
         $addressBook->save();
 
         $data = AddressBookTransformer::transform($addressBook);
