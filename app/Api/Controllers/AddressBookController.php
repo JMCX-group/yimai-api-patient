@@ -501,7 +501,7 @@ class AddressBookController extends BaseController
         /**
          * 发送短信和保存数据
          */
-        $ret = SmsContent::sendSMS_zoneInvite($phone, $user->name, $txt);
+        $ret = SmsContent::sendSMS_zoneInvite($phone, Patient::getHealthConsultantCode($user->city_id, $user->code), $user->name, $txt);
         if ($ret) {
             $addressBook->doctor_list = json_encode($newDoctorListArr);
             $addressBook->save();

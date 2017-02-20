@@ -72,16 +72,17 @@ class SmsContent
      * 发送合作专区邀请短信给新的注册用户
      *
      * @param $phone
+     * @param string $code
      * @param string $name
      * @param string $content
      * @return bool
      */
-    public static function sendSMS_zoneInvite($phone, $name='', $content='')
+    public static function sendSMS_zoneInvite($phone, $code, $name='', $content='')
     {
-        if($content){
-            $txt = $content;
+        if ($content) {
+            $txt = str_replace('邀请您登陆', '（健康顾问码：' . $code . '）邀请您登陆', $content);
         } else {
-            $txt = '【医者脉连】您的朋友' . $name . '邀请您登陆医脉医生端，在医脉平台，您可以建立属于您自己的个人品牌。'; //文案
+            $txt = '【医者脉连】您的朋友' . $name . '（健康顾问码：' . $code . '）邀请您登陆医脉医生端，在医脉平台，您可以建立属于您自己的个人品牌。'; //文案
         }
 
         return self::sendSms($phone, $txt, 'send-sms-zone-invite');
