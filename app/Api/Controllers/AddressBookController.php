@@ -46,60 +46,62 @@ class AddressBookController extends BaseController
             $newDoctorListArr = array();
             $newDoctorPhoneArr = array();
 
-            foreach ($doctorListArr as $item) {
-                $tmp = null;
-                $status = null;
+            if ($doctorListArr) {
+                foreach ($doctorListArr as $item) {
+                    $tmp = null;
+                    $status = null;
 
-                /**
-                 * 刷新我邀请的已经加入之后的状态：
-                 */
-                foreach ($invitedDoctor as $value) {
-                    if ($item['phone'] == $value->doctor_phone) {
+                    /**
+                     * 刷新我邀请的已经加入之后的状态：
+                     */
+                    foreach ($invitedDoctor as $value) {
+                        if ($item['phone'] == $value->doctor_phone) {
+                            $tmp = [
+                                'name' => $item['name'],
+                                'phone' => $item['phone'],
+                                'status' => $value->status, //wait：等待邀请；invited：已邀请/未加入；re-invite：可以重新邀请了；join：已加入；processing：认证中；completed：完成认证
+                                'time' => ''
+                            ];
+                            break;
+                        }
+                    }
+
+                    /**
+                     * 刷新其他的状态
+                     */
+                    if ($tmp == null) {
+                        /**
+                         * 获取该用户状态：
+                         * wait：等待邀请；invited：已邀请/未加入；re-invite：可以重新邀请了；join：已加入；processing：认证中；completed：完成认证
+                         */
+                        $doctor = Doctor::where('phone', $item['phone'])->first();
+                        if (isset($doctor->auth)) { //已加入
+                            if ($doctor->auth == '' || $doctor->auth == null) {
+                                $status = 'join'; //已加入还未申请认证
+                            } else {
+                                $status = ($doctor->auth == 'completed') ? 'completed' : 'processing';
+                            }
+                            $time = $doctor->created_at->format('Y/m/d');
+                        }
+
                         $tmp = [
                             'name' => $item['name'],
                             'phone' => $item['phone'],
-                            'status' => $value->status, //wait：等待邀请；invited：已邀请/未加入；re-invite：可以重新邀请了；join：已加入；processing：认证中；completed：完成认证
-                            'time' => ''
+                            'status' => (!empty($status)) ? $status : $item['status'], //wait：等待邀请；invited：已邀请/未加入；re-invite：可以重新邀请了；join：已加入；processing：认证中；completed：完成认证
+                            'time' => isset($time) ? $time : $item['time']
                         ];
-                        break;
-                    }
-                }
 
-                /**
-                 * 刷新其他的状态
-                 */
-                if ($tmp == null) {
-                    /**
-                     * 获取该用户状态：
-                     * wait：等待邀请；invited：已邀请/未加入；re-invite：可以重新邀请了；join：已加入；processing：认证中；completed：完成认证
-                     */
-                    $doctor = Doctor::where('phone', $item['phone'])->first();
-                    if (isset($doctor->auth)) { //已加入
-                        if ($doctor->auth == '' || $doctor->auth == null) {
-                            $status = 'join'; //已加入还未申请认证
-                        } else {
-                            $status = ($doctor->auth == 'completed') ? 'completed' : 'processing';
+                        /**
+                         * 当前时间如果小于一个月前，则可以重新邀请：
+                         */
+                        if ($tmp['status'] == 'invited' && $tmp['time'] != '' && (strtotime($tmp['time']) < date('Y-m-d H:i:s', time() - 30 * 24 * 3600))) {
+                            $tmp['status'] = 're-invite'; //wait：等待邀请；invited：已邀请/未加入；re-invite：可以重新邀请了；join：已加入；processing：认证中；completed：完成认证
                         }
-                        $time = $doctor->created_at->format('Y/m/d');
                     }
 
-                    $tmp = [
-                        'name' => $item['name'],
-                        'phone' => $item['phone'],
-                        'status' => (!empty($status)) ? $status : $item['status'], //wait：等待邀请；invited：已邀请/未加入；re-invite：可以重新邀请了；join：已加入；processing：认证中；completed：完成认证
-                        'time' => isset($time) ? $time : $item['time']
-                    ];
-
-                    /**
-                     * 当前时间如果小于一个月前，则可以重新邀请：
-                     */
-                    if ($tmp['status'] == 'invited' && $tmp['time'] != '' && (strtotime($tmp['time']) < date('Y-m-d H:i:s', time() - 30 * 24 * 3600))) {
-                        $tmp['status'] = 're-invite'; //wait：等待邀请；invited：已邀请/未加入；re-invite：可以重新邀请了；join：已加入；processing：认证中；completed：完成认证
-                    }
+                    array_push($newDoctorListArr, $tmp);
+                    array_push($newDoctorPhoneArr, $tmp['phone']);
                 }
-
-                array_push($newDoctorListArr, $tmp);
-                array_push($newDoctorPhoneArr, $tmp['phone']);
             }
 
             $addressBook->doctor_list = json_encode($this->orderByAddressBook($newDoctorListArr));
