@@ -44,8 +44,10 @@ class AddressBookController extends BaseController
             $doctorListArr = json_decode($addressBook->doctor_list, true);
             $newDoctorListArr = array();
             $newDoctorPhoneArr = array();
+
             foreach ($doctorListArr as $item) {
                 $tmp = null;
+                $status = null;
 
                 /**
                  * 刷新我邀请的已经加入之后的状态：
@@ -83,7 +85,7 @@ class AddressBookController extends BaseController
                     $tmp = [
                         'name' => $item['name'],
                         'phone' => $item['phone'],
-                        'status' => isset($status) ? $status : $item['status'], //wait：等待邀请；invited：已邀请/未加入；re-invite：可以重新邀请了；join：已加入；processing：认证中；completed：完成认证
+                        'status' => (!empty($status)) ? $status : $item['status'], //wait：等待邀请；invited：已邀请/未加入；re-invite：可以重新邀请了；join：已加入；processing：认证中；completed：完成认证
                         'time' => isset($time) ? $time : $item['time']
                     ];
 
