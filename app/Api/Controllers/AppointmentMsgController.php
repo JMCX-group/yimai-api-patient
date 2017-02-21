@@ -26,7 +26,11 @@ class AppointmentMsgController extends BaseController
         }
 
         $allMsg = AppointmentMsg::where('patient_id', $user->id)
-            ->whereIn('status', array('wait-1', 'wait-3', 'wait-4', 'close-2', 'close-3', 'close-4', 'close-5', 'cancel-2', 'cancel-4', 'cancel-7'))
+            ->whereIn('status', array(
+                'wait-1', 'wait-3', 'wait-4',
+                'close-0', 'close-2', 'close-3', 'close-4', 'close-5',
+                'cancel-2', 'cancel-4', 'cancel-7'
+            ))
             ->orderBy('id', 'DESC')
             ->get();
 
