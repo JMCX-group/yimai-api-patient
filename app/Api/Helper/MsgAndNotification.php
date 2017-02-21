@@ -92,12 +92,14 @@ class MsgAndNotification
                 /**
                  * 批量插入推送消息
                  */
-                foreach ($appointmentMsgList as $item){
+                foreach ($appointmentMsgList as $item) {
                     AppointmentMsg::create($item);
                 }
 
-                foreach ($deviceTokens as $deviceToken) {
-                    self::pushAppointmentMsg($deviceToken['device_token'], $status, $deviceToken['id'], 'patient'); //向患者端推送消息
+                if (!empty($deviceTokens)) {
+                    foreach ($deviceTokens as $deviceToken) {
+                        self::pushAppointmentMsg($deviceToken['device_token'], $status, $deviceToken['id'], 'patient'); //向患者端推送消息
+                    }
                 }
 
                 if ($isPushDoctor) {
@@ -202,7 +204,7 @@ class MsgAndNotification
      * @param $recipient
      * @param null $appointment
      */
-    public static function pushAdmissionsMsg($deviceToken, $appointmentStatus, $appointmentId, $recipient, $appointment=null)
+    public static function pushAppointmentMsg($deviceToken, $appointmentStatus, $appointmentId, $recipient, $appointment=null)
     {
         /**
          * 获取推送文案和动作
