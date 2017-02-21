@@ -16,6 +16,7 @@ use App\Doctor;
 use App\InvitedDoctor;
 use App\Patient;
 use App\PatientAddressBook;
+use App\TmpSort;
 use App\User;
 use Illuminate\Http\Request;
 
@@ -101,7 +102,7 @@ class AddressBookController extends BaseController
                 array_push($newDoctorPhoneArr, $tmp['phone']);
             }
 
-            $addressBook->doctor_list = json_encode($newDoctorListArr);
+            $addressBook->doctor_list = json_encode($this->orderByAddressBook($newDoctorListArr));
             $addressBook->doctor_phone_arr = json_encode($newDoctorPhoneArr);
 
             /**
@@ -109,9 +110,9 @@ class AddressBookController extends BaseController
              */
             $viewList = json_decode($addressBook->view_list, true);
             $lists = $this->analysisInvitedList($user, $viewList, $addressBook);
-            $addressBook->view_list = json_encode($lists['view_list']);
+            $addressBook->view_list = json_encode($this->orderByAddressBook($lists['view_list']));
             $addressBook->view_phone_arr = json_encode($lists['view_phone_arr']);
-            $addressBook->invited_list = json_encode($lists['invited_list']);
+            $addressBook->invited_list = json_encode($this->orderByAddressBook($lists['invited_list']));
             $addressBook->invited_phone_arr = json_encode($lists['invited_phone_arr']);
         }
         $addressBook->save();
@@ -135,9 +136,12 @@ class AddressBookController extends BaseController
         }
 
         $viewList = json_decode($request['view_list'], true);
+
         if (!$viewList) {
             return response()->json(['message' => '格式错误或数据为空'], 400);
         }
+
+        $viewList = $this->orderByAddressBook($viewList);
 
         $addressBook = PatientAddressBook::where('patient_id', $user->id)->first();
         if (!isset($addressBook->id)) {
@@ -527,5 +531,20 @@ class AddressBookController extends BaseController
         } else {
             return response()->json(['message' => '短信发送失败'], 500);
         }
+    }
+
+    /**
+     * Order by name|phone
+     *
+     * @param $data
+     * @return mixed
+     */
+    public function orderByAddressBook($data)
+    {
+        TmpSort::truncate();
+        TmpSort::insert($data);
+        $ret = TmpSort::orderByGBK();
+
+        return $ret;
     }
 }
