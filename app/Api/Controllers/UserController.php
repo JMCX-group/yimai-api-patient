@@ -85,6 +85,13 @@ class UserController extends BaseController
             $user->blacklist = $request['blacklist'];
         }
 
+        /**
+         * Protocol read
+         */
+        if (isset($request['protocol_read']) && !empty($request['protocol_read'])) {
+            $user->protocol_read = $request['protocol_read'];
+        }
+
         try {
             if ($user->save()) {
                 return $this->response->item($user, new UserTransformer());

@@ -33,6 +33,7 @@ class Patient extends Model
         'tag_list',
         'blacklist',
         'my_doctors',
+        'protocol_read'
     ];
 
     /**

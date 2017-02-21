@@ -433,7 +433,8 @@ class ApiController extends BaseController
                             'province' => '用户所在省份ID',
                             'city' => '用户所属城市ID',
                             'tags' => '标签； 格式（JSON Encode）：{"tag_list":"1,2,3,4","illness_list":"3,4,5,6"}',
-                            'blacklist' => '黑名单； 用户ID list，用逗号分隔'
+                            'blacklist' => '黑名单； 用户ID list，用逗号分隔',
+                            'protocol_read' => '协议是否已读；1为已读，0为未读'
                         ],
                         'response' => [
                             'user' => [
@@ -455,7 +456,8 @@ class ApiController extends BaseController
                                 ],
                                 'code' => '合作专区健康顾问码，有号码为加入，7位数值，用字符串形式传，因为首位一般是0；如果为null，则未加入合作专区',
                                 'tags' => '标签； 格式（JSON Encode）：{"tag_list":"1,2,3,4","illness_list":"3,4,5,6"}',
-                                'blacklist' => '黑名单； 用户ID list，用逗号分隔； 增加/删除都更新改字段即可'
+                                'blacklist' => '黑名单； 用户ID list，用逗号分隔； 增加/删除都更新改字段即可',
+                                'protocol_read' => '协议是否已读；1为已读，0为未读'
                             ],
                             'message' => '',
                             'error' => ''
@@ -1941,7 +1943,8 @@ class ApiController extends BaseController
                                 ],
                                 'code' => '合作专区健康顾问码，有号码为加入，7位数值，用字符串形式传，因为首位一般是0；如果为null，则未加入合作专区',
                                 'tags' => '标签； 格式（JSON Encode）：{"tag_list":"1,2,3,4","illness_list":"3,4,5,6"}',
-                                'blacklist' => '黑名单； 用户ID list，用逗号分隔； 增加/删除都更新改字段即可'
+                                'blacklist' => '黑名单； 用户ID list，用逗号分隔； 增加/删除都更新改字段即可',
+                                'protocol_read' => '协议是否已读；1为已读，0为未读'
                             ],
                             'message' => '',
                             'error' => ''

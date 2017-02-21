@@ -54,7 +54,8 @@ class UserTransformer extends TransformerAbstract
             'city' => $user['city_id'],
             'code' => ($user['code']) ? Patient::getHealthConsultantCode($user['city_id']['id'], $user['code']) : $user['code'],
             'tags' => $user['tag_list'],
-            'blacklist' => $user['blacklist']
+            'blacklist' => $user['blacklist'],
+            'protocol_read' => $user['protocol_read']
         ];
     }
 
