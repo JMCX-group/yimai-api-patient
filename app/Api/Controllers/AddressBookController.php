@@ -153,9 +153,9 @@ class AddressBookController extends BaseController
 
         $lists = $this->analysisInvitedList($user, $viewList, $addressBook);
 
-        $addressBook->view_list = json_encode($lists['view_list']);
+        $addressBook->view_list = json_encode($this->orderByAddressBook($lists['view_list']));
         $addressBook->view_phone_arr = json_encode($lists['view_phone_arr']);
-        $addressBook->invited_list = json_encode($lists['invited_list']);
+        $addressBook->invited_list = json_encode($this->orderByAddressBook($lists['invited_list']));
         $addressBook->invited_phone_arr = json_encode($lists['invited_phone_arr']);
         $addressBook->upload_time = (isset($request['upload_time']) && $request['upload_time'] != '') ? date('Y-m-d H:i:s', strtotime($request['upload_time'])) : $addressBook->upload_time;
         $addressBook->save();
@@ -546,6 +546,8 @@ class AddressBookController extends BaseController
         TmpSort::truncate();
         TmpSort::insert($data);
         $ret = TmpSort::orderByGBK();
+        $ret = json_encode($ret);
+        $ret = json_decode($ret, true);
 
         return $ret;
     }
